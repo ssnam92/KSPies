@@ -34,12 +34,13 @@ P_tar = mf.make_rdm1()
 #    np.save('Pn'+str(l), mz1.dm)
   
 #run ZMP with density fit (fast)
-mz2=zmp.RZMP(mol, P_tar)
-mz2.with_df = True
-for l in [ 8, 16, 32, 64, 128, 256, 512 ]:
-    mz2.level_shift_factor = l*0.1
-    mz2.zscf(l)
-    np.save('Pf'+str(l), mz2.dm)
+#mz2=zmp.RZMP(mol, P_tar)
+#mz2.with_df = True
+#mz2.diis_space = 20
+#for l in [ 8, 16, 32, 64, 128, 256, 512 ]:
+#    mz2.level_shift_factor = l*0.1
+#    mz2.zscf(l)
+#    np.save('Pf'+str(l), mz2.dm)
 
 #Setting for plotting density difference
 import matplotlib.pyplot as plt
@@ -83,17 +84,19 @@ coords=np.array(coords)
 ao=dft.numint.eval_ao(mol,coords)
 
 ls = [8, 32, 128, 512]
-fig = plt.figure(figsize = (7, 7))
+fig = plt.figure(figsize = (8, 7))
 ax = fig.subplots(2, 2, sharex=True, sharey=True, gridspec_kw={'hspace': 0.06, 'wspace': 0.06})
 for i in range(4):
     P=np.load('Pf'+str(ls[i])+'.npy')
     drho=dft.numint.eval_rho(mol,ao,P-P_tar)
     drho=np.reshape(drho, (nx, ny))
-    ax[i//2,i%2].contourf(xs/unit, ys/unit, drho.T, levels=np.linspace(-0.05,0.05,101), cmap=rvb, extend='both')
+    c = ax[i//2,i%2].contourf(xs/unit, ys/unit, drho.T, levels=np.linspace(-0.05,0.05,101), cmap=rvb, extend='both')
     ax[i//2,i%2].set_aspect('equal', adjustable='box')
 
-fig.tight_layout()
+plt.subplots_adjust(top=0.95,right=0.84,bottom=0.06,left=0.06)
+cbar_ax = fig.add_axes([0.88, 0.06, 0.03, 0.88])
+fig.colorbar(c, cax=cbar_ax,ticks=np.linspace(-0.05,0.05,11))
 plt.savefig('bz_dendiff.pdf', format='pdf')
-plt.savefig('bz_dendiff.eps', format='eps')
-#plt.show()
+#plt.savefig('bz_dendiff.eps', format='eps')
+plt.show()
 

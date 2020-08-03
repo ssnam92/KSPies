@@ -4,6 +4,7 @@ import numpy as np
 import util_dev as util
 import zmp_dev as zmp
 
+#Target density from HF
 mol = gto.M(atom='Ne',
             basis='aug-cc-pVTZ')
 mf=scf.RHF(mol).run()
@@ -28,6 +29,6 @@ for l in [ 16, 128, 1024 ]:
 plt.xlim(0, 5)
 plt.ylim(-9, 0)
 plt.legend()
-plt.savefig('vxc_zmp_fa.pdf', format='pdf')
-plt.savefig('vxc_zmp_fa.eps', format='eps')
+#plt.savefig('vxc_zmp_fa.pdf', format='pdf')
+#plt.savefig('vxc_zmp_fa.eps', format='eps')
 plt.show()

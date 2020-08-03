@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 """
 Utility Functions
-===============
+=================
 
-**Summary** Utility functions for pyscf.
+**Summary** Utility functions for KSPies.
 
   :References:
 
@@ -14,6 +14,10 @@ Utility Functions
 .. moduleauthor::
     Seungsoo Nam <skaclitz@yonsei.ac.kr> <http://tccl.yonsei.ac.kr/mediawiki/index.php/Main_Page> ORCID: `000-0001-9948-6140 <https://orcid.org/0000-0001-9948-6140>`_
     Hansol Park <hansol7954@yonsei.ac.kr> <http://tccl.yonsei.ac.kr/mediawiki/index.php/Main_Page> ORCID: `000-0001-8706-5015 <https://orcid.org/0000-0001-8706-5015>`_
+
+.. note::
+
+    SN : When I make html, some texts are strange, especially "Returns" part. 
 
 .. topic:: functions
 
@@ -41,24 +45,17 @@ from pyscf.dft import numint
 radi_method = dft.radi.gauss_chebyshev
 
 def eval_vh(mol, coords, dm, Lvl=3, ang_lv=2): #only atoms dependent values
-    """Summary: Calculate real-space Hartree potential from given density matrix
-
-       See [Mirko2014]_ for some extra context.
-
-        :References:
-            .. [Mirko2014] Mirko Franchini, Pierre Herman Theodoor Philipsen, Erik van Lenthe, and Lucas Visscher.
-                Accurate Coulomb Potentials for Periodic and Molecular Systems through Density Fitting. (2014)
-                <https://doi.org/10.1021/ct500172n> Journal of Chemical Theory and Computation, 10(5), 1994-2004.
+    """Summary: Calculate real-space Hartree potential from given density matrix. See [Mirko2014]_ for some extra context.
 
         Args:
-            mol : pyscf mol object
+            mol (object) : pyscf mol object
             coords (ndarray) :  grids space used for calculating Hartree potential
             dm (ndarray) : one-particle reduced density matrix in basis set representation
             Lvl (integer) : Interpolation grids space level (input : 0 ~ 9, default 3)
             ang_lv (integer) : setting a limit of angular momentum of spherical harmonics (input : 0 ~ 4, default 2)
 
         Returns:
-            Pointwise Hartree potential
+            vh (ndarray) : Pointwise Hartree potential
     """
     def _Cart_Spharm(xyz, lmax):
         """Summary: Cartesian spherical harmonics Z for given xyz coordinate

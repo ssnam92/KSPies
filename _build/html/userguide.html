@@ -196,56 +196,71 @@ A user can</p>
 </div>
 <div class="section" id="example-usage">
 <h2>Example usage<a class="headerlink" href="#example-usage" title="Permalink to this headline">¶</a></h2>
-<p>KSPies runs over PySCF.
-A simple example of PySCF Hartree-Fock run can be done</p>
+<p>KSPies is PySCF-based program.
+KSpies requires at least two input.
+1. mole object: which defines geometry, basis set, and other molecular information (charge, spin…) and
+2. density matrix: generated with same mole object. Since KSPies is KS inversion program, this will used as a target density.</p>
+<p>Below simple example code shows HF and CCSD calculation of Ne atom</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
 2
 3
-4</pre></div></td><td class="code"><div class="highlight"><pre><span></span>  <span class="kn">from</span> <span class="nn">pyscf</span> <span class="kn">import</span> <span class="n">gto</span><span class="p">,</span> <span class="n">scf</span>
+4
+5</pre></div></td><td class="code"><div class="highlight"><pre><span></span>  <span class="kn">from</span> <span class="nn">pyscf</span> <span class="kn">import</span> <span class="n">gto</span><span class="p">,</span> <span class="n">scf</span><span class="p">,</span> <span class="n">cc</span>
 
   <span class="n">mol</span> <span class="o">=</span> <span class="n">gto</span><span class="o">.</span><span class="n">M</span><span class="p">(</span><span class="n">atom</span><span class="o">=</span><span class="s1">&#39;Ne&#39;</span><span class="p">,</span><span class="n">basis</span><span class="o">=</span><span class="s1">&#39;cc-pVTZ&#39;</span><span class="p">)</span>
   <span class="n">mf</span> <span class="o">=</span> <span class="n">scf</span><span class="o">.</span><span class="n">RHF</span><span class="p">(</span><span class="n">mol</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+  <span class="n">mc</span> <span class="o">=</span> <span class="n">cc</span><span class="o">.</span><span class="n">CCSD</span><span class="p">(</span><span class="n">mf</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
 </pre></div>
 </td></tr></table></div>
-<p>A least input for KSpies inversion programs(ZMP, WY) are mole object and one-particle density matrix.
-Density matrix can be obtained as</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span>  <span class="n">dm_tar</span> <span class="o">=</span> <span class="n">mf</span><span class="o">.</span><span class="n">make_rdm1</span><span class="p">()</span>
-</pre></div>
-</td></tr></table></div>
-<p>ZMP run can be called as</p>
+<p>And one-particle reduced density matrix (1-rdm) can be obtained from HF and CCSD calculation</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
 2
-3</pre></div></td><td class="code"><div class="highlight"><pre><span></span>  <span class="kn">import</span> <span class="nn">zmp_dev</span> <span class="k">as</span> <span class="nn">zmp</span>
-  <span class="n">mz</span> <span class="o">=</span> <span class="n">zmp</span><span class="o">.</span><span class="n">RZMP</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="n">dm_tar</span><span class="p">)</span>
+3
+4</pre></div></td><td class="code"><div class="highlight"><pre><span></span>  <span class="n">dm_hf</span> <span class="o">=</span> <span class="n">mf</span><span class="o">.</span><span class="n">make_rdm1</span><span class="p">()</span>
+  <span class="n">dm</span> <span class="o">=</span> <span class="n">mc</span><span class="o">.</span><span class="n">make_rdm1</span><span class="p">()</span>
+  <span class="kn">from</span> <span class="nn">kspies</span> <span class="kn">import</span> <span class="n">util</span>
+  <span class="n">dm_cc</span> <span class="o">=</span> <span class="n">util</span><span class="o">.</span><span class="n">mo2ao</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="n">dm</span><span class="p">,</span> <span class="n">mf</span><span class="o">.</span><span class="n">mo_coeff</span><span class="p">)</span>
+</pre></div>
+</td></tr></table></div>
+<p>where the last line convertes mo-basis CCSD 1-rdm to ao-basis, using mo2ao function in util module.</p>
+<p>Now, mol and dm_hf (or dm_cc) passes into KSpies to perform inversion.
+ZMP can be done as</p>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3</pre></div></td><td class="code"><div class="highlight"><pre><span></span>  <span class="kn">from</span> <span class="nn">kspies</span> <span class="kn">import</span> <span class="n">zmp</span>
+  <span class="n">mz</span> <span class="o">=</span> <span class="n">zmp</span><span class="o">.</span><span class="n">RZMP</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="n">dm_hf</span><span class="p">)</span>
   <span class="n">mz</span><span class="o">.</span><span class="n">zscf</span><span class="p">(</span><span class="mi">16</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
-<p>WY can be called as</p>
+<p>WY can be done as</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
 2
-3</pre></div></td><td class="code"><div class="highlight"><pre><span></span>  <span class="kn">import</span> <span class="nn">wy_dev</span> <span class="k">as</span> <span class="nn">wy</span>
-  <span class="n">mw</span> <span class="o">=</span> <span class="n">wy</span><span class="o">.</span><span class="n">RWY</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="n">dm_tar</span><span class="p">)</span>
+3</pre></div></td><td class="code"><div class="highlight"><pre><span></span>  <span class="kn">from</span> <span class="nn">kspies</span> <span class="kn">import</span> <span class="n">wy</span>
+  <span class="n">mw</span> <span class="o">=</span> <span class="n">wy</span><span class="o">.</span><span class="n">RWY</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="n">dm_hf</span><span class="p">)</span>
   <span class="n">mw</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
 </pre></div>
 </td></tr></table></div>
-<ol class="loweralpha simple">
-<li></li>
-</ol>
+<p>For detailed settings or outputs, please see ???</p>
 </div>
 <div class="section" id="failures">
 <h2>Failures<a class="headerlink" href="#failures" title="Permalink to this headline">¶</a></h2>
-<p>Inversion sometimes fails.</p>
-<p>Check same mole object is given into PySCF and KSpies.</p>
-<p>Check the dimension of the target density matrix.
-For RWY and RZMP, the target density matrix have to be (nao,nao) while
-for UWY and UZMP, the target density matrix have to be (2,nao,nao).</p>
-<p>Check if the target density is potentially vs-representable.
+<p>Inversion sometimes fails.
+Here are some general instructions when inversion fails.</p>
+<p>1. Check the dimension of the 1-rdm.
+For RWY and RZMP, the 1-rdm should have shape (nao,nao).
+for UWY and UZMP, the 1-rdm should have shape (2,nao,nao).</p>
+<p>2. Check same mole object is given into PySCF and KSpies.
+For example, same spin-state or same number of electrons.</p>
+<p>3. Check if the target density is potentially pure-state vs-representable.
 If its not, KS solution does not exist.
-Heuristically, inversion of target density obtained based on ROHF calculation (ROHF, ROHF-UCCSD) does not converge.</p>
-<p>In case of ZMP, increase l gradually with large level shift.
+For example, inversion of C2 electron density will fail (especially when density is generated with multi-reference method) because its not vs-representable.
+Please see [Theoretical Chemistry Accounts, 99(5), 329-343] for detail.
+Typically, inversion of target density obtained based on ROHF calculation (ROHF, ROHF-UCCSD) does not converge.</p>
+<p>Below here shows some instructions when ZMP failes</p>
+<p>Increase l gradually with large level shift.
 For example,</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2</pre></div></td><td class="code"><div class="highlight"><pre><span></span>  <span class="n">mz</span> <span class="o">=</span> <span class="n">zmp</span><span class="o">.</span><span class="n">RZMP</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="n">dm_tar</span><span class="p">)</span>
+2</pre></div></td><td class="code"><div class="highlight"><pre><span></span>  <span class="n">mz</span> <span class="o">=</span> <span class="n">zmp</span><span class="o">.</span><span class="n">RZMP</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="n">dm_cc</span><span class="p">)</span>
   <span class="n">mz</span><span class="o">.</span><span class="n">zscf</span><span class="p">(</span><span class="mi">1024</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
@@ -260,12 +275,27 @@ However,</p>
       <span class="n">mz</span><span class="o">.</span><span class="n">zscf</span><span class="p">(</span><span class="n">l</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
-<p>will converge much better.
-Note that for ZMP, the flexibility of XC potential is determined with ao basis.
-In ZMP, as l increases, C decreases.
-However, integrated density error (dN in the log) can increase when l increases.
-This means l is too large for a given basis set.</p>
-<p>In case of WY,</p>
+<p>convergence will be much better.
+ZMP, by design, C decreases when l increases.
+However, for some large l, integrated density error (dN in the log) may increase when l increases.
+This means l is too large for a given basis set, since flexibility of XC potential in ZMP is determined from ao basis.
+After this point, SCF convergence will hard.
+See [The Journal of Chemical Physics 105, 9200 (1996)] for approximate amount of l for given basis set.</p>
+<p>Below here shows some instructions when WY fails</p>
+<p>If WY “fails”, it means scipy.optimize failed to find maximum point of Ws.
+Typically, default optimization algorithm ‘trust-exact’, work generally fine for most of the inversion problems.
+However, when potential basis is very large (uncontracted or even-tempered gaussian),
+Hessian is nearly singular and thus Hessian-based optimization algorithms does not work.
+In those cases, switch to gradient-based optimization algorithms, BFGS or CG, will might work.
+CG typically takes more iteration to converge than BFGS.
+However, when BFGS fails, CG can be an option.</p>
+<p>If WY fails with maximum gradient element (can be checked with .info() method) approximately 1e-5,
+check if “tol” is set too low.
+For molecular systems, setting “tol” below 1e-7 might numerically burden to WY.</p>
+<p>Note that the result of WY is very sensitive to initial condition or optimization algorithm used.
+For density-rich region (i.e. vicinity of nuclei or bonding region), this is not a problem,
+but for density-deficient region, the shape of potential may depend on optimization conditions.
+See [int J Quantum Chem. 2018;118:e25425] for practical details of WY.</p>
 </div>
 </div>
 

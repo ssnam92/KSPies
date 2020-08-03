@@ -156,9 +156,9 @@
 <span></span><span class="c1"># -*- coding: utf-8 -*-</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Utility Functions</span>
-<span class="sd">===============</span>
+<span class="sd">=================</span>
 
-<span class="sd">**Summary** Utility functions for pyscf.</span>
+<span class="sd">**Summary** Utility functions for KSPies.</span>
 
 <span class="sd">  :References:</span>
 
@@ -169,6 +169,10 @@
 <span class="sd">.. moduleauthor::</span>
 <span class="sd">    Seungsoo Nam &lt;skaclitz@yonsei.ac.kr&gt; &lt;http://tccl.yonsei.ac.kr/mediawiki/index.php/Main_Page&gt; ORCID: `000-0001-9948-6140 &lt;https://orcid.org/0000-0001-9948-6140&gt;`_</span>
 <span class="sd">    Hansol Park &lt;hansol7954@yonsei.ac.kr&gt; &lt;http://tccl.yonsei.ac.kr/mediawiki/index.php/Main_Page&gt; ORCID: `000-0001-8706-5015 &lt;https://orcid.org/0000-0001-8706-5015&gt;`_</span>
+
+<span class="sd">.. note::</span>
+
+<span class="sd">    SN : When I make html, some texts are strange, especially &quot;Returns&quot; part. </span>
 
 <span class="sd">.. topic:: functions</span>
 
@@ -196,24 +200,17 @@
 <span class="n">radi_method</span> <span class="o">=</span> <span class="n">dft</span><span class="o">.</span><span class="n">radi</span><span class="o">.</span><span class="n">gauss_chebyshev</span>
 
 <div class="viewcode-block" id="eval_vh"><a class="viewcode-back" href="../modules.html#util_dev.eval_vh">[docs]</a><span class="k">def</span> <span class="nf">eval_vh</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="n">coords</span><span class="p">,</span> <span class="n">dm</span><span class="p">,</span> <span class="n">Lvl</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">ang_lv</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span> <span class="c1">#only atoms dependent values</span>
-    <span class="sd">&quot;&quot;&quot;Summary: Calculate real-space Hartree potential from given density matrix</span>
-
-<span class="sd">       See [Mirko2014]_ for some extra context.</span>
-
-<span class="sd">        :References:</span>
-<span class="sd">            .. [Mirko2014] Mirko Franchini, Pierre Herman Theodoor Philipsen, Erik van Lenthe, and Lucas Visscher.</span>
-<span class="sd">                Accurate Coulomb Potentials for Periodic and Molecular Systems through Density Fitting. (2014)</span>
-<span class="sd">                &lt;https://doi.org/10.1021/ct500172n&gt; Journal of Chemical Theory and Computation, 10(5), 1994-2004.</span>
+    <span class="sd">&quot;&quot;&quot;Summary: Calculate real-space Hartree potential from given density matrix. See [Mirko2014]_ for some extra context.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            mol : pyscf mol object</span>
+<span class="sd">            mol (object) : pyscf mol object</span>
 <span class="sd">            coords (ndarray) :  grids space used for calculating Hartree potential</span>
 <span class="sd">            dm (ndarray) : one-particle reduced density matrix in basis set representation</span>
 <span class="sd">            Lvl (integer) : Interpolation grids space level (input : 0 ~ 9, default 3)</span>
 <span class="sd">            ang_lv (integer) : setting a limit of angular momentum of spherical harmonics (input : 0 ~ 4, default 2)</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            Pointwise Hartree potential</span>
+<span class="sd">            vh (ndarray) : Pointwise Hartree potential</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">_Cart_Spharm</span><span class="p">(</span><span class="n">xyz</span><span class="p">,</span> <span class="n">lmax</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Summary: Cartesian spherical harmonics Z for given xyz coordinate</span>

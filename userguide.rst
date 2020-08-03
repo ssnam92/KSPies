@@ -136,10 +136,24 @@ ZMP, by design, C decreases when l increases.
 However, for some large l, integrated density error (dN in the log) may increase when l increases.
 This means l is too large for a given basis set, since flexibility of XC potential in ZMP is determined from ao basis.
 After this point, SCF convergence will hard.
-See [The Journal of Chemical Physics 105, 9200 (1996)] for detail.
+See [The Journal of Chemical Physics 105, 9200 (1996)] for approximate amount of l for given basis set.
 
 
 Below here shows some instructions when WY fails
 
-Optimization algorithm, BFGS 
+If WY "fails", it means scipy.optimize failed to find maximum point of Ws.
+Typically, default optimization algorithm 'trust-exact', work generally fine for most of the inversion problems.
+However, when potential basis is very large (uncontracted or even-tempered gaussian), 
+Hessian is nearly singular and thus Hessian-based optimization algorithms does not work.
+In those cases, switch to gradient-based optimization algorithms, BFGS or CG, will might work.
+CG typically takes more iteration to converge than BFGS.
+However, when BFGS fails, CG can be an option.
 
+If WY fails with maximum gradient element (can be checked with .info() method) approximately 1e-5, 
+check if "tol" is set too low.
+For molecular systems, setting "tol" below 1e-7 might numerically burden to WY.
+
+Note that the result of WY is very sensitive to initial condition or optimization algorithm used.
+For density-rich region (i.e. vicinity of nuclei or bonding region), this is not a problem, 
+but for density-deficient region, the shape of potential may depend on optimization conditions.
+See [int J Quantum Chem. 2018;118:e25425] for practical details of WY.

@@ -18,7 +18,7 @@ Written for Python 3.?
 
 .. topic:: Funding
 
-    This research was made possible by funding from the Korean Research Foundation (2017R1A2B2003552).
+    This research was made possible by funding from the Korean Research Foundation (2020R1A2C2007468).
 
 .. topic:: Internal Log
 
