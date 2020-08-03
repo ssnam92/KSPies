@@ -1,0 +1,125 @@
+
+.. _Userguide:
+
+User guide
+==========
+
+.. todo::
+
+    * Need Summary
+    * Need to refer to installation 
+    * Need WY guide
+    * Need ZMP guide
+    * Need a slim example of both and the helper.
+    * Probably should direct users to our upcoming paper for more scientific details.
+
+Summary
+    This is a broad outline on how the software is used. Both examples of WY and ZMP use the helper function. For a scientific discussion and examples on use, please refer to our paper on our software.
+
+Installation
+############
+
+For installation please refer to the :ref:`Installation section <Installkspies>`..
+
+
+Wu and Yang
+###########
+
+First run PySCF and extract one-particle density matrix.
+A user can 
+
+
+Zhao-Morrison-Parr
+##################
+
+First run PySCF and get one-particle density matrix.
+
+Simple instructions on what to do.
+
+
+Example usage 
+#############
+
+KSPies runs over PySCF.
+A simple example of PySCF Hartree-Fock run can be done 
+
+.. code-block:: python
+  :linenos:
+
+    from pyscf import gto, scf
+
+    mol = gto.M(atom='Ne',basis='cc-pVTZ')
+    mf = scf.RHF(mol).run()
+
+A least input for KSpies inversion programs(ZMP, WY) are mole object and one-particle density matrix.
+Density matrix can be obtained as 
+
+.. code-block:: python
+  :linenos:
+
+    dm_tar = mf.make_rdm1()
+
+ZMP run can be called as
+
+.. code-block:: python
+  :linenos:
+
+    import zmp_dev as zmp
+    mz = zmp.RZMP(mol, dm_tar)
+    mz.zscf(16)
+
+WY can be called as
+
+.. code-block:: python
+  :linenos:
+
+    import wy_dev as wy
+    mw = wy.RWY(mol, dm_tar)
+    mw.run()
+
+a.
+
+Failures
+########
+
+Inversion sometimes fails.
+
+Check same mole object is given into PySCF and KSpies.
+
+Check the dimension of the target density matrix. 
+For RWY and RZMP, the target density matrix have to be (nao,nao) while 
+for UWY and UZMP, the target density matrix have to be (2,nao,nao).
+
+Check if the target density is potentially vs-representable.
+If its not, KS solution does not exist.
+Heuristically, inversion of target density obtained based on ROHF calculation (ROHF, ROHF-UCCSD) does not converge.
+
+
+In case of ZMP, increase l gradually with large level shift.
+For example,
+
+.. code-block:: python
+  :linenos:
+
+    mz = zmp.RZMP(mol, dm_tar) 
+    mz.zscf(1024)
+
+will never converge.
+However,
+
+.. code-block:: python
+  :linenos:
+
+    mz = zmp.RZMP(mol, dm_tar)
+    for l in [ 8, 16, 32, 64, 128, 256, 512, 1024]:
+        mz.level_shift_factor = l*0.1
+        mz.zscf(l)
+
+will converge much better.
+Note that for ZMP, the flexibility of XC potential is determined with ao basis.
+In ZMP, as l increases, C decreases. 
+However, integrated density error (dN in the log) can increase when l increases.
+This means l is too large for a given basis set.
+
+In case of WY, 
+

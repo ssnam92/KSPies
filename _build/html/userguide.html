@@ -1,0 +1,321 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>User guide &mdash; KS Pies 2020 documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="_static/favicon-32x32.png"/>
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="author" title="About these documents" href="about.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Installation" href="install.html" />
+    <link rel="prev" title="Modules" href="modules.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> KS Pies
+          
+
+          
+            
+            <img src="_static/KSPies.svg" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="modules.html">Modules</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">User guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#wu-and-yang">Wu and Yang</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#zhao-morrison-parr">Zhao-Morrison-Parr</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#example-usage">Example usage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#failures">Failures</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="about.html">About and Contact</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cite.html">Cite</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">KS Pies</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>User guide</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/userguide.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="user-guide">
+<span id="userguide"></span><h1>User guide<a class="headerlink" href="#user-guide" title="Permalink to this headline">¶</a></h1>
+<div class="admonition-todo admonition" id="id1">
+<p class="admonition-title">Todo</p>
+<ul class="simple">
+<li><p>Need Summary</p></li>
+<li><p>Need to refer to installation</p></li>
+<li><p>Need WY guide</p></li>
+<li><p>Need ZMP guide</p></li>
+<li><p>Need a slim example of both and the helper.</p></li>
+<li><p>Probably should direct users to our upcoming paper for more scientific details.</p></li>
+</ul>
+</div>
+<dl class="simple">
+<dt>Summary</dt><dd><p>This is a broad outline on how the software is used. Both examples of WY and ZMP use the helper function. For a scientific discussion and examples on use, please refer to our paper on our software.</p>
+</dd>
+</dl>
+<div class="section" id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<p>For installation please refer to the <a class="reference internal" href="install.html#installkspies"><span class="std std-ref">Installation section</span></a>..</p>
+</div>
+<div class="section" id="wu-and-yang">
+<h2>Wu and Yang<a class="headerlink" href="#wu-and-yang" title="Permalink to this headline">¶</a></h2>
+<p>First run PySCF and extract one-particle density matrix.
+A user can</p>
+</div>
+<div class="section" id="zhao-morrison-parr">
+<h2>Zhao-Morrison-Parr<a class="headerlink" href="#zhao-morrison-parr" title="Permalink to this headline">¶</a></h2>
+<p>First run PySCF and get one-particle density matrix.</p>
+<p>Simple instructions on what to do.</p>
+</div>
+<div class="section" id="example-usage">
+<h2>Example usage<a class="headerlink" href="#example-usage" title="Permalink to this headline">¶</a></h2>
+<p>KSPies runs over PySCF.
+A simple example of PySCF Hartree-Fock run can be done</p>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4</pre></div></td><td class="code"><div class="highlight"><pre><span></span>  <span class="kn">from</span> <span class="nn">pyscf</span> <span class="kn">import</span> <span class="n">gto</span><span class="p">,</span> <span class="n">scf</span>
+
+  <span class="n">mol</span> <span class="o">=</span> <span class="n">gto</span><span class="o">.</span><span class="n">M</span><span class="p">(</span><span class="n">atom</span><span class="o">=</span><span class="s1">&#39;Ne&#39;</span><span class="p">,</span><span class="n">basis</span><span class="o">=</span><span class="s1">&#39;cc-pVTZ&#39;</span><span class="p">)</span>
+  <span class="n">mf</span> <span class="o">=</span> <span class="n">scf</span><span class="o">.</span><span class="n">RHF</span><span class="p">(</span><span class="n">mol</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+</td></tr></table></div>
+<p>A least input for KSpies inversion programs(ZMP, WY) are mole object and one-particle density matrix.
+Density matrix can be obtained as</p>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span>  <span class="n">dm_tar</span> <span class="o">=</span> <span class="n">mf</span><span class="o">.</span><span class="n">make_rdm1</span><span class="p">()</span>
+</pre></div>
+</td></tr></table></div>
+<p>ZMP run can be called as</p>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3</pre></div></td><td class="code"><div class="highlight"><pre><span></span>  <span class="kn">import</span> <span class="nn">zmp_dev</span> <span class="k">as</span> <span class="nn">zmp</span>
+  <span class="n">mz</span> <span class="o">=</span> <span class="n">zmp</span><span class="o">.</span><span class="n">RZMP</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="n">dm_tar</span><span class="p">)</span>
+  <span class="n">mz</span><span class="o">.</span><span class="n">zscf</span><span class="p">(</span><span class="mi">16</span><span class="p">)</span>
+</pre></div>
+</td></tr></table></div>
+<p>WY can be called as</p>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3</pre></div></td><td class="code"><div class="highlight"><pre><span></span>  <span class="kn">import</span> <span class="nn">wy_dev</span> <span class="k">as</span> <span class="nn">wy</span>
+  <span class="n">mw</span> <span class="o">=</span> <span class="n">wy</span><span class="o">.</span><span class="n">RWY</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="n">dm_tar</span><span class="p">)</span>
+  <span class="n">mw</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+</td></tr></table></div>
+<ol class="loweralpha simple">
+<li></li>
+</ol>
+</div>
+<div class="section" id="failures">
+<h2>Failures<a class="headerlink" href="#failures" title="Permalink to this headline">¶</a></h2>
+<p>Inversion sometimes fails.</p>
+<p>Check same mole object is given into PySCF and KSpies.</p>
+<p>Check the dimension of the target density matrix.
+For RWY and RZMP, the target density matrix have to be (nao,nao) while
+for UWY and UZMP, the target density matrix have to be (2,nao,nao).</p>
+<p>Check if the target density is potentially vs-representable.
+If its not, KS solution does not exist.
+Heuristically, inversion of target density obtained based on ROHF calculation (ROHF, ROHF-UCCSD) does not converge.</p>
+<p>In case of ZMP, increase l gradually with large level shift.
+For example,</p>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2</pre></div></td><td class="code"><div class="highlight"><pre><span></span>  <span class="n">mz</span> <span class="o">=</span> <span class="n">zmp</span><span class="o">.</span><span class="n">RZMP</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="n">dm_tar</span><span class="p">)</span>
+  <span class="n">mz</span><span class="o">.</span><span class="n">zscf</span><span class="p">(</span><span class="mi">1024</span><span class="p">)</span>
+</pre></div>
+</td></tr></table></div>
+<p>will never converge.
+However,</p>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4</pre></div></td><td class="code"><div class="highlight"><pre><span></span>  <span class="n">mz</span> <span class="o">=</span> <span class="n">zmp</span><span class="o">.</span><span class="n">RZMP</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="n">dm_tar</span><span class="p">)</span>
+  <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="p">[</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="mi">256</span><span class="p">,</span> <span class="mi">512</span><span class="p">,</span> <span class="mi">1024</span><span class="p">]:</span>
+      <span class="n">mz</span><span class="o">.</span><span class="n">level_shift_factor</span> <span class="o">=</span> <span class="n">l</span><span class="o">*</span><span class="mf">0.1</span>
+      <span class="n">mz</span><span class="o">.</span><span class="n">zscf</span><span class="p">(</span><span class="n">l</span><span class="p">)</span>
+</pre></div>
+</td></tr></table></div>
+<p>will converge much better.
+Note that for ZMP, the flexibility of XC potential is determined with ao basis.
+In ZMP, as l increases, C decreases.
+However, integrated density error (dN in the log) can increase when l increases.
+This means l is too large for a given basis set.</p>
+<p>In case of WY,</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="install.html" class="btn btn-neutral float-right" title="Installation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="modules.html" class="btn btn-neutral float-left" title="Modules" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Seungsoo Nam, Ryan J. McCarty, Eunji Sim
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
