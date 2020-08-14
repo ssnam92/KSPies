@@ -1,0 +1,61 @@
+
+.. _Userguide:
+
+User guide
+==========
+
+.. todo::
+
+    * Need Summary
+    * Need to refer to installation 
+    * Need WY guide
+    * Need ZMP guide
+    * Need a slim example of both and the helper.
+    * Probably should direct users to our upcoming paper for more scientific details.
+
+Summary
+    This is a broad outline on how the software is used. Both examples of WY and ZMP use the helper function. For a scientific discussion and examples on use, please refer to our paper on our software.
+
+Installation
+############
+
+For installation please refer to the :ref:`Installation section <Installkspies>`..
+
+
+Wu and Yang inversion
+#####################
+
+Simple instructions on what to do.
+
+
+Zhao-Morrison-Parr
+##################
+
+Simple instructions on what to do.
+
+
+Example usage with Wu-Yang and Zhao-Morrison-Parr
+#################################################
+
+My vision for this is a script that is set up to work with pySCF, and goes from start to finish, making a molecules, running the pySCF parts, running the EY and ZMP with the helper function. Looking at the outputs.
+
+.. code-block:: python
+  :linenos:
+
+    from pyscf import gto, scf
+    import zmp_dev as zmp
+
+    mol = gto.M(atom='Ne',basis='aug-cc-pVQZ')
+    mf = scf.RHF(mol).run()
+    P_tar = mf.make_rdm1()
+
+    mz = zmp.RZMP(mol,P_tar)
+    mz.zscf(8)
+
+Some text
+
+.. code-block:: python
+  :linenos:
+
+    from pyscf import gto, scf
+    #some more code here
