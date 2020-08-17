@@ -21,31 +21,14 @@ Installation
 
 For installation please refer to the :ref:`Installation section <Installkspies>`..
 
-
-Wu and Yang
-###########
-
-First run PySCF and extract one-particle density matrix.
-A user can 
-
-
-Zhao-Morrison-Parr
-##################
-
-First run PySCF and get one-particle density matrix.
-
-Simple instructions on what to do.
-
-
-Example usage 
+Prerequisites
 #############
 
-KSPies is PySCF-based program.
-KSpies requires at least two input.
+KSPies is PySCF-based program. PySCF should be installed.
+All KSPies inversion program (ZMP and WY) requires at least two input:
 1. mole object: which defines geometry, basis set, and other molecular information (charge, spin...) and
 2. density matrix: generated with same mole object. Since KSPies is KS inversion program, this will used as a target density.
-
-Below simple example code shows HF and CCSD calculation of Ne atom
+Below code shows how these inputs can be generated for HF and CCSD calculations.
 
 .. code-block:: python
   :linenos:
@@ -54,22 +37,24 @@ Below simple example code shows HF and CCSD calculation of Ne atom
 
     mol = gto.M(atom='Ne',basis='cc-pVTZ')
     mf = scf.RHF(mol).run()
-    mc = cc.CCSD(mf).run()
-
-And one-particle reduced density matrix (1-rdm) can be obtained from HF and CCSD calculation
-
-.. code-block:: python
-  :linenos:
-
     dm_hf = mf.make_rdm1()
-    dm = mc.make_rdm1()
+    mc = cc.CCSD(mf).run()
     from kspies import util
-    dm_cc = util.mo2ao(mol, dm, mf.mo_coeff)
+    dm_cc = util.mo2ao(mol, mc.make_rdm1(), mf.mo_coeff)
 
-where the last line convertes mo-basis CCSD 1-rdm to ao-basis, using mo2ao function in util module.
+"mol" is a mole object that contains standard details needed for quantum chemical calculations, 
+such as atomic coordinates, number of electrons, and basis sets.
+"dm_hf" or "dm_cc" is atomic orbital (ao) representation of one-particle density matrices (1-rdm) from HF or CCSD calculations, respectively.
+Basically, PySCF CCSD calculation provides molecular orbital (mo) representation of 1-rdm, 
+which can be converted into ao representation by using mo2ao in util.
+Any density matrix in ao representation can be feed into inversion program.
 
-Now, mol and dm_hf (or dm_cc) passes into KSpies to perform inversion.
-ZMP can be done as
+Below here shows examples of ZMP and WY.
+
+Zhao-Morrison-Parr
+##################
+
+The simplest way of performing ZMP calculation is:
 
 .. code-block:: python
   :linenos:
@@ -78,16 +63,22 @@ ZMP can be done as
     mz = zmp.RZMP(mol, dm_hf)
     mz.zscf(16)
 
-WY can be done as
+which uses lambda = 16.
+Function zscf(l) performs self-consistent ZMP calculations for l.
+
+Wu and Yang
+###########
+
+The simplest way of performing WY calculation is:
 
 .. code-block:: python
   :linenos:
 
     from kspies import wy
-    mw = wy.RWY(mol, dm_hf)
+    mw = wy.RWY(mol, dm_cc)
     mw.run()
 
-For detailed settings or outputs, please see ???
+For detailed settings or outputs, please see docs(I don't known how to put link. link to source code docs) 
 
 Failures
 ########
