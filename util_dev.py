@@ -185,14 +185,9 @@ def eval_vh(mol, coords, dm, Lvl=3, ang_lv=2): #only atoms dependent values
         ZvH[j] = _Cart_Spharm(rel_coord, lmax) #This is time consuming
         #partition function P_i
         p[j] = np.exp(-2.*d)/(d**3) #partition function P_i
-        for ib in range(mol.natm):
-            symb2 = mol.atom_symbol(ib)
-            """.. todo::
-                * SN: Consider merging these comparisons with "in" to "symb2 in ('H', 'h')" (consider-using-in) ???
-                SN: What bout using short notation .lower()== ???
-            """
-            if symb2.lower() == "h": #Special treatment on hydrogen atom
-                p[j, ib, :] *= 0.3
+        for ia, za in enumerate(mol.atom_charges):
+            if za==1: #Special treatment on hydrogen atom
+                p[j, ia, :] *= 0.3
         ao[j] = numint.eval_ao(mol, tst) #AO value in real coordinate
 
     #Density dependent values

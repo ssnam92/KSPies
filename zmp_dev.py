@@ -107,7 +107,7 @@ def basic(mz, mol):
         mz : RZMP or UZMP object
     """
     mz.mol = mol
-    mz.guide = 'fa'
+    mz.guide = 'faxc'
     mz.diis_space = 40
     mz.level_shift_factor = .2
     mz.max_cycle = 400
@@ -131,7 +131,7 @@ class RZMP:
         guide (str) : Guiding potential. Can be set as
 
             |  None : no guiding potential except external potential
-            |  'fa' : Fermi-Amaldi potential
+            |  'faxc' : Exchange-correlation part of Fermi-Amaldi potential
             |  xc   : ks.xc attribute in pyscf DFT
 
         diis_space (int) : DIIS space size. Default is 40
@@ -192,7 +192,7 @@ class RZMP:
 
         if self.guide is None:
             self.V0=np.zeros_like(self.dm_tar)
-        elif self.guide.lower()=='fa':
+        elif self.guide.lower()=='faxc':
             N=self.mol.nelectron
             self.J_aux=self.mf.get_jk(self.mol,self.dm_aux)[0]
             self.V0=((N-1.)/N)*(self.J_aux)
@@ -267,7 +267,7 @@ class UZMP:
         guide (str) : Guiding potential. Can be set as
 
             |  None : no guiding potential except external potential
-            |  'fa' : Fermi-Amaldi potential
+            | 'faxc' : Exchange-correlation part of Fermi-Amaldi potential
             |  xc   : ks.xc attribute in pyscf DFT
 
         diis_space (int) : DIIS space size. Default is 40

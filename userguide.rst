@@ -6,15 +6,16 @@ User guide
 
 .. todo::
 
-    * Need Summary
-    * Need to refer to installation 
-    * Need WY guide
-    * Need ZMP guide
+    * Need Summary (Done?)
+    * Need to refer to installation (Done?)
+    * Need WY guide (Done)
+    * Need ZMP guide (Done)
     * Need a slim example of both and the helper.
-    * Probably should direct users to our upcoming paper for more scientific details.
+    * Probably should direct users to our upcoming paper for more scientific details. (??)
 
 Summary
-    This is a broad outline on how the software is used. Both examples of WY and ZMP use the helper function. For a scientific discussion and examples on use, please refer to our paper on our software.
+    This is a broad outline on how the software is used. Both examples of WY and ZMP. 
+    For a scientific discussion and examples on use, please refer to our paper on our software.
 
 Installation
 ############

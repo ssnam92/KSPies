@@ -186,7 +186,7 @@ def basic(mw, mol, pbas, Sijt):
     """
 
     mw.mol = mol
-    mw.guide = 'fa'
+    mw.guide = 'faxc'
     mw.reg = 0.
     mw.tol = 1e-6
     mw.method = 'trust-exact'
@@ -241,11 +241,11 @@ class RWY:
         dm_tar (ndarra)y : Density matrix of target density in atomic orbital basis representation
         pbas (dict or str) : Potential basis set for WY. If not given, same with atomic orbital basis
         Sijt (ndarray) : Three-center overlap integral. If not given, calculated analytically as overlap of atomic orbital basis
-        dm_aux (ndarray) : Auxilary density matrix to construct density-dependent part of guiding potential, i.e. Hartree or XC potential. Default is dm_tar
+        dm_aux (ndarray) : Auxilary density matrix to construct density-dependent part of guiding potential. Default is dm_tar
         guide (str) : Guiding potential. Can be set as
 
             |  None : no guiding potential except external potential
-            |  'fa' : Fermi-Amaldi potential
+            |  'faxc' : Exchange-correlation part of Fermi-Amaldi potential
             |  xc   : ks.xc attribute in pyscf DFT
 
         reg (float) : strength of regularization. Default is 0
@@ -304,7 +304,7 @@ class RWY:
 
         if self.guide is None:
             self.V0 = np.zeros_like(self.dm_tar)
-        elif self.guide.lower() == 'fa':
+        elif self.guide.lower() == 'faxc':
             N = self.mol.nelectron
             J_tar = scf.hf.get_jk(self.mol, self.dm_aux)[0]
             self.V0 = ((N-1.)/N)*(J_tar)
@@ -413,11 +413,11 @@ class UWY:
         dm_tar (ndarra)y : Density matrix of target density in atomic orbital basis representation
         pbas (dict or str) : Potential basis set for WY. If not given, same with atomic orbital basis
         Sijt (ndarray) : Three-center overlap integral. If not given, calculated analytically as overlap of atomic orbital basis
-        dm_aux (ndarray) : Auxilary density matrix to construct density-dependent part of guiding potential, i.e. Hartree or XC potential. Default is dm_tar
+        dm_aux (ndarray) : Auxilary density matrix to construct density-dependent part of guiding potential. Default is dm_tar
         guide (str) : Guiding potential. Can be set as
 
             |  None : no guiding potential except external potential
-            |  'fa' : Fermi-Amaldi potential
+            |  'faxc' : Exchange-correlation part of Fermi-Amaldi potential
             |  xc   : ks.xc attribute in pyscf DFT
 
         reg (float) : strength of regularization. Default is 0
@@ -477,7 +477,7 @@ class UWY:
 
         if self.guide is None:
             self.V0 = np.zeros_like(self.dm_tar)
-        elif self.guide.lower() == 'fa':
+        elif self.guide.lower() == 'faxc':
             N = self.mol.nelectron
             J_tar = scf.hf.get_jk(self.mol, self.dm_aux)[0]
             VFA = ((N-1.)/N)*(J_tar[0]+J_tar[1])
