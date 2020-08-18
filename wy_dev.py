@@ -6,16 +6,6 @@ Wu and Yang
 
 Written for Python 3.? Lots of other text here, like details about how this uses the original Wu Yang idea [WuYang2003]_, and how the other ref is used for  Regularization [HBY2007]_ . Any useful info about the algorithm should also be given.
 
-.. todo::
-
-      * Docstrings need attention (SN: Please specifiy more)
-      * Some code is commented out; it should be removed if not necessary, or added to a more formal note explaining why and when you would want to uncomment it. (SN: Done)
-      * See warnings in docstrings. I try and point out some things that I think we should address. 
-      * We need to discuss the 2 vs 4 spacing. I suggest we use 4 spacing, as it seems that most of the pyscf code uses 4 spacing for indents. (SN: 4 spacing done)
-
-.. note::
-    The pyscf documentation has a bunch of funny things to it... I don't think they have been paying full attention to the documentation like they should, and it is not consistent.
-
 .. moduleauthor::
     Seungsoo Nam <skaclitz@yonsei.ac.kr> <http://tccl.yonsei.ac.kr/mediawiki/index.php/Main_Page> ORCID: `000-0001-9948-6140 <https://orcid.org/0000-0001-9948-6140>`_
     Ryan J. McCarty <rmccarty@uci.edu> <http://ryanjmccarty.com> ORCID: `0000-0002-2417-8917 <http://https://orcid.org/0000-0002-2417-8917>`_
@@ -37,7 +27,9 @@ Written for Python 3.? Lots of other text here, like details about how this uses
     **2020-06-02** RJM added in docstring templates
 
     **2020-06-15** SN added some comments and fix bug(RWY and UWY gave different results with regularization)
+
 """
+
 import time
 import numpy as np
 from scipy.optimize import minimize
@@ -85,15 +77,12 @@ def numint_3c2b(mol, pbas, level=5):
 def time_profile(mw):
     """Summary: Print to terminal a collection of time data in seconds
 
-    initialize : time for initialization
-
-    total_opt  : total elasped time
-
-    solve_eig  : time to construct fock matrix and diagonalize it
-
-    Ws_eval    : time to evaluate objective function Ws
-
-    Gd_eval    : time to evaluate gradient of objective function
+    Terminal prints:
+    * initialize : time for initialization
+    * total_opt  : total elasped time
+    * solve_eig  : time to construct fock matrix and diagonalize it
+    * Ws_eval    : time to evaluate objective function Ws
+    * Gd_eval    : time to evaluate gradient of objective function
 
     """
     print("*********Time Profile*********")
@@ -127,8 +116,11 @@ def wyscf(mw):
     """Summary: Run WY until its self-consistent. This is required for hybrid guiding potentials
 
     .. note::
-        There is no physical evidence that the result of this function can be trusted.
+        There is no theoretical proof that the result of this function can be trusted.
         The minimization in WY are only for local multiplicative potentials, not non-local potential.
+
+    .. Todo::
+
         SN need to find a paper for this function...
 
     Args:
@@ -235,6 +227,8 @@ def basic(mw, mol, pbas, Sijt):
 
 class RWY:
     """Summary: Perform WY calculation in restricted scheme
+
+    .. _restrictedwy:
 
     Attributes:
         mol (object) : an instance of :class:`Mole`
@@ -407,6 +401,8 @@ class RWY:
 
 class UWY:
     """Summary: Perform WY calculation in unrestricted scheme
+
+    .. _unrestrictedwy:
 
     Attributes:
         mol (object) : an instance of :class:`Mole`

@@ -124,6 +124,8 @@ def basic(mz, mol):
 class RZMP:
     """Summary: Perform ZMP calculation in restricted scheme
 
+    .. _restricted-zmp:
+
     Attributes:
         mol (object) : an instance of :class:`Mole`
         dm_tar (ndarray) : Density matrix of target density in atomic orbital basis representation
@@ -255,10 +257,7 @@ class RZMP:
 class UZMP:
     """Summary: Perform ZMP calculation in unrestricted scheme
 
-    .. note::
-
-        SN : I think we need to discuss a 'tidy' way of logging
-        RJM: We can do some more advanced logging (looks like pyscf has a liblogger), but I think at the current moment thats a second or 3rd order correction/improvement.
+    .. _unrestricted-zmp:
 
     Attributes:
         mol (object) : an instance of :class:`Mole`

@@ -17,8 +17,9 @@ This is a python based Kohn-Sham Inversion Evaluation Software package for use w
 
    modules.rst
    userguide.rst
-   install.rst
    examples.rst
+   install.rst
+   in_action.rst
    about.rst
    cite.rst
 

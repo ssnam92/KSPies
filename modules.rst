@@ -3,7 +3,6 @@ Modules
 =======
 
 .. automodule:: wy_dev
-
     :members:
     :undoc-members:
     :show-inheritance:
