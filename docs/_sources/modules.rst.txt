@@ -3,7 +3,6 @@ Modules
 =======
 
 .. automodule:: wy_dev
-
     :members:
     :undoc-members:
     :show-inheritance:
@@ -13,7 +12,7 @@ Modules
     :undoc-members:
     :show-inheritance:
 
-.. automodule:: helper_dev
+.. automodule:: util_dev
     :members:
     :undoc-members:
     :show-inheritance:

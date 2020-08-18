@@ -1,19 +1,24 @@
 
+.. _Cite:
+
 Cite
 ====
 
 .. todo::
 
       * Need to get publication info.
-      * Need to settle on name.
       * Need to update BibTex part.
       * Need to update Endnote thing.
 
 
-To cite this work please cite our publication
+To cite this work please cite our academic publication once it becomes published
 
-Nam, S., McCarty, R.J., Sim, E. (202?) PAPER TITLE SOON TO BECOME AVAIABLE.
+Nam, S., McCarty, R.J., Park, H., Sim, E. (202?) Kohn-Sham Inversion Toolkit.
 
+
+To cite this repository and the software directly please reference the DOI:
+
+https://doi.org/10.25351/V3.KS-PIES.2020
 
 BibTex
 ######
@@ -32,6 +37,7 @@ BibTex
 EndNote RIS
 ###########
 
+
 ::
 
     TY  - JOUR
@@ -49,5 +55,6 @@ EndNote RIS
     EP  - ??
     A1  - Nam, Seungsoo
     AU  - McCarty, Ryan J.
+    AU  - Park, Hansol
     AU  - Sim, Eunji
     ER  - 

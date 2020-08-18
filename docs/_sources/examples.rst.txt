@@ -2,7 +2,44 @@
 Examples
 ========
 
-The following is a list of examples using our software. For examples of how to use our software please see the :ref:`user guide <Userguide>`.
+Included in the KS-pies download is an example folder. In each folder is a run.py file which intends to showcase the use of a KS-pies feature.
 
-*Measuring density-driven errors using Kohn-Sham inversion.* Seungsoo Nam, Suhwan Song, Eunji Sim, and Kieron Burke. (2020) `ArXiv <https://arxiv.org/abs/2004.11595>`_ . `J. Chem. Theory Comput. <https://pubs.acs.org/doi/abs/10.1021/acs.jctc.0c00391>`_ .
 
+.. _Full-example:
+
+Testexample
+###########
+
+A complete example showing ZMP, WY and the util functions. A Be atom is used for the test density. Prints to terminal confirmation of working code.
+
+
+.. _ZMP-benzene:
+
+Benzene
+#######
+
+Use ZMP to create an potential of Benzene
+
+
+.. _WY-regular:
+
+Regularization
+##############
+
+Regularized WY on molecular nitrogen.
+
+
+.. _userdefined-systems:
+
+User_defined_system
+###################
+
+Regularized WY on a user defined harmonic oscillator.
+
+
+.. _plot-xc:
+
+Plot_xc
+#######
+
+Two examples including 1) regularized WY using the util functions with a PBE guiding potential and 2) regularized ZMP using the util functions with exchange-correlation aspects of the Fermi-Amaldi potential.

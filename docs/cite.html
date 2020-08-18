@@ -1,8 +1,7 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
   
@@ -12,6 +11,10 @@
   
 
   
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
   
     <link rel="shortcut icon" href="_static/favicon-32x32.png"/>
   
@@ -19,7 +22,9 @@
   
 
   
-  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -27,15 +32,11 @@
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
         <script src="_static/language_data.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="author" title="About these documents" href="about.html" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -53,7 +54,7 @@
           
 
           
-            <a href="index.html" class="icon icon-home"> KS Pies
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> KS Pies
           
 
           
@@ -76,6 +77,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -87,8 +89,9 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="modules.html">Modules</a></li>
 <li class="toctree-l1"><a class="reference internal" href="userguide.html">User guide</a></li>
-<li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="in_action.html">KS-Pies in Use</a></li>
 <li class="toctree-l1"><a class="reference internal" href="about.html">About and Contact</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Cite</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#bibtex">BibTex</a></li>
@@ -100,6 +103,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -138,7 +142,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="index.html">Docs</a> &raquo;</li>
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
         
       <li>Cite</li>
     
@@ -160,18 +164,19 @@
            <div itemprop="articleBody">
             
   <div class="section" id="cite">
-<h1>Cite<a class="headerlink" href="#cite" title="Permalink to this headline">¶</a></h1>
-<div class="admonition-todo admonition" id="id1">
+<span id="id1"></span><h1>Cite<a class="headerlink" href="#cite" title="Permalink to this headline">¶</a></h1>
+<div class="admonition-todo admonition" id="id2">
 <p class="admonition-title">Todo</p>
 <ul class="simple">
 <li><p>Need to get publication info.</p></li>
-<li><p>Need to settle on name.</p></li>
 <li><p>Need to update BibTex part.</p></li>
 <li><p>Need to update Endnote thing.</p></li>
 </ul>
 </div>
-<p>To cite this work please cite our publication</p>
-<p>Nam, S., McCarty, R.J., Sim, E. (202?) PAPER TITLE SOON TO BECOME AVAIABLE.</p>
+<p>To cite this work please cite our academic publication once it becomes published</p>
+<p>Nam, S., McCarty, R.J., Park, H., Sim, E. (202?) Kohn-Sham Inversion Toolkit.</p>
+<p>To cite this repository and the software directly please reference the DOI:</p>
+<p><a class="reference external" href="https://doi.org/10.25351/V3.KS-PIES.2020">https://doi.org/10.25351/V3.KS-PIES.2020</a></p>
 <div class="section" id="bibtex">
 <h2>BibTex<a class="headerlink" href="#bibtex" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@article</span><span class="p">{</span><span class="n">NamMcCartySim2020</span><span class="p">,</span>
@@ -202,6 +207,7 @@ SP  - ??
 EP  - ??
 A1  - Nam, Seungsoo
 AU  - McCarty, Ryan J.
+AU  - Park, Hansol
 AU  - Sim, Eunji
 ER  -
 </pre></div>
@@ -227,11 +233,19 @@ ER  -
 
   <div role="contentinfo">
     <p>
+        
         &copy; Copyright 2020, Seungsoo Nam, Ryan J. McCarty, Eunji Sim
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -242,7 +256,6 @@ ER  -
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {
