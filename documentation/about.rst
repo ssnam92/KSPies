@@ -22,8 +22,7 @@ Dr. McCarty is a `University of California President's Postdoctoral Fellow <http
 
 hansol7954@yonsei.ac.kr
 
-Mr. Park is a ? at `Yonsei University <https://www.yonsei.ac.kr/>`_ working under Prof. Eunji Sim.
-
+Mr. Park is a MS student at `Yonsei University <https://www.yonsei.ac.kr/>`_ working under Prof. Sim. His research focuses on the development of TD-DFT based on density-corrected DFT.
 
 
 :Eunji Sim:
