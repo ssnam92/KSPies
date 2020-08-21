@@ -100,7 +100,7 @@ def eval_vh(mol, coords, dm, Lvl=3, ang_lv=2): #only atoms dependent values
     """Summary: Calculate real-space Hartree potential from given density matrix. See [Mirko2014]_ for some extra context.
 
         Args:
-            mol (object) : pyscf mol object
+            mol (object) : an instance of :class:`Mole`
             coords (ndarray) :  grids space used for calculating Hartree potential
             dm (ndarray) : one-particle reduced density matrix in basis set representation
             Lvl (integer) : Interpolation grids space level (input : 0 ~ 9, default 3)
@@ -259,7 +259,7 @@ def eval_vxc(mol, dm, xc_code, coords, delta=1e-7):
     """Summary: Calculate real-space exchange-correlation potential for GGA from given density matrix
 
         Args:
-            mol : pyscf mol object
+            mol (object) : an instance of :class:`Mole`
             coords (ndarray) : grids space used for calculating XC potential
             dm (ndarray) : one-particle reduced density matrix in basis set representation
             xc_code (str) : XC functional description.
