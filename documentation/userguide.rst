@@ -4,18 +4,9 @@
 User guide
 ==========
 
-.. todo::
-
-    * Need Summary (Done?)
-    * Need to refer to installation (Done?)
-    * Need WY guide (Done)
-    * Need ZMP guide (Done)
-    * Need a slim example of both and the helper.
-    * Probably should direct users to our upcoming paper for more scientific details. (??)
-
 Summary
     This is a broad outline on how the software is used. Both examples of WY and ZMP. 
-    For a scientific discussion and examples on use, please refer to our paper on our software.
+    For a scientific discussion on theory and examples on use, please :ref:`refer to our paper <Cite>`.
 
 Installation
 ############
@@ -66,26 +57,41 @@ The simplest way of performing ZMP calculation is:
 
 which uses lambda = 16.
 Function zscf(l) performs self-consistent ZMP calculations for l.
+Further details can be found in the module documentation for :ref:`unrestricted ZMP <unrestricted-zmp>` and :ref:`restricted ZMP <restricted-zmp>`.
+
+The examples directory includes:
+
+- :ref:`Regularized ZMP on a beryllium atom <Full-example>`
+- :ref:`ZMP on a benzene molecule <ZMP-benzene>`
 
 Wu and Yang
 ###########
 
-The simplest way of performing WY calculation is:
+A WY calculation can be preformed by creating a wy instance:
 
 .. code-block:: python
   :linenos:
 
     from kspies import wy
-    mw = wy.RWY(mol, dm_cc)
-    mw.run()
+    wy_instance = wy.RWY(mol, dm_cc)
+    wy_instance.run()
 
-For detailed settings or outputs, please see docs(I don't known how to put link. link to source code docs) 
+For detailed settings or outputs, please see the module documentation.
+:ref:`unrestricted WY <unrestrictedwy>` and :ref:`restricted WY <restrictedwy>` classes.
+
+The examples directory includes:
+
+- :ref:`Regularized WY on a beryllium atom <Full-example>`
+- :ref:`Regularized WY on molecular nitrogen <WY-regular>`
+- :ref:`WY usage for plotting FA potential <plot-xc>`
+- :ref:`WY usage on a user defined potential <userdefined-systems>`
+
 
 Failures
 ########
 
 Inversion sometimes fails.
-Here are some general instructions when inversion fails.
+Here are some general instructions when an inversion fails.
 
 1. Check the dimension of the 1-rdm.
 For RWY and RZMP, the 1-rdm should have shape (nao,nao).

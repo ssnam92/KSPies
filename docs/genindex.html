@@ -1,9 +1,7 @@
 
 
-
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
   
@@ -13,6 +11,10 @@
   
 
   
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
   
     <link rel="shortcut icon" href="_static/favicon-32x32.png"/>
   
@@ -20,7 +22,9 @@
   
 
   
-  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -28,15 +32,11 @@
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
         <script src="_static/language_data.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="author" title="About these documents" href="about.html" />
     <link rel="index" title="Index" href="#" />
     <link rel="search" title="Search" href="search.html" /> 
@@ -53,7 +53,7 @@
           
 
           
-            <a href="index.html" class="icon icon-home"> KS Pies
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> KS Pies
           
 
           
@@ -76,6 +76,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -87,8 +88,9 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="modules.html">Modules</a></li>
 <li class="toctree-l1"><a class="reference internal" href="userguide.html">User guide</a></li>
-<li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="in_action.html">KS-Pies in Use</a></li>
 <li class="toctree-l1"><a class="reference internal" href="about.html">About and Contact</a></li>
 <li class="toctree-l1"><a class="reference internal" href="cite.html">Cite</a></li>
 </ul>
@@ -96,6 +98,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -134,7 +137,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="index.html">Docs</a> &raquo;</li>
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
         
       <li>Index</li>
     
@@ -158,14 +161,14 @@
 
 <div class="genindex-jumpbox">
  <a href="#B"><strong>B</strong></a>
- | <a href="#C"><strong>C</strong></a>
  | <a href="#D"><strong>D</strong></a>
  | <a href="#E"><strong>E</strong></a>
- | <a href="#G"><strong>G</strong></a>
- | <a href="#H"><strong>H</strong></a>
  | <a href="#I"><strong>I</strong></a>
  | <a href="#M"><strong>M</strong></a>
+ | <a href="#N"><strong>N</strong></a>
  | <a href="#R"><strong>R</strong></a>
+ | <a href="#S"><strong>S</strong></a>
+ | <a href="#T"><strong>T</strong></a>
  | <a href="#U"><strong>U</strong></a>
  | <a href="#W"><strong>W</strong></a>
  | <a href="#Z"><strong>Z</strong></a>
@@ -174,20 +177,12 @@
 <h2 id="B">B</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="modules.html#zmp_dev.basic">basic() (in module zmp_dev)</a>
-</li>
-  </ul></td>
-</tr></table>
+      <li><a href="modules.html#wy_dev.basic">basic() (in module wy_dev)</a>
 
-<h2 id="C">C</h2>
-<table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="modules.html#helper_dev.Cart_Spharm">Cart_Spharm() (in module helper_dev)</a>
+      <ul>
+        <li><a href="modules.html#zmp_dev.basic">(in module zmp_dev)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="modules.html#helper_dev.convert_coeff">convert_coeff() (in module helper_dev)</a>
-</li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
@@ -197,51 +192,68 @@
       <li><a href="modules.html#zmp_dev.DIIS">DIIS (class in zmp_dev)</a>
 </li>
   </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="modules.html#wy_dev.RWY.Dvb">Dvb() (wy_dev.RWY method)</a>
+
+      <ul>
+        <li><a href="modules.html#wy_dev.UWY.Dvb">(wy_dev.UWY method)</a>
+</li>
+      </ul></li>
+  </ul></td>
 </tr></table>
 
 <h2 id="E">E</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="modules.html#helper_dev.eval_hartree">eval_hartree() (in module helper_dev)</a>
-</li>
-      <li><a href="modules.html#helper_dev.eval_I">eval_I() (in module helper_dev)</a>
-</li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="modules.html#helper_dev.eval_vxc_libxc">eval_vxc_libxc() (in module helper_dev)</a>
-</li>
-      <li><a href="modules.html#zmp_dev.DIIS.extrapolate">extrapolate() (zmp_dev.DIIS method)</a>
-</li>
-  </ul></td>
-</tr></table>
-
-<h2 id="G">G</h2>
-<table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="modules.html#helper_dev.grid_refine">grid_refine() (in module helper_dev)</a>
-</li>
-  </ul></td>
-</tr></table>
-
-<h2 id="H">H</h2>
-<table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li>
-    helper_dev
+      <li><a href="modules.html#wy_dev.RWY.eval_Gd">eval_Gd() (wy_dev.RWY method)</a>
 
       <ul>
-        <li><a href="modules.html#module-helper_dev">module</a>
+        <li><a href="modules.html#wy_dev.UWY.eval_Gd">(wy_dev.UWY method)</a>
 </li>
       </ul></li>
+      <li><a href="modules.html#wy_dev.RWY.eval_Hs">eval_Hs() (wy_dev.RWY method)</a>
+
+      <ul>
+        <li><a href="modules.html#wy_dev.UWY.eval_Hs">(wy_dev.UWY method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="modules.html#util_dev.eval_vh">eval_vh() (in module util_dev)</a>
+</li>
+      <li><a href="modules.html#util_dev.eval_vxc_libxc">eval_vxc_libxc() (in module util_dev)</a>
+</li>
+      <li><a href="modules.html#wy_dev.RWY.eval_Ws">eval_Ws() (wy_dev.RWY method)</a>
+
+      <ul>
+        <li><a href="modules.html#wy_dev.UWY.eval_Ws">(wy_dev.UWY method)</a>
+</li>
+      </ul></li>
+      <li><a href="modules.html#zmp_dev.DIIS.extrapolate">extrapolate() (zmp_dev.DIIS method)</a>
+</li>
   </ul></td>
 </tr></table>
 
 <h2 id="I">I</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="modules.html#zmp_dev.RZMP.initialize">initialize() (zmp_dev.RZMP method)</a>
+      <li><a href="modules.html#wy_dev.info">info() (in module wy_dev)</a>
 
       <ul>
+        <li><a href="modules.html#wy_dev.RWY.info">(wy_dev.RWY method)</a>
+</li>
+        <li><a href="modules.html#wy_dev.UWY.info">(wy_dev.UWY method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="modules.html#wy_dev.RWY.initialize">initialize() (wy_dev.RWY method)</a>
+
+      <ul>
+        <li><a href="modules.html#wy_dev.UWY.initialize">(wy_dev.UWY method)</a>
+</li>
+        <li><a href="modules.html#zmp_dev.RZMP.initialize">(zmp_dev.RZMP method)</a>
+</li>
         <li><a href="modules.html#zmp_dev.UZMP.initialize">(zmp_dev.UZMP method)</a>
 </li>
       </ul></li>
@@ -251,11 +263,13 @@
 <h2 id="M">M</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="modules.html#util_dev.mo2ao">mo2ao() (in module util_dev)</a>
+</li>
       <li>
     module
 
       <ul>
-        <li><a href="modules.html#module-helper_dev">helper_dev</a>
+        <li><a href="modules.html#module-util_dev">util_dev</a>
 </li>
         <li><a href="modules.html#module-wy_dev">wy_dev</a>
 </li>
@@ -265,17 +279,74 @@
   </ul></td>
 </tr></table>
 
+<h2 id="N">N</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="modules.html#wy_dev.numint_3c2b">numint_3c2b() (in module wy_dev)</a>
+</li>
+  </ul></td>
+</tr></table>
+
 <h2 id="R">R</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="modules.html#wy_dev.run">run() (in module wy_dev)</a>
+
+      <ul>
+        <li><a href="modules.html#wy_dev.RWY.run">(wy_dev.RWY method)</a>
+</li>
+        <li><a href="modules.html#wy_dev.UWY.run">(wy_dev.UWY method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="modules.html#wy_dev.RWY">RWY (class in wy_dev)</a>
+</li>
       <li><a href="modules.html#zmp_dev.RZMP">RZMP (class in zmp_dev)</a>
 </li>
+  </ul></td>
+</tr></table>
+
+<h2 id="S">S</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="modules.html#wy_dev.RWY.solve">solve() (wy_dev.RWY method)</a>
+
+      <ul>
+        <li><a href="modules.html#wy_dev.UWY.solve">(wy_dev.UWY method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
+<h2 id="T">T</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="modules.html#wy_dev.time_profile">time_profile() (in module wy_dev)</a>
+
+      <ul>
+        <li><a href="modules.html#wy_dev.RWY.time_profile">(wy_dev.RWY method)</a>
+</li>
+        <li><a href="modules.html#wy_dev.UWY.time_profile">(wy_dev.UWY method)</a>
+</li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
 <h2 id="U">U</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li>
+    util_dev
+
+      <ul>
+        <li><a href="modules.html#module-util_dev">module</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="modules.html#wy_dev.UWY">UWY (class in wy_dev)</a>
+</li>
       <li><a href="modules.html#zmp_dev.UZMP">UZMP (class in zmp_dev)</a>
 </li>
   </ul></td>
@@ -289,6 +360,16 @@
 
       <ul>
         <li><a href="modules.html#module-wy_dev">module</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="modules.html#wy_dev.wyscf">wyscf() (in module wy_dev)</a>
+
+      <ul>
+        <li><a href="modules.html#wy_dev.RWY.wyscf">(wy_dev.RWY method)</a>
+</li>
+        <li><a href="modules.html#wy_dev.UWY.wyscf">(wy_dev.UWY method)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -327,11 +408,19 @@
 
   <div role="contentinfo">
     <p>
+        
         &copy; Copyright 2020, Seungsoo Nam, Ryan J. McCarty, Eunji Sim
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -342,7 +431,6 @@
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {

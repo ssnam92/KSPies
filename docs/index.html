@@ -1,8 +1,7 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
   
@@ -12,6 +11,10 @@
   
 
   
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
   
     <link rel="shortcut icon" href="_static/favicon-32x32.png"/>
   
@@ -19,7 +22,9 @@
   
 
   
-  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -27,15 +32,11 @@
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
         <script src="_static/language_data.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="author" title="About these documents" href="about.html" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -53,7 +54,7 @@
           
 
           
-            <a href="#" class="icon icon-home"> KS Pies
+            <a href="#" class="icon icon-home" alt="Documentation Home"> KS Pies
           
 
           
@@ -76,6 +77,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -87,8 +89,9 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="modules.html">Modules</a></li>
 <li class="toctree-l1"><a class="reference internal" href="userguide.html">User guide</a></li>
-<li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="in_action.html">KS-Pies in Use</a></li>
 <li class="toctree-l1"><a class="reference internal" href="about.html">About and Contact</a></li>
 <li class="toctree-l1"><a class="reference internal" href="cite.html">Cite</a></li>
 </ul>
@@ -96,6 +99,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -134,7 +138,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="#">Docs</a> &raquo;</li>
+      <li><a href="#" class="icon icon-home"></a> &raquo;</li>
         
       <li>KS Pies! Kohn-Sham Python Inversion Evaluation Software</li>
     
@@ -169,25 +173,35 @@ Please let us know if you have further questions, suggestions, or ideas.</p>
 <li class="toctree-l1"><a class="reference internal" href="modules.html">Modules</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="modules.html#wu-and-yang">Wu and Yang</a></li>
 <li class="toctree-l2"><a class="reference internal" href="modules.html#zhao-morrison-parr">Zhao-Morrison-Parr</a></li>
-<li class="toctree-l2"><a class="reference internal" href="modules.html#helper-function">Helper Function</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules.html#utility-functions">Utility Functions</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="userguide.html">User guide</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="userguide.html#installation">Installation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="userguide.html#wu-and-yang-inversion">Wu and Yang inversion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userguide.html#prerequisites">Prerequisites</a></li>
 <li class="toctree-l2"><a class="reference internal" href="userguide.html#zhao-morrison-parr">Zhao-Morrison-Parr</a></li>
-<li class="toctree-l2"><a class="reference internal" href="userguide.html#example-usage-with-wu-yang-and-zhao-morrison-parr">Example usage with Wu-Yang and Zhao-Morrison-Parr</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userguide.html#wu-and-yang">Wu and Yang</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userguide.html#failures">Failures</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#testexample">Testexample</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#benzene">Benzene</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#regularization">Regularization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#user-defined-system">User_defined_system</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#plot-xc">Plot_xc</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="install.html#python-3">Python 3</a></li>
 <li class="toctree-l2"><a class="reference internal" href="install.html#dependencies">Dependencies</a></li>
-<li class="toctree-l2"><a class="reference internal" href="install.html#download-packagename">Download PACKAGENAME</a></li>
+<li class="toctree-l2"><a class="reference internal" href="install.html#download-ks-pies">Download KS-Pies</a></li>
 <li class="toctree-l2"><a class="reference internal" href="install.html#extract-zip-to-a-folder">Extract zip to a folder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="install.html#check-download">Check download</a></li>
 <li class="toctree-l2"><a class="reference internal" href="install.html#finished">Finished</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="in_action.html">KS-Pies in Use</a></li>
 <li class="toctree-l1"><a class="reference internal" href="about.html">About and Contact</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="about.html#authors">Authors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="about.html#acknowledgments">Acknowledgments</a></li>
@@ -211,51 +225,34 @@ Please let us know if you have further questions, suggestions, or ideas.</p>
 <div class="admonition-todo admonition">
 <p class="admonition-title">Todo</p>
 <ul class="simple">
+<li><p>SN needs to upload the test examples that is recomended for checking that the software works. Pick one and link to it.</p></li>
+</ul>
+</div>
+<p class="todo-source">(The <a class="reference internal" href="install.html#id1"><em>original entry</em></a> is located in E:\Research\DCDFT\Code_2020-08-17\KSPies-master\install.rst, line 7.)</p>
+<div class="admonition-todo admonition">
+<p class="admonition-title">Todo</p>
+<ul class="simple">
 <li><p>Need to get publication info.</p></li>
-<li><p>Need to settle on name.</p></li>
 <li><p>Need to update BibTex part.</p></li>
 <li><p>Need to update Endnote thing.</p></li>
 </ul>
 </div>
-<p class="todo-source">(The <a class="reference internal" href="cite.html#id1"><em>original entry</em></a> is located in E:\Research\DCDFT\code_2020-07-24\cite.rst, line 5.)</p>
+<p class="todo-source">(The <a class="reference internal" href="cite.html#id2"><em>original entry</em></a> is located in E:\Research\DCDFT\Code_2020-08-17\KSPies-master\cite.rst, line 7.)</p>
 <div class="admonition-todo admonition">
 <p class="admonition-title">Todo</p>
-<ul class="simple">
-<li><p>Install instructions need updating to the real install.</p></li>
-<li><p>We need to make a hash for the downloadable version.</p></li>
-<li><p>It would be great to have a test example that should be easy to launch and will run though everything that the script can do in the black box setting.</p></li>
-</ul>
+<p>SN need to find a paper for this function…</p>
 </div>
-<p class="todo-source">(The <a class="reference internal" href="install.html#id1"><em>original entry</em></a> is located in E:\Research\DCDFT\code_2020-07-24\install.rst, line 7.)</p>
+<p class="todo-source">(The <a class="reference internal" href="modules.html#id6"><em>original entry</em></a> is located in E:\Research\DCDFT\Code_2020-08-17\KSPies-master\wy_dev.py:docstring of wy_dev.wyscf, line 7.)</p>
 <div class="admonition-todo admonition">
 <p class="admonition-title">Todo</p>
-<ul class="simple">
-<li><p>Need Summary</p></li>
-<li><p>Need to refer to installation</p></li>
-<li><p>Need WY guide</p></li>
-<li><p>Need ZMP guide</p></li>
-<li><p>Need a slim example of both and the helper.</p></li>
-<li><p>Probably should direct users to our upcoming paper for more scientific details.</p></li>
-</ul>
+<p>SN need to find a paper for this function…</p>
 </div>
-<p class="todo-source">(The <a class="reference internal" href="userguide.html#id1"><em>original entry</em></a> is located in E:\Research\DCDFT\code_2020-07-24\userguide.rst, line 7.)</p>
+<p class="todo-source">(The <a class="reference internal" href="modules.html#id7"><em>original entry</em></a> is located in E:\Research\DCDFT\Code_2020-08-17\KSPies-master\wy_dev.py:docstring of wy_dev.RWY.wyscf, line 7.)</p>
 <div class="admonition-todo admonition">
 <p class="admonition-title">Todo</p>
-<ul class="simple">
-<li><p>Docstrings need attention</p></li>
-<li><p>Some code is commented out; it should be removed if not necessary, or added to a more formal note explaining why and when you would want to uncomment it.</p></li>
-<li><p>See warnings in docstrings. I try and point out some things that I think we should address.</p></li>
-<li><p>We need to discuss the 2 vs 4 spacing. I suggest we use 4 spacing, as it seems that most of the pyscf code uses 4 spacing for indents.</p></li>
-</ul>
+<p>SN need to find a paper for this function…</p>
 </div>
-<p class="todo-source">(The <a class="reference internal" href="modules.html#id4"><em>original entry</em></a> is located in E:\Research\DCDFT\code_2020-07-24\wy_dev.py:docstring of wy_dev, line 8.)</p>
-<div class="admonition-todo admonition">
-<p class="admonition-title">Todo</p>
-<ul class="simple">
-<li><p>Docstrings need attention!</p></li>
-</ul>
-</div>
-<p class="todo-source">(The <a class="reference internal" href="modules.html#id9"><em>original entry</em></a> is located in E:\Research\DCDFT\code_2020-07-24\helper_dev.py:docstring of helper_dev, line 10.)</p>
+<p class="todo-source">(The <a class="reference internal" href="modules.html#id8"><em>original entry</em></a> is located in E:\Research\DCDFT\Code_2020-08-17\KSPies-master\wy_dev.py:docstring of wy_dev.UWY.wyscf, line 7.)</p>
 </div>
 
 
@@ -276,11 +273,19 @@ Please let us know if you have further questions, suggestions, or ideas.</p>
 
   <div role="contentinfo">
     <p>
+        
         &copy; Copyright 2020, Seungsoo Nam, Ryan J. McCarty, Eunji Sim
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -291,7 +296,6 @@ Please let us know if you have further questions, suggestions, or ideas.</p>
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {
