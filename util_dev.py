@@ -21,16 +21,19 @@ Utility Functions
 
 .. topic:: functions
 
+    mo2ao
+
     eval_vh
 
-    eval_vxc_libxc
-
-    mo2ao
+    eval_vxc
 
 .. topic:: Internal Log
 
     **2020-06-06** SN made edits
+
     **2020-07-26** Updates on eval_vh (Hansol ver.)
+
+    **2020-08-21** SN corrected typos, minor changes in attribute names, etc.
 
 """
 from functools import reduce
@@ -40,6 +43,55 @@ from scipy.spatial import distance_matrix
 import kspies_fort as kf
 from pyscf import gto, dft
 from pyscf.dft import numint
+
+def mo2ao(mo, p1, p2=None):
+    """Summary: Convert mo-basis density matrices to basis-set representation density matrices
+
+        Args:
+            mo (ndarray) : molecular orbital coefficients
+            p1 (ndarray) : mo-basis one-particle density matrices
+            p2 (ndarray) : mo-basis two-particle density matrices, optional
+
+        Returns:
+            dm1 (ndarray) : ao-basis one-particle density matrices
+            dm2 (ndarray) : ao-basis two-particle density matrices, returned only when p2 is given
+    """
+    def _convert_rdm1(mo, p1):
+        """ Summary: Convert mo-basis 1-rdm p1 to ao-basis
+        """
+        return reduce(np.dot, (mo, p1, mo.T))
+    def _convert_rdm2(mo1, mo2, p2):
+        """ Summary: Convert mo-basis 2-rdm p2 to ao-basis
+        """
+        nmo = mo1.shape[1]
+        p = np.dot(mo1, p2.reshape(nmo, -1))
+        p = np.dot(p.reshape(-1, nmo), mo2.T)
+        p = p.reshape([nmo]*4).transpose(2, 3, 0, 1)
+        p = np.dot(mo2, p.reshape(nmo, -1))
+        p = np.dot(p.reshape(-1, nmo), mo1.T)
+        p = p.reshape([nmo]*4)
+        return p
+
+    if np.array(p1).ndim == 2: #RHF
+        dm1 = _convert_rdm1(mo, p1)
+        if p2 is None:
+            return dm1
+        dm2 = _convert_rdm2(mo, mo, p2)
+        return dm1, dm2
+    elif np.array(p1).ndim == 3:
+        if np.array(mo).ndim == 2: #ROHF
+            mo_a = mo
+            mo_b = mo
+        else: #UHF
+            mo_a, mo_b = mo
+        dm1a = _convert_rdm1(mo_a, p1[0])
+        dm1b = _convert_rdm1(mo_b, p1[1])
+        if p2 is None:
+            return (dm1a, dm1b)
+        dm2aa = _convert_rdm2(mo_a, mo_a, p2[0])
+        dm2ab = _convert_rdm2(mo_a, mo_b, p2[1])
+        dm2bb = _convert_rdm2(mo_b, mo_b, p2[2])
+        return (dm1a, dm1b), (dm2aa, dm2ab, dm2bb)
 
 #controller
 radi_method = dft.radi.gauss_chebyshev
@@ -185,7 +237,7 @@ def eval_vh(mol, coords, dm, Lvl=3, ang_lv=2): #only atoms dependent values
         ZvH[j] = _Cart_Spharm(rel_coord, lmax) #This is time consuming
         #partition function P_i
         p[j] = np.exp(-2.*d)/(d**3) #partition function P_i
-        for ia, za in enumerate(mol.atom_charges):
+        for ia, za in enumerate(mol.atom_charges()):
             if za==1: #Special treatment on hydrogen atom
                 p[j, ia, :] *= 0.3
         ao[j] = numint.eval_ao(mol, tst) #AO value in real coordinate
@@ -203,7 +255,7 @@ def eval_vh(mol, coords, dm, Lvl=3, ang_lv=2): #only atoms dependent values
 
     return vH
 
-def eval_vxc_libxc(mol, dm, xc_code, coords, delta=1e-7):
+def eval_vxc(mol, dm, xc_code, coords, delta=1e-7):
     """Summary: Calculate real-space exchange-correlation potential for GGA from given density matrix
 
         Args:
@@ -296,52 +348,3 @@ def eval_vxc_libxc(mol, dm, xc_code, coords, delta=1e-7):
         -np.einsum('ir,ir->r', nabla_vsigma_ab, den_a[1:4, :])-den_a[4, :]*vxc[1][:, 1]
 
         return np.array(vxc_a), np.array(vxc_b)
-
-def mo2ao(mo, p1, p2=None):
-    """Summary: Convert mo-basis density matrices to basis-set representation density matrices
-
-        Args:
-            mo (ndarray) : molecular orbital coefficients
-            p1 (ndarray) : mo-basis one-particle density matrices
-            p2 (ndarray) : mo-basis two-particle density matrices, optional
-
-        Returns:
-            dm1 (ndarray) : ao-basis one-particle density matrices
-            dm2 (ndarray) : ao-basis two-particle density matrices, returned only when p2 is given
-    """
-    def _convert_rdm1(mo, p1):
-        """ Summary: Convert mo-basis 1-rdm p1 to ao-basis
-        """
-        return reduce(np.dot, (mo, p1, mo.T))
-    def _convert_rdm2(mo1, mo2, p2):
-        """ Summary: Convert mo-basis 2-rdm p2 to ao-basis
-        """
-        nmo = mo1.shape[1]
-        p = np.dot(mo1, p2.reshape(nmo, -1))
-        p = np.dot(p.reshape(-1, nmo), mo2.T)
-        p = p.reshape([nmo]*4).transpose(2, 3, 0, 1)
-        p = np.dot(mo2, p.reshape(nmo, -1))
-        p = np.dot(p.reshape(-1, nmo), mo1.T)
-        p = p.reshape([nmo]*4)
-        return p
-
-    if np.array(p1).ndim == 2: #RHF
-        dm1 = _convert_rdm1(mo, p1)
-        if p2 is None:
-            return dm1
-        dm2 = _convert_rdm2(mo, mo, p2)
-        return dm1, dm2
-    elif np.array(p1).ndim == 3:
-        if np.array(mo).ndim == 2: #ROHF
-            mo_a = mo
-            mo_b = mo
-        else: #UHF
-            mo_a, mo_b = mo
-        dm1a = _convert_rdm1(mo_a, p1[0])
-        dm1b = _convert_rdm1(mo_b, p1[1])
-        if p2 is None:
-            return (dm1a, dm1b)
-        dm2aa = _convert_rdm2(mo_a, mo_a, p2[0])
-        dm2ab = _convert_rdm2(mo_a, mo_b, p2[1])
-        dm2bb = _convert_rdm2(mo_b, mo_b, p2[2])
-        return (dm1a, dm1b), (dm2aa, dm2ab, dm2bb)

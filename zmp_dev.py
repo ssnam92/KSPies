@@ -5,7 +5,7 @@ Zhao-Morrison-Parr
 **Summary** This script preforms a Zhao-Morrison-Parr [ZMP1994]_ Kohn Sham inversion.
 
 Extra text about it.
-Written for Python 3.?
+Written for Python 3.7.4
 
   :References:
 
@@ -13,16 +13,27 @@ Written for Python 3.?
         From electron densities to Kohn-Sham kinetic energies, orbital energies, exchange-correlation potentials, and exchange-correlation energies. (1994)
         <https://doi.org/10.1103/PhysRevA.50.2138> Physical Review A, 50(3) 2138.
 
+    .. [THG1997] David J Tozer, Nicholas C Handy, and William H Green.
+        Exchange-correlation functionals from ab initio electron densities (1997)
+        <https://doi.org/10.1016/S0009-2614(97)00586 and-1> Chemical Physics Letters, 273(3-4) 183-194
+
+    .. [Pulay1980] P Pulay.
+        Convergence acceleration of iterative sequences. the case of SCF iteration (1980)
+        <https://doi.org/10.1016/0009-2614(80)80396-4> Chemical Physics Letters, 73 (2): 393–398
+
 .. moduleauthor::
     Seungsoo Nam <skaclitz@yonsei.ac.kr> <http://tccl.yonsei.ac.kr/mediawiki/index.php/Main_Page> ORCID: `000-0001-9948-6140 <https://orcid.org/0000-0001-9948-6140>`_
 
 .. topic:: Funding
 
-    This research was made possible by funding from the Korean Research Foundation (2020R1A2C2007468).
+    This research was made possible by funding from the National Research Foundation of Korea (NRF-2020R1A2C2007468 and NRF-2020R1A4A1017737).
 
 .. topic:: Internal Log
 
     **2020-06-13** RJM added doc string templates
+
+    **2020-08-21** SN corrected typos, minor changes in attribute names, etc.
+
 """
 
 from functools import reduce
@@ -35,17 +46,13 @@ class DIIS:
        
        See [Pulay1980]_ for some extra context.
 
-        :References:
-            .. [Pulay1980] P Pulay.
-                Convergence acceleration of iterative sequences. the case of SCF iteration (1980)
-                <https://doi.org/10.1016/0009-2614(80)80396-4> Chemical Physics Letters, 73 (2): 393–398
-
     """
     def __init__(self, S, diis_space):
         """Initialize DIIS object
 
         Args:
             S (ndarray):  overlap integral
+            diis_space (integer) : number of DIIS vectors used in extrapolation
 
         """
         eig, Z = np.linalg.eigh(S)
@@ -105,11 +112,13 @@ def basic(mz, mol):
 
     Args:
         mz : RZMP or UZMP object
+        mol (object) : an instance of :class:`Mole`
+
     """
     mz.mol = mol
     mz.guide = 'faxc'
     mz.diis_space = 40
-    mz.level_shift_factor = .2
+    mz.level_shift = .2
     mz.max_cycle = 400
     mz.conv_tol_dm = 1e-7
     mz.conv_tol_diis = 1e-5
@@ -122,12 +131,14 @@ def basic(mz, mol):
     mz.V = mz.mol.intor_symmetric('int1e_nuc')
 
 class RZMP:
-    """Summary: Perform ZMP calculation in restricted scheme
+    """Summary: Perform ZMP calculation in restricted scheme, see [ZMP1994]_ for detail. 
+
+    .. _restricted-zmp:
 
     Attributes:
         mol (object) : an instance of :class:`Mole`
         dm_tar (ndarray) : Density matrix of target density in atomic orbital basis representation
-        dm_aux (ndarray) : Auxilary density matrix to construct density-dependent p
+        dm_aux (ndarray) : Auxilary density matrix to construct a fixed part of fock matrix. Default is dm_tar
         guide (str) : Guiding potential. Can be set as
 
             |  None : no guiding potential except external potential
@@ -135,7 +146,7 @@ class RZMP:
             |  xc   : ks.xc attribute in pyscf DFT
 
         diis_space (int) : DIIS space size. Default is 40
-        level_shift_factor (float) : Level shift (in AU) for virtual space. Default is 0.2
+        level_shift (float) : Level shift (in AU) for virtual space. Default is 0.2
         max_cycle (int) : max number of zscf iterations. Defalut is 400
         conv_tol_dm (float) :  converge threshold for density matrix. Default is 1e-7
         conv_tol_diis (float) : converge threshold for DIIS error. Default is 1e-5
@@ -220,7 +231,7 @@ class RZMP:
             self.J=self.mf.get_jk(self.mol,self.dm)[0]
 
             self.F=self.F0+l*(self.J-self.J_tar)
-            self.F=scf.hf.level_shift(self.S, self.dm*.5, self.F, self.level_shift_factor)
+            self.F=scf.hf.level_shift(self.S, self.dm*.5, self.F, self.level_shift)
             self.F,diis_e=self.zdiis.extrapolate(cycle, self.F, self.dm) #DIIS
 
             self.mo_energy,self.mo_coeff=scf.hf.eig(self.F,self.S)
@@ -232,15 +243,13 @@ class RZMP:
             self.dm_old=self.dm
             dm_converged=dm_e < self.conv_tol_dm
             diis_converged=diis_e < self.conv_tol_diis
-            self.mo_energy[self.mo_occ==0]-=self.level_shift_factor
+            self.mo_energy[self.mo_occ==0]-=self.level_shift
 
             nocc = self.mol.nelectron // 2
             HOMO, LUMO =self.mo_energy[nocc-1], self.mo_energy[nocc]
             gap = LUMO - HOMO
 
-            #gap=self.mo_energy[self.Nocc]-self.mo_energy[self.Nocc-1] #-self.shift*2
             print(f'\rlambda= {l:7.2f}  iter: {cycle:4d} gap= {gap:10.7f}   ',end='\r')
-            #print(f'lambda= {l:7.2f}  iter: {cycle:4d} gap= {gap:10.7f}   ')
 
             self.converged = dm_converged and diis_converged
             if self.converged and cycle > 1:
@@ -253,17 +262,14 @@ class RZMP:
         print(f'lambda= {l:7.2f} niter: {cycle:4d} gap= {LUMO-HOMO:10.7f} dN= {dN:7.2f} C= {C:.2e} ')
 
 class UZMP:
-    """Summary: Perform ZMP calculation in unrestricted scheme
+    """Summary: Perform ZMP calculation in unrestricted scheme, see [THG1997].
 
-    .. note::
-
-        SN : I think we need to discuss a 'tidy' way of logging
-        RJM: We can do some more advanced logging (looks like pyscf has a liblogger), but I think at the current moment thats a second or 3rd order correction/improvement.
+    .. _unrestricted-zmp:
 
     Attributes:
         mol (object) : an instance of :class:`Mole`
         dm_tar (ndarray) : Density matrix of target density in atomic orbital basis representation
-        dm_aux (ndarray) : Auxilary density matrix to construct density-dependent p
+        dm_aux (ndarray) : Auxilary density matrix to construct a fixed part of fock matrix. Default is dm_tar
         guide (str) : Guiding potential. Can be set as
 
             |  None : no guiding potential except external potential
@@ -271,7 +277,7 @@ class UZMP:
             |  xc   : ks.xc attribute in pyscf DFT
 
         diis_space (int) : DIIS space size. Default is 40
-        level_shift_factor (float) : Level shift (in AU) for virtual space. Default is 0.2
+        level_shift (float) : Level shift (in AU) for virtual space. Default is 0.2
         max_cycle (int) : max number of zscf iterations. Defalut is 400
         conv_tol_dm (float) :  converge threshold for density matrix. Default is 1e-7
         conv_tol_diis (float) : converge threshold for DIIS error. Default is 1e-5
@@ -330,7 +336,7 @@ class UZMP:
 
         if self.guide is None:
             self.V0=np.zeros_like(self.dm_tar)
-        elif self.guide.lower()=='fa':
+        elif self.guide.lower()=='faxc':
             N=self.mol.nelectron
             self.J_aux=self.mf.get_jk(self.mol,self.dm_aux)[0]
             VFA=((N-1.)/N)*(self.J_aux[0]+self.J_aux[1])
@@ -363,8 +369,8 @@ class UZMP:
             self.Fa=self.F0[0]+2*l*(self.J[0]-self.J_tar[0])
             self.Fb=self.F0[1]+2*l*(self.J[1]-self.J_tar[1])
 
-            self.Fa=scf.hf.level_shift(self.S, self.dm[0], self.Fa, self.level_shift_factor)
-            self.Fb=scf.hf.level_shift(self.S, self.dm[1], self.Fb, self.level_shift_factor)
+            self.Fa=scf.hf.level_shift(self.S, self.dm[0], self.Fa, self.level_shift)
+            self.Fb=scf.hf.level_shift(self.S, self.dm[1], self.Fb, self.level_shift)
 
             self.Fa,diis_e_a=self.zdiis_a.extrapolate(cycle, self.Fa, self.dm[0])
             self.Fb,diis_e_b=self.zdiis_b.extrapolate(cycle, self.Fb, self.dm[1])
@@ -382,8 +388,8 @@ class UZMP:
             self.dm_old=self.dm
             dm_converged=dm_e < self.conv_tol_dm
             diis_converged=diis_e_a+diis_e_b < self.conv_tol_diis
-            self.mo_energy[0][self.mo_occ[0]==0]-=self.level_shift_factor
-            self.mo_energy[1][self.mo_occ[1]==0]-=self.level_shift_factor
+            self.mo_energy[0][self.mo_occ[0]==0]-=self.level_shift
+            self.mo_energy[1][self.mo_occ[1]==0]-=self.level_shift
 
             HOMO=np.maximum(self.mo_energy[0][self.nelec[0]-1],
                             self.mo_energy[1][self.nelec[1]-1])
@@ -398,6 +404,7 @@ class UZMP:
                 break
 
         self.J=self.mf.get_jk(self.mol,self.dm)[0]
+        #Calculate alpha/beta density difference seperately
         #dn_a=dft.numint.eval_rho(self.mol, self.ao, (self.dm-self.dm_tar)[0])
         #dn_b=dft.numint.eval_rho(self.mol, self.ao, (self.dm-self.dm_tar)[1])
         #dN=1000*np.einsum('r,r',abs(dn_a)+abs(dn_b),self.weights)

@@ -4,17 +4,7 @@ Wu and Yang
 
 **Summary** This is a program for preforming Kohn-Sham inversion with algorithm introduced by Wu and Yang [WuYang2003]_.
 
-Written for Python 3.? Lots of other text here, like details about how this uses the original Wu Yang idea [WuYang2003]_, and how the other ref is used for  Regularization [HBY2007]_ . Any useful info about the algorithm should also be given.
-
-.. todo::
-
-      * Docstrings need attention (SN: Please specifiy more)
-      * Some code is commented out; it should be removed if not necessary, or added to a more formal note explaining why and when you would want to uncomment it. (SN: Done)
-      * See warnings in docstrings. I try and point out some things that I think we should address. 
-      * We need to discuss the 2 vs 4 spacing. I suggest we use 4 spacing, as it seems that most of the pyscf code uses 4 spacing for indents. (SN: 4 spacing done)
-
-.. note::
-    The pyscf documentation has a bunch of funny things to it... I don't think they have been paying full attention to the documentation like they should, and it is not consistent.
+Written for Python 3.7.4 Lots of other text here, like details about how this uses the original Wu Yang idea [WuYang2003]_, and how the other ref is used for  Regularization [HBY2007]_ . Any useful info about the algorithm should also be given.
 
 .. moduleauthor::
     Seungsoo Nam <skaclitz@yonsei.ac.kr> <http://tccl.yonsei.ac.kr/mediawiki/index.php/Main_Page> ORCID: `000-0001-9948-6140 <https://orcid.org/0000-0001-9948-6140>`_
@@ -28,16 +18,23 @@ Written for Python 3.? Lots of other text here, like details about how this uses
     .. [HBY2007] Tim Heaton-Burgess, Felipe A. Bulat, and Weitao Yang. Optimized Effective Potentials in Finite Basis Sets (2007)
         <https://doi.org/10.1103/PhysRevLett.98.256401> Physical review letters, 98(25).
 
+    .. [GNGK2020] Rachel Garrick, Amir Natan, Tim Gould, and Leeor Kronik. Exact Generalized Kohn-Sham Theory for Hybrid Functionals (2020)
+        <https://doi.org/10.1103/PhysRevX.10.021040> Physical Review X, 10(2).
+
 .. topic:: Funding
 
-    This research was made possible by funding from the Korean Research Foundation (2020R1A2C2007468).
+    This research was made possible by funding from the National Research Foundation of Korea (NRF-2020R1A2C2007468 and NRF-2020R1A4A1017737).
 
 .. topic:: Internal Log
 
     **2020-06-02** RJM added in docstring templates
 
     **2020-06-15** SN added some comments and fix bug(RWY and UWY gave different results with regularization)
+
+    **2020-08-21** SN corrected typos, minor changes in attribute names, etc.
+
 """
+
 import time
 import numpy as np
 from scipy.optimize import minimize
@@ -79,21 +76,21 @@ def numint_3c2b(mol, pbas, level=5):
     n1 = mol.nao_nr()
     n2 = mol2.nao_nr()
     t = (time.time()-t0)/60.
-    print(f'Sijt calculation for n1:{n1} n2:{n2} basis functions: {t:.1f} min')
+    print("Three-center overlap integral by numerical integration")
+    print("n1  : %4i"%n1)
+    print("n2  : %4i"%n2)
+    print("time: %.1f min"%t)
     return Sijt
 
 def time_profile(mw):
     """Summary: Print to terminal a collection of time data in seconds
 
-    initialize : time for initialization
-
-    total_opt  : total elasped time
-
-    solve_eig  : time to construct fock matrix and diagonalize it
-
-    Ws_eval    : time to evaluate objective function Ws
-
-    Gd_eval    : time to evaluate gradient of objective function
+    Terminal prints:
+    * initialize : time for initialization
+    * total_opt  : total elasped time
+    * solve_eig  : time to construct fock matrix and diagonalize it
+    * Ws_eval    : time to evaluate objective function Ws
+    * Gd_eval    : time to evaluate gradient of objective function
 
     """
     print("*********Time Profile*********")
@@ -123,16 +120,17 @@ def run(mw):
     mw.converged = mw.res.success
     mw.t_opt += time.time()-t
 
-def wyscf(mw):
+def wyscf(mw, ddmtol=1e-6):
     """Summary: Run WY until its self-consistent. This is required for hybrid guiding potentials
 
     .. note::
-        There is no physical evidence that the result of this function can be trusted.
-        The minimization in WY are only for local multiplicative potentials, not non-local potential.
-        SN need to find a paper for this function...
+        This function performs very simplied generalization of WY for non-local guiding potential, mimicking [GNGK2020]_.
+        There is no theoretical proof that the result of this function can be trusted.
+        The optimization of WY objective functional is only theoretically proven for local multiplicative potentials, not non-local potential.
 
     Args:
         mw : RWY or UWY object
+        ddmtol (float, optional) : Convergence criteria of density matrix. 
 
     """
     mw.totnit = 0
@@ -146,7 +144,7 @@ def wyscf(mw):
         mw.run()
         mw.totnit += mw.res.nit
         mw.ddm = np.max(np.abs(np.array(dm_old)-np.array(mw.dm)))
-        if mw.ddm < 1e-6:
+        if mw.ddm < ddmtol:
             break
 
 def info(mw):
@@ -236,9 +234,11 @@ def basic(mw, mol, pbas, Sijt):
 class RWY:
     """Summary: Perform WY calculation in restricted scheme
 
+    .. _restrictedwy:
+
     Attributes:
         mol (object) : an instance of :class:`Mole`
-        dm_tar (ndarra)y : Density matrix of target density in atomic orbital basis representation
+        dm_tar (ndarray) : Density matrix of target density in atomic orbital basis representation
         pbas (dict or str) : Potential basis set for WY. If not given, same with atomic orbital basis
         Sijt (ndarray) : Three-center overlap integral. If not given, calculated analytically as overlap of atomic orbital basis
         dm_aux (ndarray) : Auxilary density matrix to construct density-dependent part of guiding potential. Default is dm_tar
@@ -250,8 +250,8 @@ class RWY:
 
         reg (float) : strength of regularization. Default is 0
         tol (float) : tolarance of optimization (maximum gradient element). Default is 1e-6
-        method (str) : optimization algorithm used in SciPy. Can be 'cg', 'bfgs', 'newton-cg', 'dogleg', 
-                       'trust-ncg', 'trust-krylov', 'trust-exact'. Defult is 'trust-exact'
+        method (str) : optimization algorithm used in SciPy. Can be (case insensitive) 'cg', 'bfgs', 'newton-cg', 
+                       'dogleg', 'trust-ncg', 'trust-krylov', 'trust-exact'. Defult is 'trust-exact'
 
     Returns:
         converged (bool) : optimization converged or not
@@ -408,9 +408,11 @@ class RWY:
 class UWY:
     """Summary: Perform WY calculation in unrestricted scheme
 
+    .. _unrestrictedwy:
+
     Attributes:
         mol (object) : an instance of :class:`Mole`
-        dm_tar (ndarra)y : Density matrix of target density in atomic orbital basis representation
+        dm_tar (ndarray) : Density matrix of target density in atomic orbital basis representation
         pbas (dict or str) : Potential basis set for WY. If not given, same with atomic orbital basis
         Sijt (ndarray) : Three-center overlap integral. If not given, calculated analytically as overlap of atomic orbital basis
         dm_aux (ndarray) : Auxilary density matrix to construct density-dependent part of guiding potential. Default is dm_tar
@@ -422,8 +424,8 @@ class UWY:
 
         reg (float) : strength of regularization. Default is 0
         tol (float) : tolarance of optimization (maximum gradient element). Default is 1e-6
-        method (str) : optimization algorithm used in SciPy. Can be 'cg', 'bfgs', 'newton-cg', 'dogleg',
-                       'trust-ncg', 'trust-krylov', 'trust-exact'. Defult is 'trust-exact'
+        method (str) : optimization algorithm used in SciPy. Can be (case insensitive) 'cg', 'bfgs', 'newton-cg',
+                       'dogleg', 'trust-ncg', 'trust-krylov', 'trust-exact'. Defult is 'trust-exact'
 
     Returns:
         converged (bool) : optimization converged or not
