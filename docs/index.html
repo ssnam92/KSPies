@@ -166,6 +166,8 @@
 In addition to documentation of the scientific code, this site includes information on installation, setup, use, and examples of use to equip quantum chemists and physicists with this useful toolkit.
 Please let us know if you have further questions, suggestions, or ideas.</p>
 </dd>
+<dt>Git Repository</dt><dd><p><a class="reference external" href="https://github.com/ssnam92/KSPies">https://github.com/ssnam92/KSPies</a></p>
+</dd>
 </dl>
 <div class="toctree-wrapper compound">
 <p class="caption"><span class="caption-text">Contents:</span></p>
@@ -185,11 +187,13 @@ Please let us know if you have further questions, suggestions, or ideas.</p>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="examples.html#testexample">Testexample</a></li>
-<li class="toctree-l2"><a class="reference internal" href="examples.html#benzene">Benzene</a></li>
-<li class="toctree-l2"><a class="reference internal" href="examples.html#regularization">Regularization</a></li>
-<li class="toctree-l2"><a class="reference internal" href="examples.html#user-defined-system">User_defined_system</a></li>
-<li class="toctree-l2"><a class="reference internal" href="examples.html#plot-xc">Plot_xc</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#test-script">1. Test Script</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#benzene">2 Benzene</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#oxygen">3. Oxygen</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#restricted-wy">4. Restricted WY</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#user-defined-system">5. User Defined System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#plot-xc-zmp-fa">6. Plot XC ZMP FA</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#plot-xc-wy-pbe">7. Plot XC WY PBE</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a><ul>
@@ -203,6 +207,7 @@ Please let us know if you have further questions, suggestions, or ideas.</p>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="in_action.html">KS-Pies in Use</a></li>
 <li class="toctree-l1"><a class="reference internal" href="about.html">About and Contact</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="about.html#license">License</a></li>
 <li class="toctree-l2"><a class="reference internal" href="about.html#authors">Authors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="about.html#acknowledgments">Acknowledgments</a></li>
 </ul>
@@ -225,34 +230,12 @@ Please let us know if you have further questions, suggestions, or ideas.</p>
 <div class="admonition-todo admonition">
 <p class="admonition-title">Todo</p>
 <ul class="simple">
-<li><p>SN needs to upload the test examples that is recomended for checking that the software works. Pick one and link to it.</p></li>
-</ul>
-</div>
-<p class="todo-source">(The <a class="reference internal" href="install.html#id1"><em>original entry</em></a> is located in E:\Research\DCDFT\Code_2020-08-17\KSPies-master\install.rst, line 7.)</p>
-<div class="admonition-todo admonition">
-<p class="admonition-title">Todo</p>
-<ul class="simple">
 <li><p>Need to get publication info.</p></li>
 <li><p>Need to update BibTex part.</p></li>
 <li><p>Need to update Endnote thing.</p></li>
 </ul>
 </div>
-<p class="todo-source">(The <a class="reference internal" href="cite.html#id2"><em>original entry</em></a> is located in E:\Research\DCDFT\Code_2020-08-17\KSPies-master\cite.rst, line 7.)</p>
-<div class="admonition-todo admonition">
-<p class="admonition-title">Todo</p>
-<p>SN need to find a paper for this function…</p>
-</div>
-<p class="todo-source">(The <a class="reference internal" href="modules.html#id6"><em>original entry</em></a> is located in E:\Research\DCDFT\Code_2020-08-17\KSPies-master\wy_dev.py:docstring of wy_dev.wyscf, line 7.)</p>
-<div class="admonition-todo admonition">
-<p class="admonition-title">Todo</p>
-<p>SN need to find a paper for this function…</p>
-</div>
-<p class="todo-source">(The <a class="reference internal" href="modules.html#id7"><em>original entry</em></a> is located in E:\Research\DCDFT\Code_2020-08-17\KSPies-master\wy_dev.py:docstring of wy_dev.RWY.wyscf, line 7.)</p>
-<div class="admonition-todo admonition">
-<p class="admonition-title">Todo</p>
-<p>SN need to find a paper for this function…</p>
-</div>
-<p class="todo-source">(The <a class="reference internal" href="modules.html#id8"><em>original entry</em></a> is located in E:\Research\DCDFT\Code_2020-08-17\KSPies-master\wy_dev.py:docstring of wy_dev.UWY.wyscf, line 7.)</p>
+<p class="todo-source">(The <a class="reference internal" href="cite.html#id2"><em>original entry</em></a> is located in E:\Research\DCDFT\Code_2020-09-04\KSPies-master\documentation\cite.rst, line 7.)</p>
 </div>
 
 
@@ -274,7 +257,7 @@ Please let us know if you have further questions, suggestions, or ideas.</p>
   <div role="contentinfo">
     <p>
         
-        &copy; Copyright 2020, Seungsoo Nam, Ryan J. McCarty, Eunji Sim
+        &copy; Copyright 2020, Seungsoo Nam, Ryan J. McCarty, Hansol Park, Eunji Sim
 
     </p>
   </div>

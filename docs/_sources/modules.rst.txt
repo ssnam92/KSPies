@@ -2,17 +2,17 @@
 Modules
 =======
 
-.. automodule:: wy_dev
+.. automodule:: wy
     :members:
     :undoc-members:
     :show-inheritance:
 
-.. automodule:: zmp_dev
+.. automodule:: zmp
     :members:
     :undoc-members:
     :show-inheritance:
 
-.. automodule:: util_dev
+.. automodule:: util
     :members:
     :undoc-members:
     :show-inheritance:

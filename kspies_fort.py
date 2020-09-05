@@ -1,1 +1,1 @@
-"""blank for now"""
+"Blank file for sphinx build"

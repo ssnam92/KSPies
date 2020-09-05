@@ -4,11 +4,7 @@
 Installation
 ============
 
-.. todo::
-
-      * SN needs to upload the test examples that is recomended for checking that the software works. Pick one and link to it.
-
-Due to the developmental and experimental nature of our scripts, we provide it as a set of run files instead of as an official package.
+Due to the developmental and experimental nature of our scripts, we provide it as a set of run files instead of as a python package. 
 
 Python 3
 ########
@@ -27,6 +23,8 @@ KS-Pies requires the following dependencies, which were the most current version
 :pyscf: 1.7.2.post2 or later
 :scikit_learn: 0.23.1 or later
 
+Its entirely like that it works with previous versions, but we have not verified this.
+
 Download KS-Pies
 #################
 
@@ -40,7 +38,7 @@ On your system, extract to a local folder and note the full path of the folder.
 Check download
 ##############
 
-We are working on creating a test example to ensure your 
+A test example is provided as the example folder which can be used to verify that KS-pies is working correctly: :ref:`Full-example` .
 
 
 Finished

@@ -12,14 +12,17 @@
 
 import os
 import sys
-sys.path.insert(0, os.path.abspath('.'))
+
+currentpath = os.path.abspath('.')
+sys.path.insert(0, os.path.dirname(currentpath))
+
 
 
 # -- Project information -----------------------------------------------------
 
 project = 'KS Pies'
-copyright = '2020, Seungsoo Nam, Ryan J. McCarty, Eunji Sim'
-author = 'Seungsoo Nam, Ryan J. McCarty, Eunji Sim'
+copyright = '2020, Seungsoo Nam, Ryan J. McCarty, Hansol Park, Eunji Sim'
+author = 'Seungsoo Nam, Ryan J. McCarty,  Hansol Park, Eunji Sim'
 
 # The full version, including alpha/beta/rc tags
 release = '2020'

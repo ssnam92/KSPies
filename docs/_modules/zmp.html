@@ -1,23 +1,30 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>zmp &mdash; KSinversion_DCDFT 2020 documentation</title>
+  <title>zmp &mdash; KS Pies 2020 documentation</title>
   
 
   
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
+  
+    <link rel="shortcut icon" href="../_static/favicon-32x32.png"/>
   
   
   
 
   
-  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -25,15 +32,12 @@
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
         <script src="../_static/language_data.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="author" title="About these documents" href="../about.html" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
 </head>
@@ -49,15 +53,15 @@
           
 
           
-            <a href="../index.html" class="icon icon-home"> KSinversion_DCDFT
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> KS Pies
           
 
+          
+            
+            <img src="../_static/KSPies.svg" class="logo" alt="Logo"/>
           
           </a>
 
-          
-            
-            
           
 
           
@@ -72,6 +76,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -79,11 +84,21 @@
               
             
             
-              <!-- Local TOC -->
-              <div class="local-toc"></div>
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../userguide.html">User guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../in_action.html">KS-Pies in Use</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../about.html">About and Contact</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cite.html">Cite</a></li>
+</ul>
+
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -93,7 +108,7 @@
       <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../index.html">KSinversion_DCDFT</a>
+          <a href="../index.html">KS Pies</a>
         
       </nav>
 
@@ -122,7 +137,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../index.html">Docs</a> &raquo;</li>
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
         
           <li><a href="index.html">Module code</a> &raquo;</li>
         
@@ -142,262 +157,419 @@
            <div itemprop="articleBody">
             
   <h1>Source code for zmp</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Zhao-Morrison-Parr</span>
+<span class="sd">==================</span>
+
+<span class="sd">**Summary** This script preforms a Zhao-Morrison-Parr [ZMP1994]_ Kohn Sham inversion.</span>
+
+<span class="sd">Written for Python 3.7.4</span>
+
+<span class="sd">  :References:</span>
+
+<span class="sd">    .. [ZMP1994] Qingsheng Zhao, Robert C Morrison, and Robert G Parr.</span>
+<span class="sd">        From electron densities to Kohn-Sham kinetic energies, orbital energies, exchange-correlation potentials, and exchange-correlation energies. (1994)</span>
+<span class="sd">        &lt;https://doi.org/10.1103/PhysRevA.50.2138&gt; Physical Review A, 50(3) 2138.</span>
+
+<span class="sd">    .. [THG1997] David J Tozer, Nicholas C Handy, and William H Green.</span>
+<span class="sd">        Exchange-correlation functionals from ab initio electron densities (1997)</span>
+<span class="sd">        &lt;https://doi.org/10.1016/S0009-2614(97)00586 and-1&gt; Chemical Physics Letters, 273(3-4) 183-194</span>
+
+<span class="sd">    .. [Pulay1980] P Pulay.</span>
+<span class="sd">        Convergence acceleration of iterative sequences. the case of SCF iteration (1980)</span>
+<span class="sd">        &lt;https://doi.org/10.1016/0009-2614(80)80396-4&gt; Chemical Physics Letters, 73 (2): 393–398</span>
+
+<span class="sd">.. moduleauthor::</span>
+<span class="sd">    Seungsoo Nam &lt;skaclitz@yonsei.ac.kr&gt; &lt;http://tccl.yonsei.ac.kr/mediawiki/index.php/Main_Page&gt; ORCID: `000-0001-9948-6140 &lt;https://orcid.org/0000-0001-9948-6140&gt;`_</span>
+
+<span class="sd">.. topic:: Funding</span>
+
+<span class="sd">    This research was made possible by funding from the National Research Foundation of Korea (NRF-2020R1A2C2007468 and NRF-2020R1A4A1017737).</span>
+
+<span class="sd">.. topic:: Internal Log</span>
+
+<span class="sd">    **2020-06-13** RJM added doc string templates</span>
+
+<span class="sd">    **2020-08-21** SN corrected typos, minor changes in attribute names, etc.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
 <span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">reduce</span>
-<span class="kn">from</span> <span class="nn">pyscf</span> <span class="kn">import</span> <span class="n">scf</span><span class="p">,</span><span class="n">dft</span>
-
-<div class="viewcode-block" id="DIIS"><a class="viewcode-back" href="../index.html#zmp.DIIS">[docs]</a><span class="k">class</span> <span class="nc">DIIS</span><span class="p">:</span>
-  <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">diis_space</span><span class="p">):</span>
-    <span class="n">eig</span><span class="p">,</span><span class="n">Z</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">eigh</span><span class="p">(</span><span class="n">S</span><span class="p">)</span>
-    <span class="n">S12</span><span class="o">=</span><span class="mf">1.</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">eig</span><span class="p">)</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">S</span><span class="o">=</span><span class="n">S</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">O</span><span class="o">=</span><span class="n">reduce</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">,(</span><span class="n">Z</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">S12</span><span class="p">),</span><span class="n">Z</span><span class="o">.</span><span class="n">T</span><span class="p">))</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">diis_space</span><span class="o">=</span><span class="n">diis_space</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">norb</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">S</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">ems</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">diis_space</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">norb</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">norb</span><span class="p">))</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">pms</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">diis_space</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">norb</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">norb</span><span class="p">))</span>
-
-<div class="viewcode-block" id="DIIS.get_fock"><a class="viewcode-back" href="../index.html#zmp.DIIS.get_fock">[docs]</a>  <span class="k">def</span> <span class="nf">get_fock</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">iter</span><span class="p">,</span> <span class="n">fock</span><span class="p">,</span> <span class="n">dm</span> <span class="p">):</span>
-    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">diis_space</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
-      <span class="k">return</span> <span class="n">fock</span><span class="p">,</span> <span class="mf">0.0</span>
-    <span class="k">if</span> <span class="nb">iter</span> <span class="o">&lt;=</span> <span class="mi">1</span> <span class="p">:</span>
-      <span class="k">return</span> <span class="n">fock</span><span class="p">,</span> <span class="mf">0.0</span>
-
-    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="nb">iter</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">diis_space</span><span class="p">))):</span>
-      <span class="bp">self</span><span class="o">.</span><span class="n">ems</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ems</span><span class="p">[</span><span class="n">k</span><span class="o">-</span><span class="mi">1</span><span class="p">][:]</span>
-      <span class="bp">self</span><span class="o">.</span><span class="n">pms</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pms</span><span class="p">[</span><span class="n">k</span><span class="o">-</span><span class="mi">1</span><span class="p">][:]</span>
-
-    <span class="n">em</span><span class="o">=</span><span class="n">reduce</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">,</span> <span class="p">(</span><span class="n">fock</span><span class="p">,</span> <span class="n">dm</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">S</span><span class="p">))</span>
-    <span class="n">em</span> <span class="o">-=</span><span class="n">em</span><span class="o">.</span><span class="n">T</span>
-
-    <span class="bp">self</span><span class="o">.</span><span class="n">ems</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">=</span><span class="n">reduce</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">O</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">em</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">O</span><span class="p">))</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">pms</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">=</span><span class="n">fock</span><span class="p">[:]</span>
-    <span class="n">idx</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ems</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">argmax</span><span class="p">()</span>
-    <span class="n">diis_error</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ravel</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ems</span><span class="p">[</span><span class="mi">0</span><span class="p">])[</span><span class="n">idx</span><span class="p">])</span>
-
-    <span class="c1">#Solve BC=A to find C</span>
-    <span class="n">nb</span><span class="o">=</span><span class="nb">min</span><span class="p">(</span><span class="nb">iter</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">diis_space</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span>
-    <span class="n">B</span><span class="o">=-</span><span class="mf">1.</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">nb</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">nb</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
-    <span class="n">B</span><span class="p">[</span><span class="n">nb</span><span class="p">,</span><span class="n">nb</span><span class="p">]</span><span class="o">=</span><span class="mi">0</span>
-    <span class="n">B</span><span class="p">[:</span><span class="n">nb</span><span class="p">,:</span><span class="n">nb</span><span class="p">]</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s1">&#39;aij,bji-&gt;ab&#39;</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">ems</span><span class="p">[:</span><span class="n">nb</span><span class="p">,:,:],</span><span class="bp">self</span><span class="o">.</span><span class="n">ems</span><span class="p">[:</span><span class="n">nb</span><span class="p">,:,:])</span>
-    <span class="n">A</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">nb</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
-    <span class="n">A</span><span class="p">[</span><span class="n">nb</span><span class="p">]</span><span class="o">=-</span><span class="mi">1</span>
-    <span class="n">C</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">B</span><span class="p">,</span> <span class="n">A</span><span class="p">)</span>
-
-    <span class="c1"># form new interpolated diis fock matrix</span>
-    <span class="n">newfock</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">fock</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">c</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">C</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]):</span>
-      <span class="n">newfock</span> <span class="o">+=</span> <span class="n">c</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">pms</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-
-    <span class="k">return</span> <span class="n">newfock</span><span class="p">,</span> <span class="n">diis_error</span></div></div>
-
-<div class="viewcode-block" id="RZMP"><a class="viewcode-back" href="../index.html#zmp.RZMP">[docs]</a><span class="k">class</span> <span class="nc">RZMP</span><span class="p">:</span>
-  <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">mol</span><span class="p">,</span><span class="n">dm_tar</span><span class="p">):</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">mol</span><span class="o">=</span><span class="n">mol</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">Ne</span><span class="o">=</span><span class="n">mol</span><span class="o">.</span><span class="n">nelectron</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">Nocc</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">mol</span><span class="o">.</span><span class="n">nelectron</span><span class="o">//</span><span class="mi">2</span><span class="p">)</span>
-
-    <span class="bp">self</span><span class="o">.</span><span class="n">dm_tar</span><span class="o">=</span><span class="n">dm_tar</span>
-
-    <span class="bp">self</span><span class="o">.</span><span class="n">guide</span><span class="o">=</span><span class="s1">&#39;fa&#39;</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">diis_space</span><span class="o">=</span><span class="mi">40</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">level_shift_factor</span><span class="o">=.</span><span class="mi">2</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">max_cycle</span><span class="o">=</span><span class="mi">400</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">conv_tol_dm</span><span class="o">=</span><span class="mf">1e-7</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">conv_tol_diis</span><span class="o">=</span><span class="mf">1e-5</span>
-
-    <span class="bp">self</span><span class="o">.</span><span class="n">initialized</span><span class="o">=</span><span class="kc">False</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">dm</span><span class="o">=</span><span class="n">dm_tar</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">dm_old</span><span class="o">=</span><span class="n">dm_tar</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">mf</span><span class="o">=</span><span class="n">dft</span><span class="o">.</span><span class="n">RKS</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mol</span><span class="p">)</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">mf</span><span class="o">.</span><span class="n">grids</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">coords</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mf</span><span class="o">.</span><span class="n">grids</span><span class="o">.</span><span class="n">coords</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">weights</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mf</span><span class="o">.</span><span class="n">grids</span><span class="o">.</span><span class="n">weights</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">ao</span><span class="o">=</span><span class="n">dft</span><span class="o">.</span><span class="n">numint</span><span class="o">.</span><span class="n">eval_ao</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">coords</span><span class="p">)</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="o">=</span><span class="n">mol</span><span class="o">.</span><span class="n">verbose</span>
-
-  <span class="n">get_hcore</span><span class="o">=</span><span class="n">scf</span><span class="o">.</span><span class="n">hf</span><span class="o">.</span><span class="n">SCF</span><span class="o">.</span><span class="n">get_hcore</span>
-  <span class="n">get_ovlp</span><span class="o">=</span><span class="n">scf</span><span class="o">.</span><span class="n">hf</span><span class="o">.</span><span class="n">SCF</span><span class="o">.</span><span class="n">get_ovlp</span>
-  <span class="n">get_occ</span><span class="o">=</span><span class="n">scf</span><span class="o">.</span><span class="n">hf</span><span class="o">.</span><span class="n">get_occ</span>
-  <span class="n">make_rdm1</span><span class="o">=</span><span class="n">scf</span><span class="o">.</span><span class="n">hf</span><span class="o">.</span><span class="n">SCF</span><span class="o">.</span><span class="n">make_rdm1</span>
-
-<div class="viewcode-block" id="RZMP.initialize"><a class="viewcode-back" href="../index.html#zmp.RZMP.initialize">[docs]</a>  <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">h1e</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_hcore</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mol</span><span class="p">)</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">s1e</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_ovlp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mol</span><span class="p">)</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">J_tar</span><span class="o">=</span><span class="n">scf</span><span class="o">.</span><span class="n">hf</span><span class="o">.</span><span class="n">get_jk</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mol</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">dm_tar</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">guide</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-      <span class="bp">self</span><span class="o">.</span><span class="n">V0</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dm_tar</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">guide</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">==</span><span class="s1">&#39;fa&#39;</span><span class="p">:</span>
-      <span class="bp">self</span><span class="o">.</span><span class="n">V0</span><span class="o">=</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">Ne</span><span class="o">-</span><span class="mf">1.</span><span class="p">)</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">Ne</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">J_tar</span><span class="p">)</span>
-    <span class="k">else</span> <span class="p">:</span>
-      <span class="bp">self</span><span class="o">.</span><span class="n">mf</span><span class="o">.</span><span class="n">xc</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">guide</span>
-      <span class="bp">self</span><span class="o">.</span><span class="n">V0</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mf</span><span class="o">.</span><span class="n">get_veff</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mol</span><span class="p">,</span><span class="n">dm</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dm_tar</span><span class="p">)</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">F0</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">h1e</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">V0</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">initialized</span><span class="o">=</span><span class="kc">True</span></div>
-
-<div class="viewcode-block" id="RZMP.zscf"><a class="viewcode-back" href="../index.html#zmp.RZMP.zscf">[docs]</a>  <span class="k">def</span> <span class="nf">zscf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">l</span><span class="p">):</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">initialized</span><span class="p">:</span>
-      <span class="bp">self</span><span class="o">.</span><span class="n">initialize</span><span class="p">()</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">l</span><span class="o">=</span><span class="n">l</span>
-
-    <span class="bp">self</span><span class="o">.</span><span class="n">converged</span><span class="o">=</span><span class="kc">False</span>
-    <span class="c1">#SCF under given lambda l</span>
-    <span class="n">mol</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mol</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">zdiis</span><span class="o">=</span><span class="n">DIIS</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">s1e</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">diis_space</span><span class="p">)</span>
-
-    <span class="k">for</span> <span class="n">cycle</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">max_cycle</span><span class="p">):</span>
-      <span class="bp">self</span><span class="o">.</span><span class="n">J</span><span class="o">=</span><span class="n">scf</span><span class="o">.</span><span class="n">hf</span><span class="o">.</span><span class="n">get_jk</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">dm</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-
-      <span class="bp">self</span><span class="o">.</span><span class="n">F</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">F0</span><span class="o">+</span><span class="n">l</span><span class="o">*</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">J</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">J_tar</span><span class="p">)</span>
-      <span class="bp">self</span><span class="o">.</span><span class="n">F</span><span class="o">=</span><span class="n">scf</span><span class="o">.</span><span class="n">hf</span><span class="o">.</span><span class="n">level_shift</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">s1e</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dm</span><span class="o">*.</span><span class="mi">5</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">F</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">level_shift_factor</span><span class="p">)</span>
-      <span class="bp">self</span><span class="o">.</span><span class="n">F</span><span class="p">,</span><span class="n">diis_e</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">zdiis</span><span class="o">.</span><span class="n">get_fock</span><span class="p">(</span><span class="n">cycle</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">F</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dm</span><span class="p">)</span> <span class="c1">#DIIS</span>
-
-      <span class="bp">self</span><span class="o">.</span><span class="n">mo_energy</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">mo_coeff</span><span class="o">=</span><span class="n">scf</span><span class="o">.</span><span class="n">hf</span><span class="o">.</span><span class="n">eig</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">F</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">s1e</span><span class="p">)</span>
-      <span class="bp">self</span><span class="o">.</span><span class="n">mo_occ</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_occ</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mo_energy</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mo_coeff</span><span class="p">)</span>
-      <span class="bp">self</span><span class="o">.</span><span class="n">dm</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">make_rdm1</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mo_coeff</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mo_occ</span><span class="p">)</span>
-      <span class="c1">#self.dm=2.*np.einsum(&#39;pi,qi-&gt;pq&#39;,self.mo_coeff[:,:self.Nocc], self.mo_coeff[:,:self.Nocc])</span>
-      <span class="c1">#self.dm=lib.tag_array(self.dm, mo_coeff = self.mo_coeff, mo_occ=occ)</span>
-
-      <span class="n">ddm</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dm_old</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">dm</span>
-      <span class="n">dm_e</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">ddm</span><span class="p">))</span>
-      <span class="bp">self</span><span class="o">.</span><span class="n">dm_old</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dm</span>
-      <span class="n">dm_converged</span><span class="o">=</span><span class="n">dm_e</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">conv_tol_dm</span>
-      <span class="n">diis_converged</span><span class="o">=</span><span class="n">diis_e</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">conv_tol_diis</span> 
-      <span class="bp">self</span><span class="o">.</span><span class="n">mo_energy</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">mo_occ</span><span class="o">==</span><span class="mi">0</span><span class="p">]</span><span class="o">-=</span><span class="bp">self</span><span class="o">.</span><span class="n">level_shift_factor</span>
-      <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mo_energy</span><span class="p">[</span><span class="mi">3</span><span class="p">:</span><span class="mi">7</span><span class="p">])</span>
-
-      <span class="n">gap</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mo_energy</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">Nocc</span><span class="p">]</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">mo_energy</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">Nocc</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="c1">#-self.shift*2</span>
-      <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="se">\r</span><span class="s1">lambda= </span><span class="si">{</span><span class="n">l</span><span class="si">:</span><span class="s1">7.2f</span><span class="si">}</span><span class="s1">  iter: </span><span class="si">{</span><span class="n">cycle</span><span class="si">:</span><span class="s1">4d</span><span class="si">}</span><span class="s1"> gap= </span><span class="si">{</span><span class="n">gap</span><span class="si">:</span><span class="s1">10.7f</span><span class="si">}</span><span class="s1">   &#39;</span><span class="p">,</span><span class="n">end</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\r</span><span class="s1">&#39;</span><span class="p">)</span>
-
-      <span class="bp">self</span><span class="o">.</span><span class="n">converged</span> <span class="o">=</span> <span class="n">dm_converged</span> <span class="ow">and</span> <span class="n">diis_converged</span>
-      <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">converged</span> <span class="ow">and</span> <span class="n">cycle</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="k">break</span>
-
-    <span class="bp">self</span><span class="o">.</span><span class="n">J</span><span class="o">=</span><span class="n">scf</span><span class="o">.</span><span class="n">hf</span><span class="o">.</span><span class="n">get_jk</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">dm</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="n">dn</span><span class="o">=</span><span class="n">dft</span><span class="o">.</span><span class="n">numint</span><span class="o">.</span><span class="n">eval_rho</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mol</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ao</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dm</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">dm_tar</span><span class="p">)</span>
-    <span class="n">dN</span><span class="o">=</span><span class="mi">1000</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s1">&#39;r,r&#39;</span><span class="p">,</span><span class="nb">abs</span><span class="p">(</span><span class="n">dn</span><span class="p">),</span><span class="bp">self</span><span class="o">.</span><span class="n">weights</span><span class="p">)</span>
-    <span class="n">C</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s1">&#39;ij,ji&#39;</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">dm</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">dm_tar</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">J</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">J_tar</span><span class="p">)</span> <span class="c1">#Objective of minimization</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;lambda= </span><span class="si">{</span><span class="n">l</span><span class="si">:</span><span class="s1">7.2f</span><span class="si">}</span><span class="s1"> niter: </span><span class="si">{</span><span class="n">cycle</span><span class="si">:</span><span class="s1">4d</span><span class="si">}</span><span class="s1"> gap= </span><span class="si">{</span><span class="n">gap</span><span class="si">:</span><span class="s1">10.7f</span><span class="si">}</span><span class="s1"> dN= </span><span class="si">{</span><span class="n">dN</span><span class="si">:</span><span class="s1">7.2f</span><span class="si">}</span><span class="s1"> C= </span><span class="si">{</span><span class="n">C</span><span class="si">:</span><span class="s1">.2e</span><span class="si">}</span><span class="s1"> &#39;</span><span class="p">)</span></div></div>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">pyscf</span> <span class="kn">import</span> <span class="n">scf</span><span class="p">,</span> <span class="n">dft</span>
 
 
+<div class="viewcode-block" id="DIIS"><a class="viewcode-back" href="../modules.html#zmp.DIIS">[docs]</a><span class="k">class</span> <span class="nc">DIIS</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Summary: Class for DIIS extrapolation used in ZMP</span>
 
-<div class="viewcode-block" id="UZMP"><a class="viewcode-back" href="../index.html#zmp.UZMP">[docs]</a><span class="k">class</span> <span class="nc">UZMP</span><span class="p">:</span>
-  <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">mol</span><span class="p">,</span><span class="n">dm_tar</span><span class="p">):</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">mol</span><span class="o">=</span><span class="n">mol</span>
-    <span class="n">Ne</span><span class="o">=</span><span class="n">mol</span><span class="o">.</span><span class="n">nelectron</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">nelec</span><span class="o">=</span><span class="p">[</span><span class="nb">int</span><span class="p">((</span><span class="n">Ne</span><span class="o">+</span><span class="n">mol</span><span class="o">.</span><span class="n">spin</span><span class="p">)</span><span class="o">//</span><span class="mi">2</span><span class="p">),</span> <span class="nb">int</span><span class="p">((</span><span class="n">Ne</span><span class="o">-</span><span class="n">mol</span><span class="o">.</span><span class="n">spin</span><span class="p">)</span><span class="o">//</span><span class="mi">2</span><span class="p">)]</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">dm_tar</span><span class="o">=</span><span class="n">dm_tar</span>
+<span class="sd">       See [Pulay1980]_ for some extra context.</span>
 
-    <span class="bp">self</span><span class="o">.</span><span class="n">guide</span><span class="o">=</span><span class="s1">&#39;fa&#39;</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">diis_space</span><span class="o">=</span><span class="mi">40</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">level_shift_factor</span><span class="o">=.</span><span class="mi">2</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">max_cycle</span><span class="o">=</span><span class="mi">400</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">conv_tol_dm</span><span class="o">=</span><span class="mf">1e-7</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">conv_tol_diis</span><span class="o">=</span><span class="mf">1e-5</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">diis_space</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Initialize DIIS object</span>
 
-    <span class="bp">self</span><span class="o">.</span><span class="n">initialized</span><span class="o">=</span><span class="kc">False</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">dm</span><span class="o">=</span><span class="n">dm_tar</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">dm_old</span><span class="o">=</span><span class="n">dm_tar</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">mf</span><span class="o">=</span><span class="n">dft</span><span class="o">.</span><span class="n">UKS</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mol</span><span class="p">)</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">mf</span><span class="o">.</span><span class="n">grids</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">coords</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mf</span><span class="o">.</span><span class="n">grids</span><span class="o">.</span><span class="n">coords</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">weights</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mf</span><span class="o">.</span><span class="n">grids</span><span class="o">.</span><span class="n">weights</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">ao</span><span class="o">=</span><span class="n">dft</span><span class="o">.</span><span class="n">numint</span><span class="o">.</span><span class="n">eval_ao</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">coords</span><span class="p">)</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="o">=</span><span class="n">mol</span><span class="o">.</span><span class="n">verbose</span>
+<span class="sd">        Args:</span>
+<span class="sd">            S (ndarray):  overlap integral</span>
+<span class="sd">            diis_space (integer) : number of DIIS vectors used in extrapolation</span>
 
-  <span class="n">get_hcore</span><span class="o">=</span><span class="n">scf</span><span class="o">.</span><span class="n">hf</span><span class="o">.</span><span class="n">SCF</span><span class="o">.</span><span class="n">get_hcore</span>
-  <span class="n">get_ovlp</span><span class="o">=</span><span class="n">scf</span><span class="o">.</span><span class="n">hf</span><span class="o">.</span><span class="n">SCF</span><span class="o">.</span><span class="n">get_ovlp</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">eig</span><span class="p">,</span> <span class="n">Z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">eigh</span><span class="p">(</span><span class="n">S</span><span class="p">)</span>
+        <span class="n">S12</span> <span class="o">=</span> <span class="mf">1.</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">eig</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">S</span> <span class="o">=</span> <span class="n">S</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">O</span> <span class="o">=</span> <span class="n">reduce</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">,</span> <span class="p">(</span><span class="n">Z</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">S12</span><span class="p">),</span> <span class="n">Z</span><span class="o">.</span><span class="n">T</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">diis_space</span> <span class="o">=</span> <span class="n">diis_space</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">norb</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">S</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ems</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">diis_space</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">norb</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">norb</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pms</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">diis_space</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">norb</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">norb</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tall</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">t_1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">t_2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">t_3</span> <span class="o">=</span> <span class="mf">0.</span>
 
-  <span class="n">get_occ</span><span class="o">=</span><span class="n">scf</span><span class="o">.</span><span class="n">uhf</span><span class="o">.</span><span class="n">get_occ</span>
-  <span class="n">make_rdm1</span><span class="o">=</span><span class="n">scf</span><span class="o">.</span><span class="n">uhf</span><span class="o">.</span><span class="n">UHF</span><span class="o">.</span><span class="n">make_rdm1</span>
+<div class="viewcode-block" id="DIIS.extrapolate"><a class="viewcode-back" href="../modules.html#zmp.DIIS.extrapolate">[docs]</a>    <span class="k">def</span> <span class="nf">extrapolate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iteration</span><span class="p">,</span> <span class="n">fock</span><span class="p">,</span> <span class="n">dm</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Summary: New fock matrix by linear combination of previous fock matrices</span>
 
-<div class="viewcode-block" id="UZMP.initialize"><a class="viewcode-back" href="../index.html#zmp.UZMP.initialize">[docs]</a>  <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">h1e</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_hcore</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mol</span><span class="p">)</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">s1e</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_ovlp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mol</span><span class="p">)</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">J_tar</span><span class="o">=</span><span class="n">scf</span><span class="o">.</span><span class="n">hf</span><span class="o">.</span><span class="n">get_jk</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mol</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">dm_tar</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">guide</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-      <span class="bp">self</span><span class="o">.</span><span class="n">V0a</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dm_tar</span><span class="p">)</span>
-      <span class="bp">self</span><span class="o">.</span><span class="n">V0b</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dm_tar</span><span class="p">)</span>
-      <span class="bp">self</span><span class="o">.</span><span class="n">V0</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">V0a</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">V0b</span><span class="p">])</span>
-    <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">guide</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">==</span><span class="s1">&#39;fa&#39;</span><span class="p">:</span>
-      <span class="n">frac</span><span class="o">=</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">mol</span><span class="o">.</span><span class="n">nelectron</span><span class="o">-</span><span class="mf">1.</span><span class="p">)</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">mol</span><span class="o">.</span><span class="n">nelectron</span><span class="p">)</span>
-      <span class="bp">self</span><span class="o">.</span><span class="n">V0a</span><span class="o">=</span><span class="n">frac</span><span class="o">*</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">J_tar</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">J_tar</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-      <span class="bp">self</span><span class="o">.</span><span class="n">V0b</span><span class="o">=</span><span class="n">frac</span><span class="o">*</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">J_tar</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">J_tar</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-      <span class="bp">self</span><span class="o">.</span><span class="n">V0</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">V0a</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">V0b</span><span class="p">])</span>
-    <span class="k">else</span> <span class="p">:</span>
-      <span class="bp">self</span><span class="o">.</span><span class="n">mf</span><span class="o">.</span><span class="n">xc</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">guide</span>
-      <span class="bp">self</span><span class="o">.</span><span class="n">V0</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mf</span><span class="o">.</span><span class="n">get_veff</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mol</span><span class="p">,</span><span class="n">dm</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dm_tar</span><span class="p">)</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">F0</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">h1e</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">V0</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">h1e</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">V0</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="p">]</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">initialized</span><span class="o">=</span><span class="kc">True</span></div>
+<span class="sd">        Args:</span>
+<span class="sd">            iteration (integer) : present SCF iteration</span>
+<span class="sd">            fock (ndarray) : fock matrix</span>
+<span class="sd">            dm (ndarray) : density matrix obtained from previous step</span>
 
-<div class="viewcode-block" id="UZMP.zscf"><a class="viewcode-back" href="../index.html#zmp.UZMP.zscf">[docs]</a>  <span class="k">def</span> <span class="nf">zscf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">l</span><span class="p">):</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">initialized</span><span class="p">:</span>
-      <span class="bp">self</span><span class="o">.</span><span class="n">initialize</span><span class="p">()</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">l</span><span class="o">=</span><span class="n">l</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            (tuple): tuple containing:</span>
 
-    <span class="bp">self</span><span class="o">.</span><span class="n">converged</span><span class="o">=</span><span class="kc">False</span>
-    <span class="c1">#SCF under given lambda l</span>
-    <span class="n">mol</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mol</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">zdiis_a</span><span class="o">=</span><span class="n">DIIS</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">s1e</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">diis_space</span><span class="p">)</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">zdiis_b</span><span class="o">=</span><span class="n">DIIS</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">s1e</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">diis_space</span><span class="p">)</span>
+<span class="sd">                (ndarray): **newfock** extrapolated fock matrix</span>
 
-    <span class="k">for</span> <span class="n">cycle</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">max_cycle</span><span class="p">):</span>
-      <span class="bp">self</span><span class="o">.</span><span class="n">J</span><span class="o">=</span><span class="n">scf</span><span class="o">.</span><span class="n">hf</span><span class="o">.</span><span class="n">get_jk</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">dm</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+<span class="sd">                (float): **diis_error** DIIS error used in convergence criteria</span>
 
-      <span class="bp">self</span><span class="o">.</span><span class="n">Fa</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">F0</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="mi">2</span><span class="o">*</span><span class="n">l</span><span class="o">*</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">J</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">J_tar</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-      <span class="bp">self</span><span class="o">.</span><span class="n">Fb</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">F0</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="mi">2</span><span class="o">*</span><span class="n">l</span><span class="o">*</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">J</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">J_tar</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="sd">        &quot;&quot;&quot;</span>
 
-      <span class="bp">self</span><span class="o">.</span><span class="n">Fa</span><span class="o">=</span><span class="n">scf</span><span class="o">.</span><span class="n">hf</span><span class="o">.</span><span class="n">level_shift</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">s1e</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dm</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">Fa</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">level_shift_factor</span><span class="p">)</span>
-      <span class="bp">self</span><span class="o">.</span><span class="n">Fb</span><span class="o">=</span><span class="n">scf</span><span class="o">.</span><span class="n">hf</span><span class="o">.</span><span class="n">level_shift</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">s1e</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dm</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">Fb</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">level_shift_factor</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">iteration</span> <span class="o">&lt;=</span> <span class="mi">1</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">diis_space</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">fock</span><span class="p">,</span> <span class="mf">0.0</span>
 
-      <span class="bp">self</span><span class="o">.</span><span class="n">Fa</span><span class="p">,</span><span class="n">diis_e_a</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">zdiis_a</span><span class="o">.</span><span class="n">get_fock</span><span class="p">(</span><span class="n">cycle</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">Fa</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dm</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-      <span class="bp">self</span><span class="o">.</span><span class="n">Fb</span><span class="p">,</span><span class="n">diis_e_b</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">zdiis_b</span><span class="o">.</span><span class="n">get_fock</span><span class="p">(</span><span class="n">cycle</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">Fb</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dm</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="n">iteration</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">diis_space</span><span class="p">))[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ems</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ems</span><span class="p">[</span><span class="n">k</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pms</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pms</span><span class="p">[</span><span class="n">k</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
 
-      <span class="n">e_a</span><span class="p">,</span><span class="n">c_a</span><span class="o">=</span><span class="n">scf</span><span class="o">.</span><span class="n">hf</span><span class="o">.</span><span class="n">eig</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Fa</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">s1e</span><span class="p">)</span>
-      <span class="n">e_b</span><span class="p">,</span><span class="n">c_b</span><span class="o">=</span><span class="n">scf</span><span class="o">.</span><span class="n">hf</span><span class="o">.</span><span class="n">eig</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Fb</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">s1e</span><span class="p">)</span>
-      <span class="bp">self</span><span class="o">.</span><span class="n">mo_energy</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">((</span><span class="n">e_a</span><span class="p">,</span><span class="n">e_b</span><span class="p">))</span>
-      <span class="bp">self</span><span class="o">.</span><span class="n">mo_coeff</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">((</span><span class="n">c_a</span><span class="p">,</span><span class="n">c_b</span><span class="p">))</span>
+        <span class="n">em</span> <span class="o">=</span> <span class="n">reduce</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">,</span> <span class="p">(</span><span class="n">fock</span><span class="p">,</span> <span class="n">dm</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">S</span><span class="p">))</span>
+        <span class="n">em</span> <span class="o">-=</span> <span class="n">em</span><span class="o">.</span><span class="n">T</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ems</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">reduce</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">O</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">em</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">O</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pms</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">fock</span><span class="p">[:]</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ems</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">argmax</span><span class="p">()</span>
+        <span class="n">diis_error</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ravel</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ems</span><span class="p">[</span><span class="mi">0</span><span class="p">])[</span><span class="n">idx</span><span class="p">])</span>
 
-      <span class="bp">self</span><span class="o">.</span><span class="n">mo_occ</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_occ</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mo_energy</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mo_coeff</span><span class="p">)</span>
-      <span class="bp">self</span><span class="o">.</span><span class="n">dm</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">make_rdm1</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mo_coeff</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mo_occ</span><span class="p">)</span>
-      <span class="c1">#self.dm=2.*np.einsum(&#39;pi,qi-&gt;pq&#39;,self.mo_coeff[:,:self.Nocc], self.mo_coeff[:,:self.Nocc])</span>
-      <span class="c1">#self.dm=lib.tag_array(self.dm, mo_coeff = self.mo_coeff, mo_occ=occ)</span>
+        <span class="c1">#Solve BC = A to find C</span>
+        <span class="n">nb</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">iteration</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">diis_space</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span>
+        <span class="n">B</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">nb</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">nb</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
+        <span class="n">B</span><span class="p">[</span><span class="n">nb</span><span class="p">,</span> <span class="n">nb</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.</span>
+        <span class="n">B</span><span class="p">[:</span><span class="n">nb</span><span class="p">,</span> <span class="p">:</span><span class="n">nb</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s1">&#39;aij,bji-&gt;ab&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ems</span><span class="p">[:</span><span class="n">nb</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:],</span> <span class="bp">self</span><span class="o">.</span><span class="n">ems</span><span class="p">[:</span><span class="n">nb</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:],</span><span class="n">optimize</span><span class="o">=</span><span class="s1">&#39;greedy&#39;</span><span class="p">)</span>
+        <span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">nb</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">A</span><span class="p">[</span><span class="n">nb</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.</span>
+        <span class="n">C</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">B</span><span class="p">,</span> <span class="n">A</span><span class="p">)</span>
 
-      <span class="n">ddm</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dm_old</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">dm</span>
-      <span class="n">dm_e</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">ddm</span><span class="p">))</span>
-      <span class="bp">self</span><span class="o">.</span><span class="n">dm_old</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dm</span>
-      <span class="n">dm_converged</span><span class="o">=</span><span class="n">dm_e</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">conv_tol_dm</span>
-      <span class="n">diis_converged</span><span class="o">=</span><span class="n">diis_e_a</span><span class="o">+</span><span class="n">diis_e_b</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">conv_tol_diis</span>
-      <span class="bp">self</span><span class="o">.</span><span class="n">mo_energy</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">mo_occ</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">==</span><span class="mi">0</span><span class="p">]</span><span class="o">-=</span><span class="bp">self</span><span class="o">.</span><span class="n">level_shift_factor</span>
-      <span class="bp">self</span><span class="o">.</span><span class="n">mo_energy</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">mo_occ</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">==</span><span class="mi">0</span><span class="p">]</span><span class="o">-=</span><span class="bp">self</span><span class="o">.</span><span class="n">level_shift_factor</span>
-      <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mo_energy</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">3</span><span class="p">:</span><span class="mi">7</span><span class="p">])</span>
-      <span class="c1">#print(self.mo_energy[1][3:7])</span>
+        <span class="c1"># form new extrapolated diis fock matrix</span>
+        <span class="n">newfock</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">fock</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">C</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]):</span>
+            <span class="n">newfock</span> <span class="o">+=</span> <span class="n">c</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">pms</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
 
-      <span class="n">HOMO</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mo_energy</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">nelec</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
-                      <span class="bp">self</span><span class="o">.</span><span class="n">mo_energy</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">nelec</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
-      <span class="n">LUMO</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">minimum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mo_energy</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">nelec</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span>
-                      <span class="bp">self</span><span class="o">.</span><span class="n">mo_energy</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">nelec</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span>
-      <span class="n">gap</span><span class="o">=</span><span class="n">LUMO</span><span class="o">-</span><span class="n">HOMO</span>
-      <span class="c1">#gap_a=self.mo_energy[0][self.nelec[0]]-self.mo_energy[0][self.nelec[0]-1]</span>
-      <span class="c1">#gap_b=self.mo_energy[1][self.nelec[1]]-self.mo_energy[1][self.nelec[1]-1]</span>
+        <span class="k">return</span> <span class="n">newfock</span><span class="p">,</span> <span class="n">diis_error</span></div></div>
 
-      <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="se">\r</span><span class="s1">lambda= </span><span class="si">{</span><span class="n">l</span><span class="si">:</span><span class="s1">7.2f</span><span class="si">}</span><span class="s1">  iter: </span><span class="si">{</span><span class="n">cycle</span><span class="si">:</span><span class="s1">4d</span><span class="si">}</span><span class="s1"> gap= </span><span class="si">{</span><span class="n">gap</span><span class="si">:</span><span class="s1">10.7f</span><span class="si">}</span><span class="s1">   &#39;</span><span class="p">,</span><span class="n">end</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\r</span><span class="s1">&#39;</span><span class="p">)</span>
+<div class="viewcode-block" id="basic"><a class="viewcode-back" href="../modules.html#zmp.basic">[docs]</a><span class="k">def</span> <span class="nf">basic</span><span class="p">(</span><span class="n">mz</span><span class="p">,</span> <span class="n">mol</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Summary: Common basic initialization function for RZMP and UZMP objects</span>
 
-      <span class="bp">self</span><span class="o">.</span><span class="n">converged</span> <span class="o">=</span> <span class="n">dm_converged</span> <span class="ow">and</span> <span class="n">diis_converged</span>
-      <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">converged</span> <span class="ow">and</span> <span class="n">cycle</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="k">break</span>
+<span class="sd">    Args:</span>
+<span class="sd">        mz : RZMP or UZMP object</span>
+<span class="sd">        mol (object) : an instance of :class:`Mole`</span>
 
-    <span class="bp">self</span><span class="o">.</span><span class="n">J</span><span class="o">=</span><span class="n">scf</span><span class="o">.</span><span class="n">hf</span><span class="o">.</span><span class="n">get_jk</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">dm</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="c1">#dn_a=dft.numint.eval_rho(self.mol, self.ao, (self.dm-self.dm_tar)[0])</span>
-    <span class="c1">#dn_b=dft.numint.eval_rho(self.mol, self.ao, (self.dm-self.dm_tar)[1])</span>
-    <span class="c1">#dN=1000*np.einsum(&#39;r,r&#39;,abs(dn_a)+abs(dn_b),self.weights)</span>
-    <span class="n">dn</span><span class="o">=</span><span class="n">dft</span><span class="o">.</span><span class="n">numint</span><span class="o">.</span><span class="n">eval_rho</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mol</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ao</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dm</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">dm</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">dm_tar</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">dm_tar</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
-    <span class="n">dN</span><span class="o">=</span><span class="mi">1000</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s1">&#39;r,r&#39;</span><span class="p">,</span><span class="nb">abs</span><span class="p">(</span><span class="n">dn</span><span class="p">),</span><span class="bp">self</span><span class="o">.</span><span class="n">weights</span><span class="p">)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">mz</span><span class="o">.</span><span class="n">mol</span> <span class="o">=</span> <span class="n">mol</span>
+    <span class="n">mz</span><span class="o">.</span><span class="n">guide</span> <span class="o">=</span> <span class="s1">&#39;faxc&#39;</span>
+    <span class="n">mz</span><span class="o">.</span><span class="n">diis_space</span> <span class="o">=</span> <span class="mi">40</span>
+    <span class="n">mz</span><span class="o">.</span><span class="n">level_shift</span> <span class="o">=</span> <span class="o">.</span><span class="mi">2</span>
+    <span class="n">mz</span><span class="o">.</span><span class="n">max_cycle</span> <span class="o">=</span> <span class="mi">400</span>
+    <span class="n">mz</span><span class="o">.</span><span class="n">conv_tol_dm</span> <span class="o">=</span> <span class="mf">1e-7</span>
+    <span class="n">mz</span><span class="o">.</span><span class="n">conv_tol_diis</span> <span class="o">=</span> <span class="mf">1e-5</span>
+    <span class="n">mz</span><span class="o">.</span><span class="n">with_df</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">mz</span><span class="o">.</span><span class="n">verbose</span> <span class="o">=</span> <span class="n">mz</span><span class="o">.</span><span class="n">mol</span><span class="o">.</span><span class="n">verbose</span>
+    <span class="n">mz</span><span class="o">.</span><span class="n">stdout</span> <span class="o">=</span> <span class="n">mz</span><span class="o">.</span><span class="n">mol</span><span class="o">.</span><span class="n">stdout</span>
 
-    <span class="n">Ca</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s1">&#39;ij,ji&#39;</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">dm</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">dm_tar</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">J</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">J_tar</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-    <span class="n">Cb</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s1">&#39;ij,ji&#39;</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">dm</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">dm_tar</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">J</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">J_tar</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-    <span class="n">C</span><span class="o">=</span><span class="n">Ca</span><span class="o">+</span><span class="n">Cb</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;lambda= </span><span class="si">{</span><span class="n">l</span><span class="si">:</span><span class="s1">7.2f</span><span class="si">}</span><span class="s1"> niter: </span><span class="si">{</span><span class="n">cycle</span><span class="si">:</span><span class="s1">4d</span><span class="si">}</span><span class="s1"> gap= </span><span class="si">{</span><span class="n">gap</span><span class="si">:</span><span class="s1">10.7f</span><span class="si">}</span><span class="s1"> dN= </span><span class="si">{</span><span class="n">dN</span><span class="si">:</span><span class="s1">7.2f</span><span class="si">}</span><span class="s1"> C= </span><span class="si">{</span><span class="n">C</span><span class="si">:</span><span class="s1">.2e</span><span class="si">}</span><span class="s1">  &#39;</span><span class="p">)</span></div></div>
+    <span class="n">mz</span><span class="o">.</span><span class="n">S</span> <span class="o">=</span> <span class="n">mz</span><span class="o">.</span><span class="n">mol</span><span class="o">.</span><span class="n">intor_symmetric</span><span class="p">(</span><span class="s1">&#39;int1e_ovlp&#39;</span><span class="p">)</span>
+    <span class="n">mz</span><span class="o">.</span><span class="n">T</span> <span class="o">=</span> <span class="n">mz</span><span class="o">.</span><span class="n">mol</span><span class="o">.</span><span class="n">intor_symmetric</span><span class="p">(</span><span class="s1">&#39;int1e_kin&#39;</span><span class="p">)</span>
+    <span class="n">mz</span><span class="o">.</span><span class="n">V</span> <span class="o">=</span> <span class="n">mz</span><span class="o">.</span><span class="n">mol</span><span class="o">.</span><span class="n">intor_symmetric</span><span class="p">(</span><span class="s1">&#39;int1e_nuc&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RZMP"><a class="viewcode-back" href="../modules.html#zmp.RZMP">[docs]</a><span class="k">class</span> <span class="nc">RZMP</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Summary: Perform ZMP calculation in restricted scheme, see [ZMP1994]_ for detail. </span>
+
+<span class="sd">    .. _restricted-zmp:</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        mol (object) : an instance of :class:`Mole`</span>
+<span class="sd">        dm_tar (ndarray) : Density matrix of target density in atomic orbital basis representation</span>
+<span class="sd">        dm_aux (ndarray) : Auxilary density matrix to construct a fixed part of fock matrix. Default is dm_tar</span>
+<span class="sd">        guide (str) : Guiding potential. Can be set as</span>
+
+<span class="sd">            |  None : no guiding potential except external potential</span>
+<span class="sd">            |  &#39;faxc&#39; : Exchange-correlation part of Fermi-Amaldi potential</span>
+<span class="sd">            |  xc   : ks.xc attribute in pyscf DFT</span>
+
+<span class="sd">        diis_space (int) : DIIS space size. Default is 40</span>
+<span class="sd">        level_shift (float) : Level shift (in AU) for virtual space. Default is 0.2</span>
+<span class="sd">        max_cycle (int) : max number of zscf iterations. Defalut is 400</span>
+<span class="sd">        conv_tol_dm (float) :  converge threshold for density matrix. Default is 1e-7</span>
+<span class="sd">        conv_tol_diis (float) : converge threshold for DIIS error. Default is 1e-5</span>
+
+<span class="sd">    :ivar:</span>
+<span class="sd">        * **converged** (bool) – zscf converged or not</span>
+<span class="sd">        * **mo_energy** (ndarray) –  molecular orbital energies (Note that energies when level_shift = 0)</span>
+<span class="sd">        * **mo_occ** (ndarray) –  molecular orbital occupation numbers</span>
+<span class="sd">        * **mo_coeff** (ndarray) – molecular orbital coefficients</span>
+<span class="sd">        * **dm** (ndarray) – density matrix in atomic orbital basis representation</span>
+<span class="sd">        * **l** (float) – the last given lambda</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mol</span><span class="p">,</span> <span class="n">dm_tar</span><span class="p">,</span> <span class="n">dm_aux</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">basic</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">mol</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">dm_tar</span> <span class="o">=</span> <span class="n">dm_tar</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">initialized</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dm</span> <span class="o">=</span> <span class="n">dm_tar</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dm_aux</span> <span class="o">=</span> <span class="n">dm_aux</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dm_old</span> <span class="o">=</span> <span class="n">dm_tar</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">=</span> <span class="n">mol</span><span class="o">.</span><span class="n">verbose</span>
+
+    <span class="n">get_occ</span> <span class="o">=</span> <span class="n">scf</span><span class="o">.</span><span class="n">hf</span><span class="o">.</span><span class="n">get_occ</span>
+    <span class="n">make_rdm1</span> <span class="o">=</span> <span class="n">scf</span><span class="o">.</span><span class="n">hf</span><span class="o">.</span><span class="n">SCF</span><span class="o">.</span><span class="n">make_rdm1</span>
+
+<div class="viewcode-block" id="RZMP.initialize"><a class="viewcode-back" href="../modules.html#zmp.RZMP.initialize">[docs]</a>    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Summary: Construct a fixed part of fock matrix F0</span>
+
+<span class="sd">        .. math::</span>
+
+<span class="sd">            F_{0} = T + V_{ext} + V_{h} + V_{g}</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">get_ovlp</span><span class="o">=</span><span class="k">lambda</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">S</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">with_df</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mf</span><span class="o">=</span><span class="n">dft</span><span class="o">.</span><span class="n">RKS</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mol</span><span class="p">)</span><span class="o">.</span><span class="n">density_fit</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mf</span><span class="o">=</span><span class="n">dft</span><span class="o">.</span><span class="n">RKS</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mol</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mf</span><span class="o">.</span><span class="n">grids</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">coords</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mf</span><span class="o">.</span><span class="n">grids</span><span class="o">.</span><span class="n">coords</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">weights</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mf</span><span class="o">.</span><span class="n">grids</span><span class="o">.</span><span class="n">weights</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ao</span><span class="o">=</span><span class="n">dft</span><span class="o">.</span><span class="n">numint</span><span class="o">.</span><span class="n">eval_ao</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mol</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">coords</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dm_aux</span> <span class="ow">is</span> <span class="kc">None</span> <span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dm_aux</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dm_tar</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">J_tar</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mf</span><span class="o">.</span><span class="n">get_jk</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mol</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">dm_tar</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">guide</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">V0</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dm_tar</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">guide</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">==</span><span class="s1">&#39;faxc&#39;</span><span class="p">:</span>
+            <span class="n">N</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mol</span><span class="o">.</span><span class="n">nelectron</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">J_aux</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mf</span><span class="o">.</span><span class="n">get_jk</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mol</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">dm_aux</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">V0</span><span class="o">=</span><span class="p">((</span><span class="n">N</span><span class="o">-</span><span class="mf">1.</span><span class="p">)</span><span class="o">/</span><span class="n">N</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">J_aux</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mf</span><span class="o">.</span><span class="n">xc</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">guide</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">V0</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mf</span><span class="o">.</span><span class="n">get_veff</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mol</span><span class="p">,</span><span class="n">dm</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dm_aux</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">F0</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">T</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">V</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">V0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">initialized</span><span class="o">=</span><span class="kc">True</span></div>
+
+<div class="viewcode-block" id="RZMP.zscf"><a class="viewcode-back" href="../modules.html#zmp.RZMP.zscf">[docs]</a>    <span class="k">def</span> <span class="nf">zscf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">l</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Summary:</span>
+<span class="sd">            Run self-consistent ZMP equation under given lambda (l). Prints lambda,</span>
+<span class="sd">            HOMO-LUMO, dN and C to terminal.</span>
+
+<span class="sd">            Args:</span>
+<span class="sd">                l (float): Lagrange multiplier lambda</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">initialized</span><span class="p">:</span>
+          <span class="bp">self</span><span class="o">.</span><span class="n">initialize</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">l</span><span class="o">=</span><span class="n">l</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">converged</span><span class="o">=</span><span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">zdiis</span><span class="o">=</span><span class="n">DIIS</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">S</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">diis_space</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">cycle</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">max_cycle</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">J</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mf</span><span class="o">.</span><span class="n">get_jk</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mol</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">dm</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">F</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">F0</span><span class="o">+</span><span class="n">l</span><span class="o">*</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">J</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">J_tar</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">F</span><span class="o">=</span><span class="n">scf</span><span class="o">.</span><span class="n">hf</span><span class="o">.</span><span class="n">level_shift</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dm</span><span class="o">*.</span><span class="mi">5</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">F</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">level_shift</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">F</span><span class="p">,</span><span class="n">diis_e</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">zdiis</span><span class="o">.</span><span class="n">extrapolate</span><span class="p">(</span><span class="n">cycle</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">F</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dm</span><span class="p">)</span> <span class="c1">#DIIS</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">mo_energy</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">mo_coeff</span><span class="o">=</span><span class="n">scf</span><span class="o">.</span><span class="n">hf</span><span class="o">.</span><span class="n">eig</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">F</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">S</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mo_occ</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_occ</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mo_energy</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mo_coeff</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dm</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">make_rdm1</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mo_coeff</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mo_occ</span><span class="p">)</span>
+
+            <span class="n">ddm</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dm_old</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">dm</span>
+            <span class="n">dm_e</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">ddm</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dm_old</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dm</span>
+            <span class="n">dm_converged</span><span class="o">=</span><span class="n">dm_e</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">conv_tol_dm</span>
+            <span class="n">diis_converged</span><span class="o">=</span><span class="n">diis_e</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">conv_tol_diis</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mo_energy</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">mo_occ</span><span class="o">==</span><span class="mi">0</span><span class="p">]</span><span class="o">-=</span><span class="bp">self</span><span class="o">.</span><span class="n">level_shift</span>
+
+            <span class="n">nocc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mol</span><span class="o">.</span><span class="n">nelectron</span> <span class="o">//</span> <span class="mi">2</span>
+            <span class="n">HOMO</span><span class="p">,</span> <span class="n">LUMO</span> <span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mo_energy</span><span class="p">[</span><span class="n">nocc</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">mo_energy</span><span class="p">[</span><span class="n">nocc</span><span class="p">]</span>
+            <span class="n">gap</span> <span class="o">=</span> <span class="n">LUMO</span> <span class="o">-</span> <span class="n">HOMO</span>
+
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="se">\r</span><span class="s1">lambda= </span><span class="si">{</span><span class="n">l</span><span class="si">:</span><span class="s1">7.2f</span><span class="si">}</span><span class="s1">  iter: </span><span class="si">{</span><span class="n">cycle</span><span class="si">:</span><span class="s1">4d</span><span class="si">}</span><span class="s1"> gap= </span><span class="si">{</span><span class="n">gap</span><span class="si">:</span><span class="s1">10.7f</span><span class="si">}</span><span class="s1">   &#39;</span><span class="p">,</span><span class="n">end</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\r</span><span class="s1">&#39;</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">converged</span> <span class="o">=</span> <span class="n">dm_converged</span> <span class="ow">and</span> <span class="n">diis_converged</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">converged</span> <span class="ow">and</span> <span class="n">cycle</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">break</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">J</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mf</span><span class="o">.</span><span class="n">get_jk</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mol</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">dm</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">dn</span><span class="o">=</span><span class="n">dft</span><span class="o">.</span><span class="n">numint</span><span class="o">.</span><span class="n">eval_rho</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mol</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ao</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dm</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">dm_tar</span><span class="p">)</span>
+        <span class="n">dN</span><span class="o">=</span><span class="mi">1000</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s1">&#39;r,r&#39;</span><span class="p">,</span><span class="nb">abs</span><span class="p">(</span><span class="n">dn</span><span class="p">),</span><span class="bp">self</span><span class="o">.</span><span class="n">weights</span><span class="p">)</span>
+        <span class="n">C</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s1">&#39;ij,ji&#39;</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">dm</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">dm_tar</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">J</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">J_tar</span><span class="p">)</span> <span class="c1">#Objective of minimization</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;lambda= </span><span class="si">{</span><span class="n">l</span><span class="si">:</span><span class="s1">7.2f</span><span class="si">}</span><span class="s1"> niter: </span><span class="si">{</span><span class="n">cycle</span><span class="si">:</span><span class="s1">4d</span><span class="si">}</span><span class="s1"> gap= </span><span class="si">{</span><span class="n">LUMO</span><span class="o">-</span><span class="n">HOMO</span><span class="si">:</span><span class="s1">10.7f</span><span class="si">}</span><span class="s1"> dN= </span><span class="si">{</span><span class="n">dN</span><span class="si">:</span><span class="s1">7.2f</span><span class="si">}</span><span class="s1"> C= </span><span class="si">{</span><span class="n">C</span><span class="si">:</span><span class="s1">.2e</span><span class="si">}</span><span class="s1"> &#39;</span><span class="p">)</span></div></div>
+
+<div class="viewcode-block" id="UZMP"><a class="viewcode-back" href="../modules.html#zmp.UZMP">[docs]</a><span class="k">class</span> <span class="nc">UZMP</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Summary: Perform ZMP calculation in unrestricted scheme, see [THG1997]_.</span>
+
+<span class="sd">    .. _unrestricted-zmp:</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        mol (object) : an instance of :class:`Mole`</span>
+<span class="sd">        dm_tar (ndarray) : Density matrix of target density in atomic orbital basis representation</span>
+<span class="sd">        dm_aux (ndarray) : Auxilary density matrix to construct a fixed part of fock matrix. Default is dm_tar</span>
+<span class="sd">        guide (str) : Guiding potential. Can be set as</span>
+
+<span class="sd">            |  None : no guiding potential except external potential</span>
+<span class="sd">            | &#39;faxc&#39; : Exchange-correlation part of Fermi-Amaldi potential</span>
+<span class="sd">            |  xc   : ks.xc attribute in pyscf DFT</span>
+
+<span class="sd">        diis_space (int) : DIIS space size. Default is 40</span>
+<span class="sd">        level_shift (float) : Level shift (in AU) for virtual space. Default is 0.2</span>
+<span class="sd">        max_cycle (int) : max number of zscf iterations. Defalut is 400</span>
+<span class="sd">        conv_tol_dm (float) :  converge threshold for density matrix. Default is 1e-7</span>
+<span class="sd">        conv_tol_diis (float) : converge threshold for DIIS error. Default is 1e-5</span>
+
+<span class="sd">    :ivar:</span>
+<span class="sd">        * **converged** (bool) – zscf converged or not</span>
+<span class="sd">        * **mo_energy** (ndarray) –  molecular orbital energies (Note that energies when level_shift = 0)</span>
+<span class="sd">        * **mo_occ** (ndarray) –  molecular orbital occupation numbers</span>
+<span class="sd">        * **mo_coeff** (ndarray) – molecular orbital coefficients</span>
+<span class="sd">        * **dm** (ndarray) – density matrix in atomic orbital basis representation</span>
+<span class="sd">        * **l** (float) – the last given lambda</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mol</span><span class="p">,</span> <span class="n">dm_tar</span><span class="p">,</span> <span class="n">dm_aux</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">basic</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mol</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nelec</span><span class="o">=</span><span class="p">[</span><span class="nb">int</span><span class="p">((</span><span class="n">mol</span><span class="o">.</span><span class="n">nelectron</span><span class="o">+</span><span class="n">mol</span><span class="o">.</span><span class="n">spin</span><span class="p">)</span><span class="o">//</span><span class="mi">2</span><span class="p">),</span> <span class="nb">int</span><span class="p">((</span><span class="n">mol</span><span class="o">.</span><span class="n">nelectron</span><span class="o">-</span><span class="n">mol</span><span class="o">.</span><span class="n">spin</span><span class="p">)</span><span class="o">//</span><span class="mi">2</span><span class="p">)]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">dm_tar</span><span class="o">=</span><span class="n">dm_tar</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">initialized</span><span class="o">=</span><span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dm</span><span class="o">=</span><span class="n">dm_tar</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dm_aux</span><span class="o">=</span><span class="n">dm_aux</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dm_old</span><span class="o">=</span><span class="n">dm_tar</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="o">=</span><span class="n">mol</span><span class="o">.</span><span class="n">verbose</span>
+
+    <span class="n">get_occ</span><span class="o">=</span><span class="n">scf</span><span class="o">.</span><span class="n">uhf</span><span class="o">.</span><span class="n">get_occ</span>
+    <span class="n">make_rdm1</span><span class="o">=</span><span class="n">scf</span><span class="o">.</span><span class="n">uhf</span><span class="o">.</span><span class="n">UHF</span><span class="o">.</span><span class="n">make_rdm1</span>
+    <span class="n">spin_square</span><span class="o">=</span><span class="n">scf</span><span class="o">.</span><span class="n">uhf</span><span class="o">.</span><span class="n">UHF</span><span class="o">.</span><span class="n">spin_square</span>
+
+<div class="viewcode-block" id="UZMP.initialize"><a class="viewcode-back" href="../modules.html#zmp.UZMP.initialize">[docs]</a>    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Summary: Construct a fixed part of fock matrix F0</span>
+
+<span class="sd">        .. math::</span>
+
+<span class="sd">            F_{0} = T + V_{ext} + V_{h} + V_{g}</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">get_ovlp</span><span class="o">=</span><span class="k">lambda</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">S</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">with_df</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mf</span><span class="o">=</span><span class="n">dft</span><span class="o">.</span><span class="n">UKS</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mol</span><span class="p">)</span><span class="o">.</span><span class="n">density_fit</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mf</span><span class="o">=</span><span class="n">dft</span><span class="o">.</span><span class="n">UKS</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mol</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mf</span><span class="o">.</span><span class="n">grids</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">coords</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mf</span><span class="o">.</span><span class="n">grids</span><span class="o">.</span><span class="n">coords</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">weights</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mf</span><span class="o">.</span><span class="n">grids</span><span class="o">.</span><span class="n">weights</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ao</span><span class="o">=</span><span class="n">dft</span><span class="o">.</span><span class="n">numint</span><span class="o">.</span><span class="n">eval_ao</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mol</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">coords</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dm_aux</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dm_aux</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dm_tar</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">J_tar</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mf</span><span class="o">.</span><span class="n">get_jk</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mol</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">dm_tar</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">guide</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">V0</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dm_tar</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">guide</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">==</span><span class="s1">&#39;faxc&#39;</span><span class="p">:</span>
+            <span class="n">N</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mol</span><span class="o">.</span><span class="n">nelectron</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">J_aux</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mf</span><span class="o">.</span><span class="n">get_jk</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mol</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">dm_aux</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">VFA</span><span class="o">=</span><span class="p">((</span><span class="n">N</span><span class="o">-</span><span class="mf">1.</span><span class="p">)</span><span class="o">/</span><span class="n">N</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">J_aux</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">J_aux</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">V0</span><span class="o">=</span><span class="p">(</span><span class="n">VFA</span><span class="p">,</span><span class="n">VFA</span><span class="p">)</span>
+        <span class="k">else</span> <span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mf</span><span class="o">.</span><span class="n">xc</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">guide</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">V0</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mf</span><span class="o">.</span><span class="n">get_veff</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mol</span><span class="p">,</span><span class="n">dm</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dm_aux</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">F0</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">T</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">V</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">V0</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                 <span class="bp">self</span><span class="o">.</span><span class="n">T</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">V</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">V0</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">initialized</span><span class="o">=</span><span class="kc">True</span></div>
+
+<div class="viewcode-block" id="UZMP.zscf"><a class="viewcode-back" href="../modules.html#zmp.UZMP.zscf">[docs]</a>    <span class="k">def</span> <span class="nf">zscf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">l</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Summary: Run self-consistent ZMP equation under given lambda (l)</span>
+
+<span class="sd">            Args:</span>
+<span class="sd">            l (float): Lagrange multiplier lambda</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">initialized</span><span class="p">:</span>
+          <span class="bp">self</span><span class="o">.</span><span class="n">initialize</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">l</span><span class="o">=</span><span class="n">l</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">converged</span><span class="o">=</span><span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">zdiis_a</span><span class="o">=</span><span class="n">DIIS</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">S</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">diis_space</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">zdiis_b</span><span class="o">=</span><span class="n">DIIS</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">S</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">diis_space</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">cycle</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">max_cycle</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">J</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mf</span><span class="o">.</span><span class="n">get_jk</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mol</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">dm</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">Fa</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">F0</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="mi">2</span><span class="o">*</span><span class="n">l</span><span class="o">*</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">J</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">J_tar</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Fb</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">F0</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="mi">2</span><span class="o">*</span><span class="n">l</span><span class="o">*</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">J</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">J_tar</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">Fa</span><span class="o">=</span><span class="n">scf</span><span class="o">.</span><span class="n">hf</span><span class="o">.</span><span class="n">level_shift</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dm</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">Fa</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">level_shift</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Fb</span><span class="o">=</span><span class="n">scf</span><span class="o">.</span><span class="n">hf</span><span class="o">.</span><span class="n">level_shift</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dm</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">Fb</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">level_shift</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">Fa</span><span class="p">,</span><span class="n">diis_e_a</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">zdiis_a</span><span class="o">.</span><span class="n">extrapolate</span><span class="p">(</span><span class="n">cycle</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">Fa</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dm</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Fb</span><span class="p">,</span><span class="n">diis_e_b</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">zdiis_b</span><span class="o">.</span><span class="n">extrapolate</span><span class="p">(</span><span class="n">cycle</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">Fb</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dm</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+            <span class="n">e_a</span><span class="p">,</span><span class="n">c_a</span><span class="o">=</span><span class="n">scf</span><span class="o">.</span><span class="n">hf</span><span class="o">.</span><span class="n">eig</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Fa</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">S</span><span class="p">)</span>
+            <span class="n">e_b</span><span class="p">,</span><span class="n">c_b</span><span class="o">=</span><span class="n">scf</span><span class="o">.</span><span class="n">hf</span><span class="o">.</span><span class="n">eig</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Fb</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">S</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mo_energy</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">((</span><span class="n">e_a</span><span class="p">,</span><span class="n">e_b</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mo_coeff</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">((</span><span class="n">c_a</span><span class="p">,</span><span class="n">c_b</span><span class="p">))</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">mo_occ</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_occ</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mo_energy</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mo_coeff</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dm</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">make_rdm1</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mo_coeff</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mo_occ</span><span class="p">)</span>
+
+            <span class="n">ddm</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dm_old</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">dm</span>
+            <span class="n">dm_e</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">ddm</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dm_old</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dm</span>
+            <span class="n">dm_converged</span><span class="o">=</span><span class="n">dm_e</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">conv_tol_dm</span>
+            <span class="n">diis_converged</span><span class="o">=</span><span class="n">diis_e_a</span><span class="o">+</span><span class="n">diis_e_b</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">conv_tol_diis</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mo_energy</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">mo_occ</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">==</span><span class="mi">0</span><span class="p">]</span><span class="o">-=</span><span class="bp">self</span><span class="o">.</span><span class="n">level_shift</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mo_energy</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">mo_occ</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">==</span><span class="mi">0</span><span class="p">]</span><span class="o">-=</span><span class="bp">self</span><span class="o">.</span><span class="n">level_shift</span>
+
+            <span class="n">HOMO</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mo_energy</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">nelec</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">mo_energy</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">nelec</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">LUMO</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">minimum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mo_energy</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">nelec</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">mo_energy</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">nelec</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span>
+            <span class="n">gap</span><span class="o">=</span><span class="n">LUMO</span><span class="o">-</span><span class="n">HOMO</span>
+
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="se">\r</span><span class="s1">lambda= </span><span class="si">{</span><span class="n">l</span><span class="si">:</span><span class="s1">7.2f</span><span class="si">}</span><span class="s1">  iter: </span><span class="si">{</span><span class="n">cycle</span><span class="si">:</span><span class="s1">4d</span><span class="si">}</span><span class="s1"> gap= </span><span class="si">{</span><span class="n">gap</span><span class="si">:</span><span class="s1">10.7f</span><span class="si">}</span><span class="s1">   &#39;</span><span class="p">,</span><span class="n">end</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\r</span><span class="s1">&#39;</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">converged</span> <span class="o">=</span> <span class="n">dm_converged</span> <span class="ow">and</span> <span class="n">diis_converged</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">converged</span> <span class="ow">and</span> <span class="n">cycle</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">break</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">J</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mf</span><span class="o">.</span><span class="n">get_jk</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mol</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">dm</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="c1">#Calculate alpha/beta density difference seperately</span>
+        <span class="c1">#dn_a=dft.numint.eval_rho(self.mol, self.ao, (self.dm-self.dm_tar)[0])</span>
+        <span class="c1">#dn_b=dft.numint.eval_rho(self.mol, self.ao, (self.dm-self.dm_tar)[1])</span>
+        <span class="c1">#dN=1000*np.einsum(&#39;r,r&#39;,abs(dn_a)+abs(dn_b),self.weights)</span>
+        <span class="n">dn</span><span class="o">=</span><span class="n">dft</span><span class="o">.</span><span class="n">numint</span><span class="o">.</span><span class="n">eval_rho</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mol</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ao</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dm</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">dm</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">dm_tar</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">dm_tar</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+        <span class="n">dN</span><span class="o">=</span><span class="mi">1000</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s1">&#39;r,r&#39;</span><span class="p">,</span><span class="nb">abs</span><span class="p">(</span><span class="n">dn</span><span class="p">),</span><span class="bp">self</span><span class="o">.</span><span class="n">weights</span><span class="p">)</span>
+
+        <span class="n">Ca</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s1">&#39;ij,ji&#39;</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">dm</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">dm_tar</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">J</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">J_tar</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">Cb</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s1">&#39;ij,ji&#39;</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">dm</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">dm_tar</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">J</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">J_tar</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">C</span><span class="o">=</span><span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="n">Ca</span><span class="o">+</span><span class="n">Cb</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;lambda= </span><span class="si">{</span><span class="n">l</span><span class="si">:</span><span class="s1">7.2f</span><span class="si">}</span><span class="s1"> niter: </span><span class="si">{</span><span class="n">cycle</span><span class="si">:</span><span class="s1">4d</span><span class="si">}</span><span class="s1"> gap= </span><span class="si">{</span><span class="n">gap</span><span class="si">:</span><span class="s1">10.7f</span><span class="si">}</span><span class="s1"> dN= </span><span class="si">{</span><span class="n">dN</span><span class="si">:</span><span class="s1">7.2f</span><span class="si">}</span><span class="s1"> C= </span><span class="si">{</span><span class="n">C</span><span class="si">:</span><span class="s1">.2e</span><span class="si">}</span><span class="s1">  &#39;</span><span class="p">)</span></div></div>
+
 </pre></div>
 
            </div>
@@ -410,11 +582,19 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2020, Seungsoo Nam, Eunji Sim
+        
+        &copy; Copyright 2020, Seungsoo Nam, Ryan J. McCarty, Hansol Park, Eunji Sim
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -425,7 +605,6 @@
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {

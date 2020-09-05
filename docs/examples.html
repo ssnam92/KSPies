@@ -91,11 +91,13 @@
 <li class="toctree-l1"><a class="reference internal" href="modules.html">Modules</a></li>
 <li class="toctree-l1"><a class="reference internal" href="userguide.html">User guide</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Examples</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#testexample">Testexample</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#benzene">Benzene</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#regularization">Regularization</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#user-defined-system">User_defined_system</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#plot-xc">Plot_xc</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#test-script">1. Test Script</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#benzene">2 Benzene</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#oxygen">3. Oxygen</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#restricted-wy">4. Restricted WY</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#user-defined-system">5. User Defined System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#plot-xc-zmp-fa">6. Plot XC ZMP FA</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#plot-xc-wy-pbe">7. Plot XC WY PBE</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
@@ -169,26 +171,108 @@
             
   <div class="section" id="examples">
 <h1>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h1>
-<p>Included in the KS-pies download is an example folder. In each folder is a run.py file which intends to showcase the use of a KS-pies feature.</p>
-<div class="section" id="testexample">
-<span id="full-example"></span><h2>Testexample<a class="headerlink" href="#testexample" title="Permalink to this headline">¶</a></h2>
-<p>A complete example showing ZMP, WY and the util functions. A Be atom is used for the test density. Prints to terminal confirmation of working code.</p>
+<dl class="simple">
+<dt>Included in the KS-pies download is an example folder including several scripts which</dt><dd><p>demonstrate possible uses of KS-pies. Each script intends to showcase the use of
+a KS-pies feature.</p>
+</dd>
+</dl>
+<div class="section" id="test-script">
+<span id="full-example"></span><h2>1. Test Script<a class="headerlink" href="#test-script" title="Permalink to this headline">¶</a></h2>
+<dl class="simple">
+<dt>A complete example showing ZMP, WY and the util functions.</dt><dd><p>A Be atom is used for the test density.
+Prints to terminal results and expected results, that can
+be compared to confirm that the code is working correctly.</p>
+</dd>
+</dl>
 </div>
 <div class="section" id="benzene">
-<span id="zmp-benzene"></span><h2>Benzene<a class="headerlink" href="#benzene" title="Permalink to this headline">¶</a></h2>
-<p>Use ZMP to create an potential of Benzene</p>
+<span id="zmp-benzene"></span><h2>2 Benzene<a class="headerlink" href="#benzene" title="Permalink to this headline">¶</a></h2>
+<p>Use ZMP to create a KS potential of Benzene.</p>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span>  <span class="n">wy</span><span class="o">.</span><span class="n">RWY</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="n">dm_tar</span><span class="p">)</span>
+</pre></div>
+</td></tr></table></div>
+<p>Showing use restricted WY instance with <strong>run</strong>, <strong>info</strong>, and use of the stored density matrix <strong>dm</strong>.</p>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span>  <span class="n">wy</span><span class="o">.</span><span class="n">UWY</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="n">udm_tar</span><span class="p">)</span>
+</pre></div>
+</td></tr></table></div>
+<p>Showing use unrestricted WY instance with <strong>run</strong>, <strong>info</strong>, and use of the stored density matrix <strong>dm</strong>.</p>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span>  <span class="n">zmp</span><span class="o">.</span><span class="n">RZMP</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="n">dm_tar</span><span class="p">)</span>
+</pre></div>
+</td></tr></table></div>
+<p>Showing use restricted ZMP instance with and without the density fitting procedure (<strong>with_df = True</strong>). Also shows use of <strong>level_shift</strong>, <strong>zscf</strong>, and how various lambda can be used.</p>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span>  <span class="n">zmp</span><span class="o">.</span><span class="n">UZMP</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="n">dm_tar</span><span class="p">)</span>
+</pre></div>
+</td></tr></table></div>
+<p>Showing use unrestricted ZMP instance with and without the density fitting procedure (<strong>with_df = True</strong>). Also shows use of <strong>level_shift</strong>, <strong>zscf</strong>, and how various lambda can be used.</p>
 </div>
-<div class="section" id="regularization">
-<span id="wy-regular"></span><h2>Regularization<a class="headerlink" href="#regularization" title="Permalink to this headline">¶</a></h2>
-<p>Regularized WY on molecular nitrogen.</p>
+<div class="section" id="oxygen">
+<span id="wy-zmp-oxygen"></span><h2>3. Oxygen<a class="headerlink" href="#oxygen" title="Permalink to this headline">¶</a></h2>
+<p>Use unrestricted ZMP and unrestricted WY to calculate a KS potential of molecular oxygen.</p>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span>  <span class="n">zmp</span><span class="o">.</span><span class="n">UZMP</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="n">dm_tar</span><span class="p">)</span>
+</pre></div>
+</td></tr></table></div>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span>  <span class="n">wy</span><span class="o">.</span><span class="n">UWY</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="n">dm_tar</span><span class="p">)</span>
+</pre></div>
+</td></tr></table></div>
+</div>
+<div class="section" id="restricted-wy">
+<span id="wy-regular"></span><h2>4. Restricted WY<a class="headerlink" href="#restricted-wy" title="Permalink to this headline">¶</a></h2>
+<p>Perform restricted WY on molecular nitrogen.</p>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span>  <span class="n">wy</span><span class="o">.</span><span class="n">RWY</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="n">dm_tar</span><span class="p">,</span> <span class="n">pbas</span><span class="o">=</span><span class="n">PBS</span><span class="p">)</span>
+</pre></div>
+</td></tr></table></div>
 </div>
 <div class="section" id="user-defined-system">
-<span id="userdefined-systems"></span><h2>User_defined_system<a class="headerlink" href="#user-defined-system" title="Permalink to this headline">¶</a></h2>
-<p>Regularized WY on a user defined harmonic oscillator.</p>
+<span id="userdefined-systems"></span><h2>5. User Defined System<a class="headerlink" href="#user-defined-system" title="Permalink to this headline">¶</a></h2>
+<p>Perform restricted WY on a user defined harmonic oscillator.</p>
+<p>wy.RWY(mol,dm_tar,Sijt=Sijt)</p>
+<p>To create a user defined instance, a number of settings must be specified:</p>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5
+6
+7
+8</pre></div></td><td class="code"><div class="highlight"><pre><span></span>  <span class="n">mw</span> <span class="o">=</span> <span class="n">wy</span><span class="o">.</span><span class="n">RWY</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="n">dm_tar</span><span class="p">,</span> <span class="n">Sijt</span><span class="o">=</span><span class="n">Sijt</span><span class="p">)</span>
+  <span class="n">mw</span><span class="o">.</span><span class="n">tol</span> <span class="o">=</span> <span class="mf">1e-7</span>
+  <span class="n">mw</span><span class="o">.</span><span class="n">method</span> <span class="o">=</span> <span class="s1">&#39;bfgs&#39;</span>
+  <span class="n">mw</span><span class="o">.</span><span class="n">T</span> <span class="o">=</span> <span class="n">T</span>
+  <span class="n">mw</span><span class="o">.</span><span class="n">Tp</span> <span class="o">=</span> <span class="n">T</span>
+  <span class="n">mw</span><span class="o">.</span><span class="n">V</span> <span class="o">=</span> <span class="n">V</span>
+  <span class="n">mw</span><span class="o">.</span><span class="n">S</span> <span class="o">=</span> <span class="n">S</span>
+  <span class="n">mw</span><span class="o">.</span><span class="n">guide</span> <span class="o">=</span> <span class="kc">None</span>
+</pre></div>
+</td></tr></table></div>
+<p>Which is then executed with:</p>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3</pre></div></td><td class="code"><div class="highlight"><pre><span></span>  <span class="n">mw</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+  <span class="n">mw</span><span class="o">.</span><span class="n">info</span><span class="p">()</span>
+  <span class="n">mw</span><span class="o">.</span><span class="n">time_profile</span><span class="p">()</span>
+</pre></div>
+</td></tr></table></div>
 </div>
-<div class="section" id="plot-xc">
-<span id="id1"></span><h2>Plot_xc<a class="headerlink" href="#plot-xc" title="Permalink to this headline">¶</a></h2>
-<p>Two examples including 1) regularized WY using the util functions with a PBE guiding potential and 2) regularized ZMP using the util functions with exchange-correlation aspects of the Fermi-Amaldi potential.</p>
+<div class="section" id="plot-xc-zmp-fa">
+<span id="plot-xc-zmp"></span><h2>6. Plot XC ZMP FA<a class="headerlink" href="#plot-xc-zmp-fa" title="Permalink to this headline">¶</a></h2>
+<p>Calculate and plot regularized ZMP using the util functions with exchange-correlation aspects of the Fermi-Amaldi potential.</p>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span>  <span class="n">zmp</span><span class="o">.</span><span class="n">RZMP</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="n">dm_tar</span><span class="p">)</span>
+</pre></div>
+</td></tr></table></div>
+<p>Showing the <strong>guide</strong>, <strong>level_shift</strong>, <strong>dm</strong>, and <strong>zscf</strong> routines.</p>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span>  <span class="n">util</span><span class="o">.</span><span class="n">eval_vh</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="n">coords</span><span class="p">,</span> <span class="n">dmxc</span> <span class="p">)</span>
+</pre></div>
+</td></tr></table></div>
+</div>
+<div class="section" id="plot-xc-wy-pbe">
+<span id="plot-xc-wy"></span><h2>7. Plot XC WY PBE<a class="headerlink" href="#plot-xc-wy-pbe" title="Permalink to this headline">¶</a></h2>
+<p>Calculate and plot regularized WY using the util functions with a PBE guiding potential.</p>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span>  <span class="n">wy</span><span class="o">.</span><span class="n">RWY</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="n">dm_tar</span><span class="p">,</span> <span class="n">pbas</span><span class="o">=</span><span class="s1">&#39;cc-pVQZ&#39;</span><span class="p">)</span>
+</pre></div>
+</td></tr></table></div>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span>  <span class="n">util</span><span class="o">.</span><span class="n">eval_vxc</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="n">dm_tar</span><span class="p">,</span> <span class="n">mw</span><span class="o">.</span><span class="n">guide</span><span class="p">,</span> <span class="n">coords</span><span class="p">)</span>
+</pre></div>
+</td></tr></table></div>
 </div>
 </div>
 
@@ -213,7 +297,7 @@
   <div role="contentinfo">
     <p>
         
-        &copy; Copyright 2020, Seungsoo Nam, Ryan J. McCarty, Eunji Sim
+        &copy; Copyright 2020, Seungsoo Nam, Ryan J. McCarty, Hansol Park, Eunji Sim
 
     </p>
   </div>
