@@ -1,0 +1,799 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>wy &mdash; KS Pies 2020 documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../_static/favicon-32x32.png"/>
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> KS Pies
+          
+
+          
+            
+            <img src="../_static/KSPies.svg" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../userguide.html">User guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../in_action.html">KS-Pies in Use</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../about.html">About and Contact</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cite.html">Cite</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">KS Pies</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="index.html">Module code</a> &raquo;</li>
+        
+      <li>wy</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for wy</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Wu and Yang</span>
+<span class="sd">===========</span>
+
+<span class="sd">**Summary** This is a program for preforming Kohn-Sham inversion with algorithm introduced by Wu and Yang [WuYang2003]_.</span>
+
+<span class="sd">Written for Python 3.7.4 Lots of other text here, like details about how this uses the original Wu Yang idea [WuYang2003]_, and how the other ref is used for  Regularization [HBY2007]_ . Any useful info about the algorithm should also be given.</span>
+
+<span class="sd">.. moduleauthor::</span>
+<span class="sd">    Seungsoo Nam &lt;skaclitz@yonsei.ac.kr&gt; &lt;http://tccl.yonsei.ac.kr/mediawiki/index.php/Main_Page&gt; ORCID: `000-0001-9948-6140 &lt;https://orcid.org/0000-0001-9948-6140&gt;`_</span>
+<span class="sd">    Ryan J. McCarty &lt;rmccarty@uci.edu&gt; &lt;http://ryanjmccarty.com&gt; ORCID: `0000-0002-2417-8917 &lt;http://https://orcid.org/0000-0002-2417-8917&gt;`_</span>
+
+<span class="sd">:References:</span>
+
+<span class="sd">    .. [WuYang2003] Qin Wu and Weitao Yang. A direct optimization method for calculating density functionals and exchange–correlation potentials from electron densities (2003)</span>
+<span class="sd">        &lt;https://doi.org/10.1063/1.1535422&gt; Journal of Chemical Physics, 118(6).</span>
+
+<span class="sd">    .. [HBY2007] Tim Heaton-Burgess, Felipe A. Bulat, and Weitao Yang. Optimized Effective Potentials in Finite Basis Sets (2007)</span>
+<span class="sd">        &lt;https://doi.org/10.1103/PhysRevLett.98.256401&gt; Physical review letters, 98(25).</span>
+
+<span class="sd">    .. [GNGK2020] Rachel Garrick, Amir Natan, Tim Gould, and Leeor Kronik. Exact Generalized Kohn-Sham Theory for Hybrid Functionals (2020)</span>
+<span class="sd">        &lt;https://doi.org/10.1103/PhysRevX.10.021040&gt; Physical Review X, 10(2).</span>
+
+<span class="sd">.. topic:: Funding</span>
+
+<span class="sd">    This research was made possible by funding from the National Research Foundation of Korea (NRF-2020R1A2C2007468 and NRF-2020R1A4A1017737).</span>
+
+<span class="sd">.. topic:: Internal Log</span>
+
+<span class="sd">    **2020-06-02** RJM added in docstring templates</span>
+
+<span class="sd">    **2020-06-15** SN added some comments and fix bug(RWY and UWY gave different results with regularization)</span>
+
+<span class="sd">    **2020-08-21** SN corrected typos, minor changes in attribute names, etc.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">scipy.optimize</span> <span class="kn">import</span> <span class="n">minimize</span>
+<span class="kn">from</span> <span class="nn">pyscf</span> <span class="kn">import</span> <span class="n">scf</span><span class="p">,</span> <span class="n">dft</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">kspies.kspies_fort</span> <span class="k">as</span> <span class="nn">kf</span>
+    <span class="n">kf_imported</span><span class="o">=</span><span class="kc">True</span>
+<span class="k">except</span><span class="p">:</span>
+    <span class="n">kf_imported</span><span class="o">=</span><span class="kc">False</span>
+
+<div class="viewcode-block" id="numint_3c2b"><a class="viewcode-back" href="../modules.html#wy.numint_3c2b">[docs]</a><span class="k">def</span> <span class="nf">numint_3c2b</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="n">pbas</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Summary: Three-center overlap integral with different atomic- and potential- basis sets with numerical integration</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        mol : an instance of :class:`Mole`</span>
+<span class="sd">        pbas (dict or str) : potential basis set for WY</span>
+<span class="sd">        level (int 0~9) : PySCF preset mesh grid used for numerical integration. Default is 5</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        (ndarray): **Sijt** three-center overlap integral with shape ((n1, n1, n2))</span>
+<span class="sd">        where n1 is the length of atomic orbital basis set defined in mol,</span>
+<span class="sd">        and n2 is the length of potential basis set</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">mol2</span> <span class="o">=</span> <span class="n">mol</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">mol2</span><span class="o">.</span><span class="n">basis</span> <span class="o">=</span> <span class="n">pbas</span>
+    <span class="n">mol2</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
+    <span class="n">grids</span> <span class="o">=</span> <span class="n">dft</span><span class="o">.</span><span class="n">gen_grid</span><span class="o">.</span><span class="n">Grids</span><span class="p">(</span><span class="n">mol</span><span class="p">)</span>
+    <span class="n">grids</span><span class="o">.</span><span class="n">level</span> <span class="o">=</span> <span class="n">level</span>
+    <span class="n">grids</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
+    <span class="n">coords</span> <span class="o">=</span> <span class="n">grids</span><span class="o">.</span><span class="n">coords</span>
+    <span class="n">weights</span> <span class="o">=</span> <span class="n">grids</span><span class="o">.</span><span class="n">weights</span>
+    <span class="n">ao1</span> <span class="o">=</span> <span class="n">dft</span><span class="o">.</span><span class="n">numint</span><span class="o">.</span><span class="n">eval_ao</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="n">coords</span><span class="p">,</span> <span class="n">deriv</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">ao2</span> <span class="o">=</span> <span class="n">dft</span><span class="o">.</span><span class="n">numint</span><span class="o">.</span><span class="n">eval_ao</span><span class="p">(</span><span class="n">mol2</span><span class="p">,</span> <span class="n">coords</span><span class="p">,</span> <span class="n">deriv</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">t0</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">kf_imported</span><span class="p">:</span> <span class="c1">#Utilize faster numerical integration</span>
+        <span class="n">Sijt</span> <span class="o">=</span> <span class="n">kf</span><span class="o">.</span><span class="n">ovlp_aab</span><span class="p">(</span><span class="n">weights</span><span class="p">,</span> <span class="n">ao1</span><span class="p">,</span> <span class="n">ao2</span><span class="p">,</span> <span class="n">mol</span><span class="o">.</span><span class="n">nao_nr</span><span class="p">(),</span> <span class="n">mol2</span><span class="o">.</span><span class="n">nao_nr</span><span class="p">(),</span> <span class="nb">len</span><span class="p">(</span><span class="n">weights</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span> <span class="c1">#kspies_fort not imported, us numpy</span>
+        <span class="n">Sijt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s1">&#39;ri, rj, rk, r-&gt;ijk&#39;</span><span class="p">,</span> <span class="n">ao1</span><span class="p">,</span> <span class="n">ao1</span><span class="p">,</span> <span class="n">ao2</span><span class="p">,</span> <span class="n">weights</span><span class="p">,</span> <span class="n">optimize</span> <span class="o">=</span> <span class="s1">&#39;greedy&#39;</span><span class="p">)</span>
+    <span class="n">n1</span> <span class="o">=</span> <span class="n">mol</span><span class="o">.</span><span class="n">nao_nr</span><span class="p">()</span>
+    <span class="n">n2</span> <span class="o">=</span> <span class="n">mol2</span><span class="o">.</span><span class="n">nao_nr</span><span class="p">()</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span><span class="o">-</span><span class="n">t0</span><span class="p">)</span><span class="o">/</span><span class="mf">60.</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Three-center overlap integral by numerical integration&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;n1  : </span><span class="si">%4i</span><span class="s2">&quot;</span><span class="o">%</span><span class="n">n1</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;n2  : </span><span class="si">%4i</span><span class="s2">&quot;</span><span class="o">%</span><span class="n">n2</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;time: </span><span class="si">%.1f</span><span class="s2"> min&quot;</span><span class="o">%</span><span class="n">t</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">Sijt</span></div>
+
+<div class="viewcode-block" id="time_profile"><a class="viewcode-back" href="../modules.html#wy.time_profile">[docs]</a><span class="k">def</span> <span class="nf">time_profile</span><span class="p">(</span><span class="n">mw</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Summary: Print to terminal a collection of time data in seconds</span>
+
+<span class="sd">    Terminal prints:</span>
+<span class="sd">    * initialize : time for initialization</span>
+<span class="sd">    * total_opt  : total elasped time</span>
+<span class="sd">    * solve_eig  : time to construct fock matrix and diagonalize it</span>
+<span class="sd">    * Ws_eval    : time to evaluate objective function Ws</span>
+<span class="sd">    * Gd_eval    : time to evaluate gradient of objective function</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;*********Time Profile*********&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;initialize : </span><span class="si">%15.3f</span><span class="s2">&quot;</span><span class="o">%</span><span class="n">mw</span><span class="o">.</span><span class="n">t_init</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;total_opt  : </span><span class="si">%15.3f</span><span class="s2">&quot;</span><span class="o">%</span><span class="n">mw</span><span class="o">.</span><span class="n">t_opt</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;solve_eig  : </span><span class="si">%15.3f</span><span class="s2">&quot;</span><span class="o">%</span><span class="n">mw</span><span class="o">.</span><span class="n">t_eig</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Ws_eval    : </span><span class="si">%15.3f</span><span class="s2">&quot;</span><span class="o">%</span><span class="n">mw</span><span class="o">.</span><span class="n">t_ws</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Gd_eval    : </span><span class="si">%15.3f</span><span class="s2">&quot;</span><span class="o">%</span><span class="n">mw</span><span class="o">.</span><span class="n">t_gd</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Hs_eval    : </span><span class="si">%15.3f</span><span class="s2">&quot;</span><span class="o">%</span><span class="n">mw</span><span class="o">.</span><span class="n">t_hs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="run"><a class="viewcode-back" href="../modules.html#wy.run">[docs]</a><span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="n">mw</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Summary: Minimize an objective function -Ws</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        mw : RWY or UWY object</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">mw</span><span class="o">.</span><span class="n">initialize</span><span class="p">()</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">mw</span><span class="o">.</span><span class="n">method</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">==</span><span class="s1">&#39;cg&#39;</span> <span class="ow">or</span> <span class="n">mw</span><span class="o">.</span><span class="n">method</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">==</span><span class="s1">&#39;bfgs&#39;</span><span class="p">:</span>
+        <span class="n">mw</span><span class="o">.</span><span class="n">res</span> <span class="o">=</span> <span class="n">minimize</span><span class="p">(</span><span class="n">mw</span><span class="o">.</span><span class="n">eval_Ws</span><span class="p">,</span> <span class="n">x0</span><span class="o">=</span><span class="n">mw</span><span class="o">.</span><span class="n">b</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">mw</span><span class="o">.</span><span class="n">method</span><span class="p">,</span> <span class="n">jac</span><span class="o">=</span><span class="n">mw</span><span class="o">.</span><span class="n">eval_Gd</span><span class="p">,</span>
+                          <span class="n">tol</span><span class="o">=</span><span class="n">mw</span><span class="o">.</span><span class="n">tol</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;disp&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">})</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">mw</span><span class="o">.</span><span class="n">res</span> <span class="o">=</span> <span class="n">minimize</span><span class="p">(</span><span class="n">mw</span><span class="o">.</span><span class="n">eval_Ws</span><span class="p">,</span> <span class="n">x0</span><span class="o">=</span><span class="n">mw</span><span class="o">.</span><span class="n">b</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">mw</span><span class="o">.</span><span class="n">method</span><span class="p">,</span> <span class="n">jac</span><span class="o">=</span><span class="n">mw</span><span class="o">.</span><span class="n">eval_Gd</span><span class="p">,</span> <span class="n">hess</span><span class="o">=</span><span class="n">mw</span><span class="o">.</span><span class="n">eval_Hs</span><span class="p">,</span>
+                          <span class="n">tol</span><span class="o">=</span><span class="n">mw</span><span class="o">.</span><span class="n">tol</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;disp&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">})</span>
+    <span class="n">mw</span><span class="o">.</span><span class="n">b</span> <span class="o">=</span> <span class="n">mw</span><span class="o">.</span><span class="n">res</span><span class="o">.</span><span class="n">x</span>
+    <span class="n">mw</span><span class="o">.</span><span class="n">converged</span> <span class="o">=</span> <span class="n">mw</span><span class="o">.</span><span class="n">res</span><span class="o">.</span><span class="n">success</span>
+    <span class="n">mw</span><span class="o">.</span><span class="n">t_opt</span> <span class="o">+=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span><span class="o">-</span><span class="n">t</span></div>
+
+<div class="viewcode-block" id="wyscf"><a class="viewcode-back" href="../modules.html#wy.wyscf">[docs]</a><span class="k">def</span> <span class="nf">wyscf</span><span class="p">(</span><span class="n">mw</span><span class="p">,</span> <span class="n">ddmtol</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Summary: Run WY until its self-consistent. This is required for hybrid guiding potentials</span>
+
+<span class="sd">    .. note::</span>
+<span class="sd">        This function performs very simplied generalization of WY for non-local guiding potential, mimicking [GNGK2020]_.</span>
+<span class="sd">        There is no theoretical proof that the result of this function can be trusted.</span>
+<span class="sd">        The optimization of WY objective functional is only theoretically proven for local multiplicative potentials, not non-local potential.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        mw : RWY or UWY object</span>
+<span class="sd">        ddmtol (float, optional) : Convergence criteria of density matrix.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">mw</span><span class="o">.</span><span class="n">totnit</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">mw</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+    <span class="n">mw</span><span class="o">.</span><span class="n">totnit</span> <span class="o">+=</span> <span class="n">mw</span><span class="o">.</span><span class="n">res</span><span class="o">.</span><span class="n">nit</span>
+    <span class="n">mw</span><span class="o">.</span><span class="n">scfcycle</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">40</span><span class="p">):</span>
+        <span class="n">mw</span><span class="o">.</span><span class="n">scfcycle</span> <span class="o">=</span> <span class="n">i</span><span class="o">+</span><span class="mi">1</span>
+        <span class="n">dm_old</span> <span class="o">=</span> <span class="n">mw</span><span class="o">.</span><span class="n">dm</span>
+        <span class="n">mw</span><span class="o">.</span><span class="n">dm_aux</span> <span class="o">=</span> <span class="n">dm_old</span>
+        <span class="n">mw</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+        <span class="n">mw</span><span class="o">.</span><span class="n">totnit</span> <span class="o">+=</span> <span class="n">mw</span><span class="o">.</span><span class="n">res</span><span class="o">.</span><span class="n">nit</span>
+        <span class="n">mw</span><span class="o">.</span><span class="n">ddm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">dm_old</span><span class="p">)</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">mw</span><span class="o">.</span><span class="n">dm</span><span class="p">)))</span>
+        <span class="k">if</span> <span class="n">mw</span><span class="o">.</span><span class="n">ddm</span> <span class="o">&lt;</span> <span class="n">ddmtol</span><span class="p">:</span>
+            <span class="k">break</span></div>
+
+<div class="viewcode-block" id="info"><a class="viewcode-back" href="../modules.html#wy.info">[docs]</a><span class="k">def</span> <span class="nf">info</span><span class="p">(</span><span class="n">mw</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Summary: Print summary of minimization</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        mw : RWY or UWY object</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">grd</span> <span class="o">=</span> <span class="n">mw</span><span class="o">.</span><span class="n">res</span><span class="o">.</span><span class="n">jac</span>
+    <span class="n">maxgrd</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">grd</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">mw</span><span class="o">.</span><span class="n">converged</span> <span class="o">==</span> <span class="kc">False</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; *****Optimization Failed*****&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;      after </span><span class="si">%i</span><span class="s2"> iterations &quot;</span><span class="o">%</span><span class="n">mw</span><span class="o">.</span><span class="n">res</span><span class="o">.</span><span class="n">nit</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;****Optimization Completed****&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">mw</span><span class="p">,</span> <span class="s1">&#39;scfcycle&#39;</span><span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;      after </span><span class="si">%i</span><span class="s2"> scf cycles &quot;</span><span class="o">%</span><span class="n">mw</span><span class="o">.</span><span class="n">scfcycle</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;      and </span><span class="si">%i</span><span class="s2"> iterations &quot;</span><span class="o">%</span><span class="n">mw</span><span class="o">.</span><span class="n">totnit</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;max(ddm)   : </span><span class="si">%15.8f</span><span class="s2">&quot;</span><span class="o">%</span><span class="n">mw</span><span class="o">.</span><span class="n">ddm</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;      after </span><span class="si">%i</span><span class="s2"> iterations &quot;</span><span class="o">%</span><span class="n">mw</span><span class="o">.</span><span class="n">res</span><span class="o">.</span><span class="n">nit</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;func_value : </span><span class="si">%15.8f</span><span class="s2">&quot;</span><span class="o">%</span><span class="n">mw</span><span class="o">.</span><span class="n">res</span><span class="o">.</span><span class="n">fun</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;max_grad   : </span><span class="si">%15.8f</span><span class="s2">&quot;</span><span class="o">%</span><span class="n">maxgrd</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="basic"><a class="viewcode-back" href="../modules.html#wy.basic">[docs]</a><span class="k">def</span> <span class="nf">basic</span><span class="p">(</span><span class="n">mw</span><span class="p">,</span> <span class="n">mol</span><span class="p">,</span> <span class="n">pbas</span><span class="p">,</span> <span class="n">Sijt</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Summary: Common basic initialization function for RWY and UWY objects</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        mw : RWY or UWY object</span>
+<span class="sd">        mol : an instance of :class:`Mole`</span>
+<span class="sd">        pbas (dict or str) : to define potential basis set for WY</span>
+<span class="sd">        Sijt (ndarray) : three-center overlap integral with shape ((n1, n1, n2))</span>
+<span class="sd">          where n1 is the length of atomic orbital basis set defined in mol,</span>
+<span class="sd">          while n2 is the length of potential basis set</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">mw</span><span class="o">.</span><span class="n">mol</span> <span class="o">=</span> <span class="n">mol</span>
+    <span class="n">mw</span><span class="o">.</span><span class="n">guide</span> <span class="o">=</span> <span class="s1">&#39;faxc&#39;</span>
+    <span class="n">mw</span><span class="o">.</span><span class="n">reg</span> <span class="o">=</span> <span class="mf">0.</span>
+    <span class="n">mw</span><span class="o">.</span><span class="n">tol</span> <span class="o">=</span> <span class="mf">1e-6</span>
+    <span class="n">mw</span><span class="o">.</span><span class="n">method</span> <span class="o">=</span> <span class="s1">&#39;trust-exact&#39;</span>
+    <span class="n">mw</span><span class="o">.</span><span class="n">verbose</span> <span class="o">=</span> <span class="n">mw</span><span class="o">.</span><span class="n">mol</span><span class="o">.</span><span class="n">verbose</span>
+    <span class="n">mw</span><span class="o">.</span><span class="n">stdout</span> <span class="o">=</span> <span class="n">mw</span><span class="o">.</span><span class="n">mol</span><span class="o">.</span><span class="n">stdout</span>
+
+    <span class="n">is_model1</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">mw</span><span class="o">.</span><span class="n">mol</span><span class="o">.</span><span class="n">_atm</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span>
+    <span class="n">is_model2</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">mw</span><span class="o">.</span><span class="n">mol</span><span class="o">.</span><span class="n">_bas</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span>
+    <span class="n">mw</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">is_model1</span> <span class="ow">and</span> <span class="n">is_model2</span>
+    <span class="k">if</span> <span class="n">mw</span><span class="o">.</span><span class="n">model</span><span class="p">:</span> <span class="c1">#Check if defined mol is molecule or model</span>
+        <span class="k">if</span> <span class="n">Sijt</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">AssertionError</span><span class="p">(</span><span class="s2">&quot;Three-center overlap integeral should be given for model system&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">kf_imported</span><span class="p">:</span>
+            <span class="n">mw</span><span class="o">.</span><span class="n">Sijt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">Sijt</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s1">&#39;F&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">mw</span><span class="o">.</span><span class="n">Sijt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">Sijt</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s1">&#39;C&#39;</span><span class="p">)</span>
+        <span class="k">return</span>
+
+    <span class="n">mw</span><span class="o">.</span><span class="n">S</span> <span class="o">=</span> <span class="n">mw</span><span class="o">.</span><span class="n">mol</span><span class="o">.</span><span class="n">intor_symmetric</span><span class="p">(</span><span class="s1">&#39;int1e_ovlp&#39;</span><span class="p">)</span>
+    <span class="n">mw</span><span class="o">.</span><span class="n">T</span> <span class="o">=</span> <span class="n">mw</span><span class="o">.</span><span class="n">mol</span><span class="o">.</span><span class="n">intor_symmetric</span><span class="p">(</span><span class="s1">&#39;int1e_kin&#39;</span><span class="p">)</span>
+    <span class="n">mw</span><span class="o">.</span><span class="n">V</span> <span class="o">=</span> <span class="n">mw</span><span class="o">.</span><span class="n">mol</span><span class="o">.</span><span class="n">intor_symmetric</span><span class="p">(</span><span class="s1">&#39;int1e_nuc&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">mol2build</span><span class="p">(</span><span class="n">pbas</span><span class="p">):</span>
+        <span class="n">mw</span><span class="o">.</span><span class="n">mol2</span> <span class="o">=</span> <span class="n">mol</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">mw</span><span class="o">.</span><span class="n">mol2</span><span class="o">.</span><span class="n">basis</span> <span class="o">=</span> <span class="n">pbas</span>
+        <span class="n">mw</span><span class="o">.</span><span class="n">mol2</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">pbas</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">Sijt</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">AssertionError</span><span class="p">(</span><span class="s2">&quot;potential basis should be given for given Sijt&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">pbas</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">Sijt</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">mol2build</span><span class="p">(</span><span class="n">mol</span><span class="o">.</span><span class="n">basis</span><span class="p">)</span>
+        <span class="n">mw</span><span class="o">.</span><span class="n">Sijt</span> <span class="o">=</span> <span class="n">mol</span><span class="o">.</span><span class="n">intor</span><span class="p">(</span><span class="s1">&#39;int3c1e&#39;</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">pbas</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">Sijt</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">mol2build</span><span class="p">(</span><span class="n">pbas</span><span class="p">)</span>
+        <span class="n">mw</span><span class="o">.</span><span class="n">Sijt</span> <span class="o">=</span> <span class="n">numint_3c2b</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="n">pbas</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">mol2build</span><span class="p">(</span><span class="n">pbas</span><span class="p">)</span>
+        <span class="n">is_same_pbas</span> <span class="o">=</span> <span class="n">mw</span><span class="o">.</span><span class="n">mol2</span><span class="o">.</span><span class="n">nao_nr</span><span class="p">()</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">Sijt</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">:])</span>
+        <span class="n">is_same_bas</span> <span class="o">=</span> <span class="n">mw</span><span class="o">.</span><span class="n">mol</span><span class="o">.</span><span class="n">nao_nr</span><span class="p">()</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">Sijt</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">is_same_pbas</span> <span class="ow">and</span> <span class="n">is_same_bas</span><span class="p">:</span>
+            <span class="n">mw</span><span class="o">.</span><span class="n">Sijt</span> <span class="o">=</span> <span class="n">Sijt</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">AssertionError</span><span class="p">(</span><span class="s2">&quot;dimension of given basis are not consistent with Sijt&quot;</span><span class="p">)</span>
+    <span class="n">mw</span><span class="o">.</span><span class="n">Tp</span> <span class="o">=</span> <span class="n">mw</span><span class="o">.</span><span class="n">mol2</span><span class="o">.</span><span class="n">intor_symmetric</span><span class="p">(</span><span class="s1">&#39;int1e_kin&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RWY"><a class="viewcode-back" href="../modules.html#wy.RWY">[docs]</a><span class="k">class</span> <span class="nc">RWY</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Summary: Perform WY calculation in restricted scheme</span>
+
+<span class="sd">    .. _restrictedwy:</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        mol (object) : an instance of :class:`Mole`</span>
+<span class="sd">        dm_tar (ndarray) : Density matrix of target density in atomic orbital basis representation</span>
+<span class="sd">        pbas (dict or str) : Potential basis set for WY. If not given, same with atomic orbital basis</span>
+<span class="sd">        Sijt (ndarray) : Three-center overlap integral. If not given, calculated analytically as overlap of atomic orbital basis</span>
+<span class="sd">        dm_aux (ndarray) : Auxilary density matrix to construct density-dependent part of guiding potential. Default is dm_tar</span>
+<span class="sd">        guide (str) : Guiding potential. Can be set as</span>
+
+<span class="sd">            |  None : no guiding potential except external potential</span>
+<span class="sd">            |  &#39;faxc&#39; : Exchange-correlation part of Fermi-Amaldi potential</span>
+<span class="sd">            |  xc   : ks.xc attribute in pyscf DFT</span>
+
+<span class="sd">        reg (float) : strength of regularization. Default is 0</span>
+<span class="sd">        tol (float) : tolarance of optimization (maximum gradient element). Default is 1e-6</span>
+<span class="sd">        method (str) : optimization algorithm used in SciPy. Can be (case insensitive) &#39;cg&#39;, &#39;bfgs&#39;, &#39;newton-cg&#39;,</span>
+<span class="sd">                       &#39;dogleg&#39;, &#39;trust-ncg&#39;, &#39;trust-krylov&#39;, &#39;trust-exact&#39;. Defult is &#39;trust-exact&#39;</span>
+
+<span class="sd">    :ivar:</span>
+<span class="sd">        * **converged** (bool) – optimization converged or not</span>
+<span class="sd">        * **mo_energy** (ndarray) –  molecular orbital energies</span>
+<span class="sd">        * **mo_occ** (ndarray) –  molecular orbital occupation numbers</span>
+<span class="sd">        * **mo_coeff** (ndarray) – molecular orbital coefficients</span>
+<span class="sd">        * **dm** (ndarray) – density matrix in atomic orbital basis representation</span>
+<span class="sd">        * **b** (ndarray) – optimized linear combination coefficients</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mol</span><span class="p">,</span> <span class="n">dm_tar</span><span class="p">,</span> <span class="n">pbas</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">Sijt</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dm_aux</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="n">basic</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mol</span><span class="p">,</span> <span class="n">pbas</span><span class="p">,</span> <span class="n">Sijt</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">nbas</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Sijt</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">npot</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Sijt</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">:])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">npot</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">internal_b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dm_aux</span> <span class="o">=</span> <span class="n">dm_aux</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dm_tar</span> <span class="o">=</span> <span class="n">dm_tar</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">t_eig</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">t_ws</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">t_gd</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">t_hs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">t_opt</span> <span class="o">=</span> <span class="mf">0.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">t_init</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span><span class="o">-</span><span class="n">t</span>
+
+    <span class="n">get_occ</span> <span class="o">=</span> <span class="n">scf</span><span class="o">.</span><span class="n">hf</span><span class="o">.</span><span class="n">get_occ</span>
+    <span class="n">make_rdm1</span> <span class="o">=</span> <span class="n">scf</span><span class="o">.</span><span class="n">hf</span><span class="o">.</span><span class="n">SCF</span><span class="o">.</span><span class="n">make_rdm1</span>
+
+    <span class="n">run</span> <span class="o">=</span> <span class="n">run</span>
+    <span class="n">time_profile</span> <span class="o">=</span> <span class="n">time_profile</span>
+    <span class="n">info</span> <span class="o">=</span> <span class="n">info</span>
+    <span class="n">wyscf</span> <span class="o">=</span> <span class="n">wyscf</span>
+
+<div class="viewcode-block" id="RWY.initialize"><a class="viewcode-back" href="../modules.html#wy.RWY.initialize">[docs]</a>    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Summary: Construct a fixed part of fock matrix F0</span>
+
+<span class="sd">        .. math::</span>
+
+<span class="sd">            F_{0} = T + V_{ext} + V_{h} + V_{g}</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">get_ovlp</span> <span class="o">=</span> <span class="k">lambda</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">S</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">internal_b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dm_aux</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dm_aux</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dm_tar</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">guide</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">V0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dm_tar</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">guide</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;faxc&#39;</span><span class="p">:</span>
+            <span class="n">N</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mol</span><span class="o">.</span><span class="n">nelectron</span>
+            <span class="n">J_tar</span> <span class="o">=</span> <span class="n">scf</span><span class="o">.</span><span class="n">hf</span><span class="o">.</span><span class="n">get_jk</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mol</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dm_aux</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">V0</span> <span class="o">=</span> <span class="p">((</span><span class="n">N</span><span class="o">-</span><span class="mf">1.</span><span class="p">)</span><span class="o">/</span><span class="n">N</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">J_tar</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">mydft</span> <span class="o">=</span> <span class="n">dft</span><span class="o">.</span><span class="n">RKS</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mol</span><span class="p">)</span>
+            <span class="n">mydft</span><span class="o">.</span><span class="n">xc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">guide</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">V0</span> <span class="o">=</span> <span class="n">mydft</span><span class="o">.</span><span class="n">get_veff</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mol</span><span class="p">,</span> <span class="n">dm</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dm_aux</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">F0</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">T</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">V</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">V0</span></div>
+
+<div class="viewcode-block" id="RWY.solve"><a class="viewcode-back" href="../modules.html#wy.RWY.solve">[docs]</a>    <span class="k">def</span> <span class="nf">solve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Summary: Under a given b vector, construct a fock matrix and diagonalize it</span>
+
+<span class="sd">        F = F0 + V(b)</span>
+
+<span class="sd">        FC = SCE</span>
+
+<span class="sd">        resulting mo_coeff(C), mo_energy(E), and density matrix are stored as instance attributes</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">internal_b</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="mf">1e-12</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="mf">1e-12</span><span class="p">):</span>
+            <span class="n">t</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">internal_b</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fock</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">F0</span><span class="o">+</span><span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s1">&#39;t,ijt-&gt;ij&#39;</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">Sijt</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mo_energy</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mo_coeff</span> <span class="o">=</span> <span class="n">scf</span><span class="o">.</span><span class="n">hf</span><span class="o">.</span><span class="n">eig</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fock</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">S</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mo_occ</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_occ</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mo_energy</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mo_coeff</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_rdm1</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mo_coeff</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mo_occ</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">t_eig</span> <span class="o">+=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span><span class="o">-</span><span class="n">t</span>
+
+            <span class="n">t</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">kf_imported</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">grad</span> <span class="o">=</span> <span class="n">kf</span><span class="o">.</span><span class="n">einsum_ij_ijt_2t</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">dm</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">dm_tar</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">Sijt</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nbas</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">npot</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">grad</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s1">&#39;ij,ijt-&gt;t&#39;</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dm</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">dm_tar</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">Sijt</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">t_gd</span> <span class="o">+=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span><span class="o">-</span><span class="n">t</span></div>
+
+<div class="viewcode-block" id="RWY.eval_Ws"><a class="viewcode-back" href="../modules.html#wy.RWY.eval_Ws">[docs]</a>    <span class="k">def</span> <span class="nf">eval_Ws</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Summary: Calculate objective function Ws under given b vector</span>
+
+<span class="sd">        When mw.reg &gt; 0, regularization is added</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
+        <span class="n">Ws</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s1">&#39;ij,ji&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dm</span><span class="p">)</span>
+        <span class="n">Ws</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s1">&#39;ij,ji&#39;</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">V</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">V0</span><span class="p">),</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dm</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">dm_tar</span><span class="p">))</span>
+        <span class="n">Ws</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s1">&#39;t,t&#39;</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">grad</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Ws</span> <span class="o">=</span> <span class="n">Ws</span>
+
+        <span class="n">penelty</span> <span class="o">=</span> <span class="mf">0.</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">reg</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">penelty</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reg</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">Dvb</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">t_ws</span> <span class="o">+=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span><span class="o">-</span><span class="n">t</span>
+        <span class="k">return</span> <span class="o">-</span><span class="p">(</span><span class="n">Ws</span><span class="o">-</span><span class="n">penelty</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RWY.eval_Gd"><a class="viewcode-back" href="../modules.html#wy.RWY.eval_Gd">[docs]</a>    <span class="k">def</span> <span class="nf">eval_Gd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Summary: -d(Ws)/b_t</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Gd</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">grad</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">reg</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Gd</span> <span class="o">-=</span> <span class="mi">4</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">reg</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s1">&#39;st,t-&gt;s&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">Tp</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">t_gd</span> <span class="o">+=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span><span class="o">-</span><span class="n">t</span>
+        <span class="k">return</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">Gd</span></div>
+
+<div class="viewcode-block" id="RWY.eval_Hs"><a class="viewcode-back" href="../modules.html#wy.RWY.eval_Hs">[docs]</a>    <span class="k">def</span> <span class="nf">eval_Hs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Summary: -d^2(Ws)/(b_t)(b_u)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
+        <span class="n">nocc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mol</span><span class="o">.</span><span class="n">nelectron</span><span class="o">//</span><span class="mi">2</span>
+        <span class="n">eia</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mo_energy</span><span class="p">[:</span><span class="n">nocc</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">mo_energy</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="n">nocc</span><span class="p">:]</span>
+
+        <span class="k">if</span> <span class="n">kf_imported</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Hs</span><span class="o">=</span><span class="n">kf</span><span class="o">.</span><span class="n">wy_hess</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Sijt</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">mo_coeff</span><span class="p">,</span><span class="n">eia</span><span class="p">,</span><span class="n">nocc</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">nbas</span><span class="o">-</span><span class="n">nocc</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">npot</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">Siat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s1">&#39;mi,va,mvt-&gt;iat&#39;</span><span class="p">,</span>
+                             <span class="bp">self</span><span class="o">.</span><span class="n">mo_coeff</span><span class="p">[:,:</span><span class="n">nocc</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">mo_coeff</span><span class="p">[:,</span><span class="n">nocc</span><span class="p">:],</span><span class="bp">self</span><span class="o">.</span><span class="n">Sijt</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Hs</span><span class="o">=</span> <span class="mi">4</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s1">&#39;iau,iat,ia-&gt;ut&#39;</span><span class="p">,</span><span class="n">Siat</span><span class="p">,</span><span class="n">Siat</span><span class="p">,</span><span class="n">eia</span><span class="o">**-</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">reg</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Hs</span> <span class="o">-=</span> <span class="mi">4</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">reg</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">Tp</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">t_hs</span> <span class="o">+=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span><span class="o">-</span><span class="n">t</span>
+        <span class="k">return</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">Hs</span></div>
+
+<div class="viewcode-block" id="RWY.Dvb"><a class="viewcode-back" href="../modules.html#wy.RWY.Dvb">[docs]</a>    <span class="k">def</span> <span class="nf">Dvb</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Summary: Calcuate the norm of the correction potential derivative</span>
+
+<span class="sd">        .. math::</span>
+
+<span class="sd">            \\| \\nabla v_C ( \\textbf{r} ) \\|^2 = \\int v_C ( \\textbf{r} ) \\nabla^2 v_C ( \\textbf{r} ) d \\textbf{r}</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">b</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">b</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span>
+        <span class="n">Dvb</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s1">&#39;s,st,t&#39;</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">Tp</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Dvb</span></div></div>
+
+<div class="viewcode-block" id="UWY"><a class="viewcode-back" href="../modules.html#wy.UWY">[docs]</a><span class="k">class</span> <span class="nc">UWY</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Summary: Perform WY calculation in unrestricted scheme</span>
+
+<span class="sd">    .. _unrestrictedwy:</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        mol (object) : an instance of :class:`Mole`</span>
+<span class="sd">        dm_tar (ndarray) : Density matrix of target density in atomic orbital basis representation</span>
+<span class="sd">        pbas (dict or str) : Potential basis set for WY. If not given, same with atomic orbital basis</span>
+<span class="sd">        Sijt (ndarray) : Three-center overlap integral. If not given, calculated analytically as overlap of atomic orbital basis</span>
+<span class="sd">        dm_aux (ndarray) : Auxilary density matrix to construct density-dependent part of guiding potential. Default is dm_tar</span>
+<span class="sd">        guide (str) : Guiding potential. Can be set as</span>
+
+<span class="sd">            |  None : no guiding potential except external potential</span>
+<span class="sd">            |  &#39;faxc&#39; : Exchange-correlation part of Fermi-Amaldi potential</span>
+<span class="sd">            |  xc   : ks.xc attribute in pyscf DFT</span>
+
+<span class="sd">        reg (float) : strength of regularization. Default is 0</span>
+<span class="sd">        tol (float) : tolarance of optimization (maximum gradient element). Default is 1e-6</span>
+<span class="sd">        method (str) : optimization algorithm used in SciPy. Can be (case insensitive) &#39;cg&#39;, &#39;bfgs&#39;, &#39;newton-cg&#39;,</span>
+<span class="sd">                       &#39;dogleg&#39;, &#39;trust-ncg&#39;, &#39;trust-krylov&#39;, &#39;trust-exact&#39;. Defult is &#39;trust-exact&#39;</span>
+
+<span class="sd">    :ivar:</span>
+<span class="sd">        * **converged** (bool) – optimization converged or not</span>
+<span class="sd">        * **mo_energy** (ndarray) –  molecular orbital energies</span>
+<span class="sd">        * **mo_occ** (ndarray) –  molecular orbital occupation numbers</span>
+<span class="sd">        * **mo_coeff** (ndarray) – molecular orbital coefficients</span>
+<span class="sd">        * **dm** (ndarray) – density matrix in atomic orbital basis representation</span>
+<span class="sd">        * **b** (ndarray) – optimized linear combination coefficients.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mol</span><span class="p">,</span> <span class="n">dm_tar</span><span class="p">,</span> <span class="n">pbas</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">Sijt</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dm_aux</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="n">basic</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mol</span><span class="p">,</span> <span class="n">pbas</span><span class="p">,</span> <span class="n">Sijt</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">nelec</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">((</span><span class="n">mol</span><span class="o">.</span><span class="n">nelectron</span><span class="o">+</span><span class="n">mol</span><span class="o">.</span><span class="n">spin</span><span class="p">)</span><span class="o">//</span><span class="mi">2</span><span class="p">),</span> <span class="nb">int</span><span class="p">((</span><span class="n">mol</span><span class="o">.</span><span class="n">nelectron</span><span class="o">-</span><span class="n">mol</span><span class="o">.</span><span class="n">spin</span><span class="p">)</span><span class="o">//</span><span class="mi">2</span><span class="p">)]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nbas</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Sijt</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">npot</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Sijt</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">:])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">npot</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dm_aux</span> <span class="o">=</span> <span class="n">dm_aux</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dm_tar</span> <span class="o">=</span> <span class="n">dm_tar</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">t_eig</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">t_ws</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">t_gd</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">t_hs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">t_opt</span> <span class="o">=</span> <span class="mf">0.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">t_init</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span><span class="o">-</span><span class="n">t</span>
+
+    <span class="n">get_occ</span> <span class="o">=</span> <span class="n">scf</span><span class="o">.</span><span class="n">uhf</span><span class="o">.</span><span class="n">get_occ</span>
+    <span class="n">make_rdm1</span> <span class="o">=</span> <span class="n">scf</span><span class="o">.</span><span class="n">uhf</span><span class="o">.</span><span class="n">UHF</span><span class="o">.</span><span class="n">make_rdm1</span>
+    <span class="n">spin_square</span> <span class="o">=</span> <span class="n">scf</span><span class="o">.</span><span class="n">uhf</span><span class="o">.</span><span class="n">UHF</span><span class="o">.</span><span class="n">spin_square</span>
+
+    <span class="n">run</span> <span class="o">=</span> <span class="n">run</span>
+    <span class="n">time_profile</span> <span class="o">=</span> <span class="n">time_profile</span>
+    <span class="n">info</span> <span class="o">=</span> <span class="n">info</span>
+    <span class="n">wyscf</span> <span class="o">=</span> <span class="n">wyscf</span>
+
+<div class="viewcode-block" id="UWY.initialize"><a class="viewcode-back" href="../modules.html#wy.UWY.initialize">[docs]</a>    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Summary: Construct a fixed part of fock matrix F0</span>
+
+<span class="sd">        .. math::</span>
+
+<span class="sd">            F_{0} = T + V_{ext} + V_{h} + V_{g}</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">get_ovlp</span> <span class="o">=</span> <span class="k">lambda</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">S</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">internal_b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dm_aux</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dm_aux</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dm_tar</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">guide</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">V0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dm_tar</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">guide</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;faxc&#39;</span><span class="p">:</span>
+            <span class="n">N</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mol</span><span class="o">.</span><span class="n">nelectron</span>
+            <span class="n">J_tar</span> <span class="o">=</span> <span class="n">scf</span><span class="o">.</span><span class="n">hf</span><span class="o">.</span><span class="n">get_jk</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mol</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dm_aux</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">VFA</span> <span class="o">=</span> <span class="p">((</span><span class="n">N</span><span class="o">-</span><span class="mf">1.</span><span class="p">)</span><span class="o">/</span><span class="n">N</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">J_tar</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="n">J_tar</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">V0</span> <span class="o">=</span> <span class="p">(</span><span class="n">VFA</span><span class="p">,</span> <span class="n">VFA</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">mydft</span> <span class="o">=</span> <span class="n">dft</span><span class="o">.</span><span class="n">UKS</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mol</span><span class="p">)</span>
+            <span class="n">mydft</span><span class="o">.</span><span class="n">xc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">guide</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">V0</span> <span class="o">=</span> <span class="n">mydft</span><span class="o">.</span><span class="n">get_veff</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mol</span><span class="p">,</span> <span class="n">dm</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dm_aux</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">F0</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">T</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">V</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">V0</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                   <span class="bp">self</span><span class="o">.</span><span class="n">T</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">V</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">V0</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="UWY.solve"><a class="viewcode-back" href="../modules.html#wy.UWY.solve">[docs]</a>    <span class="k">def</span> <span class="nf">solve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Summary: Under a given b vector, construct a fock matrix and diagonalize it</span>
+
+<span class="sd">        F = F0 + V(b)</span>
+
+<span class="sd">        FC = SCE</span>
+
+<span class="sd">        resulting mo_coeff(C), mo_energy(E), and density matrix are stored as instance attributes</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">internal_b</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="mf">1e-12</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="mf">1e-12</span><span class="p">):</span>
+            <span class="n">t</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">internal_b</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="n">Fa</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">F0</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s1">&#39;t,ijt-&gt;ij&#39;</span><span class="p">,</span> <span class="n">b</span><span class="p">[:</span><span class="bp">self</span><span class="o">.</span><span class="n">npot</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">Sijt</span><span class="p">)</span>
+            <span class="n">Fb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">F0</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s1">&#39;t,ijt-&gt;ij&#39;</span><span class="p">,</span> <span class="n">b</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">npot</span><span class="p">:],</span> <span class="bp">self</span><span class="o">.</span><span class="n">Sijt</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fock</span> <span class="o">=</span> <span class="p">((</span><span class="n">Fa</span><span class="p">,</span> <span class="n">Fb</span><span class="p">))</span>
+            <span class="n">e_a</span><span class="p">,</span> <span class="n">c_a</span> <span class="o">=</span> <span class="n">scf</span><span class="o">.</span><span class="n">hf</span><span class="o">.</span><span class="n">eig</span><span class="p">(</span><span class="n">Fa</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">S</span><span class="p">)</span>
+            <span class="n">e_b</span><span class="p">,</span> <span class="n">c_b</span> <span class="o">=</span> <span class="n">scf</span><span class="o">.</span><span class="n">hf</span><span class="o">.</span><span class="n">eig</span><span class="p">(</span><span class="n">Fb</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">S</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">mo_coeff</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">((</span><span class="n">c_a</span><span class="p">,</span> <span class="n">c_b</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mo_energy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">((</span><span class="n">e_a</span><span class="p">,</span> <span class="n">e_b</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mo_occ</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_occ</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mo_energy</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mo_coeff</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_rdm1</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mo_coeff</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mo_occ</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">t_eig</span> <span class="o">+=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span><span class="o">-</span><span class="n">t</span>
+
+            <span class="n">t</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">kf_imported</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">grad_a</span> <span class="o">=</span> <span class="n">kf</span><span class="o">.</span><span class="n">einsum_ij_ijt_2t</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">dm</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">dm_tar</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="bp">self</span><span class="o">.</span><span class="n">Sijt</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nbas</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">npot</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">grad_b</span> <span class="o">=</span> <span class="n">kf</span><span class="o">.</span><span class="n">einsum_ij_ijt_2t</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">dm</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">dm_tar</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="bp">self</span><span class="o">.</span><span class="n">Sijt</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nbas</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">npot</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">grad_a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s1">&#39;ij,ijt-&gt;t&#39;</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dm</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">dm_tar</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="bp">self</span><span class="o">.</span><span class="n">Sijt</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">grad_b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s1">&#39;ij,ijt-&gt;t&#39;</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dm</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">dm_tar</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="bp">self</span><span class="o">.</span><span class="n">Sijt</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">t_gd</span> <span class="o">+=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span><span class="o">-</span><span class="n">t</span></div>
+
+<div class="viewcode-block" id="UWY.eval_Ws"><a class="viewcode-back" href="../modules.html#wy.UWY.eval_Ws">[docs]</a>    <span class="k">def</span> <span class="nf">eval_Ws</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Summary: Calculate objective function Ws under given b vector</span>
+
+<span class="sd">        When mw.reg &gt; 0, regularization is added</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
+        <span class="n">Ws</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s1">&#39;ij,ji&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dm</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">dm</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+        <span class="n">Ws</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s1">&#39;ij,ji&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">V</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dm</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">dm</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">dm_tar</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">dm_tar</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+        <span class="n">Ws</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s1">&#39;ij,ji&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">V0</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dm</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">dm_tar</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+        <span class="n">Ws</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s1">&#39;ij,ji&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">V0</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dm</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">dm_tar</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+        <span class="n">Ws</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s1">&#39;t,t&#39;</span><span class="p">,</span> <span class="n">b</span><span class="p">[:</span><span class="bp">self</span><span class="o">.</span><span class="n">npot</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">grad_a</span><span class="p">)</span>
+        <span class="n">Ws</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s1">&#39;t,t&#39;</span><span class="p">,</span> <span class="n">b</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">npot</span><span class="p">:],</span> <span class="bp">self</span><span class="o">.</span><span class="n">grad_b</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Ws</span> <span class="o">=</span> <span class="n">Ws</span>
+
+        <span class="n">penelty</span> <span class="o">=</span> <span class="mf">0.</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">reg</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span> <span class="c1">#Regularization on</span>
+            <span class="n">penelty</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reg</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">Dvb</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">t_ws</span> <span class="o">+=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span><span class="o">-</span><span class="n">t</span>
+        <span class="k">return</span> <span class="o">-</span><span class="p">(</span><span class="n">Ws</span><span class="o">-</span><span class="n">penelty</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="UWY.eval_Gd"><a class="viewcode-back" href="../modules.html#wy.UWY.eval_Gd">[docs]</a>    <span class="k">def</span> <span class="nf">eval_Gd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Summary: -d(Ws)/b_t</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Ga</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">grad_a</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Gb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">grad_b</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">reg</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span> <span class="c1">#Regularization on</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Ga</span> <span class="o">-=</span> <span class="mi">2</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">reg</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s1">&#39;st,t-&gt;s&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">Tp</span><span class="p">,</span> <span class="n">b</span><span class="p">[:</span><span class="bp">self</span><span class="o">.</span><span class="n">npot</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Gb</span> <span class="o">-=</span> <span class="mi">2</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">reg</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s1">&#39;st,t-&gt;s&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">Tp</span><span class="p">,</span> <span class="n">b</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">npot</span><span class="p">:])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">Gd</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">Ga</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">Gb</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">t_gd</span> <span class="o">+=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span><span class="o">-</span><span class="n">t</span>
+        <span class="k">return</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">Gd</span></div>
+
+<div class="viewcode-block" id="UWY.eval_Hs"><a class="viewcode-back" href="../modules.html#wy.UWY.eval_Hs">[docs]</a>    <span class="k">def</span> <span class="nf">eval_Hs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Summary: -d^2(Ws)/(b_t)(b_u)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
+        <span class="n">n_a</span><span class="p">,</span> <span class="n">n_b</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nelec</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">nelec</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">mo_a</span><span class="p">,</span> <span class="n">mo_b</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mo_coeff</span>
+        <span class="n">eia_a</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mo_energy</span><span class="p">[</span><span class="mi">0</span><span class="p">][:</span><span class="n">n_a</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">mo_energy</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="kc">None</span><span class="p">,</span> <span class="n">n_a</span><span class="p">:]</span>
+        <span class="n">eia_b</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mo_energy</span><span class="p">[</span><span class="mi">1</span><span class="p">][:</span><span class="n">n_b</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">mo_energy</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="kc">None</span><span class="p">,</span> <span class="n">n_b</span><span class="p">:]</span>
+
+        <span class="k">if</span> <span class="n">kf_imported</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Ha</span> <span class="o">=</span> <span class="o">.</span><span class="mi">5</span><span class="o">*</span><span class="n">kf</span><span class="o">.</span><span class="n">wy_hess</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Sijt</span><span class="p">,</span> <span class="n">mo_a</span><span class="p">,</span> <span class="n">eia_a</span><span class="p">,</span> <span class="n">n_a</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nbas</span><span class="o">-</span><span class="n">n_a</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">npot</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Hb</span> <span class="o">=</span> <span class="o">.</span><span class="mi">5</span><span class="o">*</span><span class="n">kf</span><span class="o">.</span><span class="n">wy_hess</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Sijt</span><span class="p">,</span> <span class="n">mo_b</span><span class="p">,</span> <span class="n">eia_b</span><span class="p">,</span> <span class="n">n_b</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nbas</span><span class="o">-</span><span class="n">n_b</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">npot</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">Siat_a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s1">&#39;mi,va,mvt-&gt;iat&#39;</span><span class="p">,</span> <span class="n">mo_a</span><span class="p">[:,:</span><span class="n">n_a</span><span class="p">],</span> <span class="n">mo_a</span><span class="p">[:,</span><span class="n">n_a</span><span class="p">:],</span> <span class="bp">self</span><span class="o">.</span><span class="n">Sijt</span><span class="p">)</span>
+            <span class="n">Siat_b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s1">&#39;mi,va,mvt-&gt;iat&#39;</span><span class="p">,</span> <span class="n">mo_b</span><span class="p">[:,:</span><span class="n">n_b</span><span class="p">],</span> <span class="n">mo_b</span><span class="p">[:,</span><span class="n">n_b</span><span class="p">:],</span> <span class="bp">self</span><span class="o">.</span><span class="n">Sijt</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Ha</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s1">&#39;iau,iat,ia-&gt;ut&#39;</span><span class="p">,</span> <span class="n">Siat_a</span><span class="p">,</span> <span class="n">Siat_a</span><span class="p">,</span> <span class="n">eia_a</span><span class="o">**-</span><span class="mi">1</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Hb</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s1">&#39;iau,iat,ia-&gt;ut&#39;</span><span class="p">,</span> <span class="n">Siat_b</span><span class="p">,</span> <span class="n">Siat_b</span><span class="p">,</span> <span class="n">eia_b</span><span class="o">**-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Hs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">block</span><span class="p">([[</span><span class="bp">self</span><span class="o">.</span><span class="n">Ha</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">npot</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">npot</span><span class="p">))],</span>
+                            <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">npot</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">npot</span><span class="p">)),</span> <span class="bp">self</span><span class="o">.</span><span class="n">Hb</span><span class="p">]])</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">reg</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Hs</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">npot</span><span class="p">:,</span><span class="bp">self</span><span class="o">.</span><span class="n">npot</span><span class="p">:]</span> <span class="o">-=</span> <span class="mi">2</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">reg</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">Tp</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Hs</span><span class="p">[:</span><span class="bp">self</span><span class="o">.</span><span class="n">npot</span><span class="p">,:</span><span class="bp">self</span><span class="o">.</span><span class="n">npot</span><span class="p">]</span> <span class="o">-=</span> <span class="mi">2</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">reg</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">Tp</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">t_hs</span> <span class="o">+=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span><span class="o">-</span><span class="n">t</span>
+        <span class="k">return</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">Hs</span></div>
+
+<div class="viewcode-block" id="UWY.Dvb"><a class="viewcode-back" href="../modules.html#wy.UWY.Dvb">[docs]</a>    <span class="k">def</span> <span class="nf">Dvb</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Summary: Calcuate the norm of correction potential derivative</span>
+
+<span class="sd">        .. math::</span>
+
+<span class="sd">            \\| \\nabla v_C ( \\textbf{r} ) \\| = \\frac{1}{2} \\sum_{\\sigma} \\int v_{C,\\sigma} ( \\textbf{r} ) \\nabla^2 v_{C,\\sigma} ( \\textbf{r} ) d \\textbf{r}</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">b</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">ba</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">[:</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">)</span><span class="o">//</span><span class="mi">2</span><span class="p">]</span>
+            <span class="n">bb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">)</span><span class="o">//</span><span class="mi">2</span><span class="p">:]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ba</span> <span class="o">=</span> <span class="n">b</span><span class="p">[:</span><span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">)</span><span class="o">//</span><span class="mi">2</span><span class="p">]</span>
+            <span class="n">bb</span> <span class="o">=</span> <span class="n">b</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">)</span><span class="o">//</span><span class="mi">2</span><span class="p">:]</span>
+        <span class="n">Dvb</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s1">&#39;s,st,t&#39;</span><span class="p">,</span> <span class="n">ba</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">Tp</span><span class="p">,</span> <span class="n">ba</span><span class="p">)</span>
+        <span class="n">Dvb</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s1">&#39;s,st,t&#39;</span><span class="p">,</span> <span class="n">bb</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">Tp</span><span class="p">,</span> <span class="n">bb</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Dvb</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Seungsoo Nam, Ryan J. McCarty, Hansol Park, Eunji Sim
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -1,0 +1,933 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Modules &mdash; KS Pies 2020 documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="_static/favicon-32x32.png"/>
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="author" title="About these documents" href="about.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="User guide" href="userguide.html" />
+    <link rel="prev" title="KS Pies! Kohn-Sham Python Inversion Evaluation Software" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> KS Pies
+          
+
+          
+            
+            <img src="_static/KSPies.svg" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Modules</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#wu-and-yang">Wu and Yang</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#zhao-morrison-parr">Zhao-Morrison-Parr</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#utility-functions">Utility Functions</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="userguide.html">User guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="in_action.html">KS-Pies in Use</a></li>
+<li class="toctree-l1"><a class="reference internal" href="about.html">About and Contact</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cite.html">Cite</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">KS Pies</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Modules</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/modules.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-wy">
+<span id="modules"></span><h1>Modules<a class="headerlink" href="#module-wy" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="wu-and-yang">
+<h2>Wu and Yang<a class="headerlink" href="#wu-and-yang" title="Permalink to this headline">¶</a></h2>
+<p><strong>Summary</strong> This is a program for preforming Kohn-Sham inversion with algorithm introduced by Wu and Yang <a class="reference internal" href="#wuyang2003" id="id1"><span>[WuYang2003]</span></a>.</p>
+<p>Written for Python 3.7.4 Lots of other text here, like details about how this uses the original Wu Yang idea <a class="reference internal" href="#wuyang2003" id="id2"><span>[WuYang2003]</span></a>, and how the other ref is used for  Regularization <a class="reference internal" href="#hby2007" id="id3"><span>[HBY2007]</span></a> . Any useful info about the algorithm should also be given.</p>
+<p><em>Module author: Seungsoo Nam &lt;<a class="reference external" href="mailto:skaclitz&#37;&#52;&#48;yonsei&#46;ac&#46;kr">skaclitz<span>&#64;</span>yonsei<span>&#46;</span>ac<span>&#46;</span>kr</a>&gt; &lt;<a class="reference external" href="http://tccl.yonsei.ac.kr/mediawiki/index.php/Main_Page">http://tccl.yonsei.ac.kr/mediawiki/index.php/Main_Page</a>&gt; ORCID: <a class="reference external" href="https://orcid.org/0000-0001-9948-6140">000-0001-9948-6140</a>
+Ryan J. McCarty &lt;<a class="reference external" href="mailto:rmccarty&#37;&#52;&#48;uci&#46;edu">rmccarty<span>&#64;</span>uci<span>&#46;</span>edu</a>&gt; &lt;<a class="reference external" href="http://ryanjmccarty.com">http://ryanjmccarty.com</a>&gt; ORCID: <a class="reference external" href="http://https://orcid.org/0000-0002-2417-8917">0000-0002-2417-8917</a></em></p>
+<dl class="field-list">
+<dt class="field-odd">References</dt>
+<dd class="field-odd"><dl class="citation">
+<dt class="label" id="wuyang2003"><span class="brackets">WuYang2003</span><span class="fn-backref">(<a href="#id1">1</a>,<a href="#id2">2</a>)</span></dt>
+<dd><p>Qin Wu and Weitao Yang. A direct optimization method for calculating density functionals and exchange–correlation potentials from electron densities (2003)
+&lt;<a class="reference external" href="https://doi.org/10.1063/1.1535422">https://doi.org/10.1063/1.1535422</a>&gt; Journal of Chemical Physics, 118(6).</p>
+</dd>
+<dt class="label" id="hby2007"><span class="brackets"><a class="fn-backref" href="#id3">HBY2007</a></span></dt>
+<dd><p>Tim Heaton-Burgess, Felipe A. Bulat, and Weitao Yang. Optimized Effective Potentials in Finite Basis Sets (2007)
+&lt;<a class="reference external" href="https://doi.org/10.1103/PhysRevLett.98.256401">https://doi.org/10.1103/PhysRevLett.98.256401</a>&gt; Physical review letters, 98(25).</p>
+</dd>
+<dt class="label" id="gngk2020"><span class="brackets">GNGK2020</span><span class="fn-backref">(<a href="#id6">1</a>,<a href="#id7">2</a>,<a href="#id8">3</a>)</span></dt>
+<dd><p>Rachel Garrick, Amir Natan, Tim Gould, and Leeor Kronik. Exact Generalized Kohn-Sham Theory for Hybrid Functionals (2020)
+&lt;<a class="reference external" href="https://doi.org/10.1103/PhysRevX.10.021040">https://doi.org/10.1103/PhysRevX.10.021040</a>&gt; Physical Review X, 10(2).</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<div class="topic">
+<p class="topic-title">Funding</p>
+<p>This research was made possible by funding from the National Research Foundation of Korea (NRF-2020R1A2C2007468 and NRF-2020R1A4A1017737).</p>
+</div>
+<div class="topic">
+<p class="topic-title">Internal Log</p>
+<p><strong>2020-06-02</strong> RJM added in docstring templates</p>
+<p><strong>2020-06-15</strong> SN added some comments and fix bug(RWY and UWY gave different results with regularization)</p>
+<p><strong>2020-08-21</strong> SN corrected typos, minor changes in attribute names, etc.</p>
+</div>
+<dl class="py function">
+<dt id="wy.numint_3c2b">
+<code class="sig-prename descclassname">wy.</code><code class="sig-name descname">numint_3c2b</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mol</span></em>, <em class="sig-param"><span class="n">pbas</span></em>, <em class="sig-param"><span class="n">level</span><span class="o">=</span><span class="default_value">5</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wy.html#numint_3c2b"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wy.numint_3c2b" title="Permalink to this definition">¶</a></dt>
+<dd><p>Summary: Three-center overlap integral with different atomic- and potential- basis sets with numerical integration</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mol</strong> – an instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">Mole</span></code></p></li>
+<li><p><strong>pbas</strong> (<em>dict</em><em> or </em><em>str</em>) – potential basis set for WY</p></li>
+<li><p><strong>level</strong> (<em>int 0~9</em>) – PySCF preset mesh grid used for numerical integration. Default is 5</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>Sijt</strong> three-center overlap integral with shape ((n1, n1, n2))
+where n1 is the length of atomic orbital basis set defined in mol,
+and n2 is the length of potential basis set</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>(ndarray)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="wy.time_profile">
+<code class="sig-prename descclassname">wy.</code><code class="sig-name descname">time_profile</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mw</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wy.html#time_profile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wy.time_profile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Summary: Print to terminal a collection of time data in seconds</p>
+<p>Terminal prints:
+* initialize : time for initialization
+* total_opt  : total elasped time
+* solve_eig  : time to construct fock matrix and diagonalize it
+* Ws_eval    : time to evaluate objective function Ws
+* Gd_eval    : time to evaluate gradient of objective function</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="wy.run">
+<code class="sig-prename descclassname">wy.</code><code class="sig-name descname">run</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mw</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wy.html#run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wy.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Summary: Minimize an objective function -Ws</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>mw</strong> – RWY or UWY object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="wy.wyscf">
+<code class="sig-prename descclassname">wy.</code><code class="sig-name descname">wyscf</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mw</span></em>, <em class="sig-param"><span class="n">ddmtol</span><span class="o">=</span><span class="default_value">1e-06</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wy.html#wyscf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wy.wyscf" title="Permalink to this definition">¶</a></dt>
+<dd><p>Summary: Run WY until its self-consistent. This is required for hybrid guiding potentials</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This function performs very simplied generalization of WY for non-local guiding potential, mimicking <a class="reference internal" href="#gngk2020" id="id6"><span>[GNGK2020]</span></a>.
+There is no theoretical proof that the result of this function can be trusted.
+The optimization of WY objective functional is only theoretically proven for local multiplicative potentials, not non-local potential.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mw</strong> – RWY or UWY object</p></li>
+<li><p><strong>ddmtol</strong> (<em>float</em><em>, </em><em>optional</em>) – Convergence criteria of density matrix.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="wy.info">
+<code class="sig-prename descclassname">wy.</code><code class="sig-name descname">info</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mw</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wy.html#info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wy.info" title="Permalink to this definition">¶</a></dt>
+<dd><p>Summary: Print summary of minimization</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>mw</strong> – RWY or UWY object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="wy.basic">
+<code class="sig-prename descclassname">wy.</code><code class="sig-name descname">basic</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mw</span></em>, <em class="sig-param"><span class="n">mol</span></em>, <em class="sig-param"><span class="n">pbas</span></em>, <em class="sig-param"><span class="n">Sijt</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wy.html#basic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wy.basic" title="Permalink to this definition">¶</a></dt>
+<dd><p>Summary: Common basic initialization function for RWY and UWY objects</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mw</strong> – RWY or UWY object</p></li>
+<li><p><strong>mol</strong> – an instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">Mole</span></code></p></li>
+<li><p><strong>pbas</strong> (<em>dict</em><em> or </em><em>str</em>) – to define potential basis set for WY</p></li>
+<li><p><strong>Sijt</strong> (<em>ndarray</em>) – three-center overlap integral with shape ((n1, n1, n2))
+where n1 is the length of atomic orbital basis set defined in mol,
+while n2 is the length of potential basis set</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt id="wy.RWY">
+<em class="property">class </em><code class="sig-prename descclassname">wy.</code><code class="sig-name descname">RWY</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mol</span></em>, <em class="sig-param"><span class="n">dm_tar</span></em>, <em class="sig-param"><span class="n">pbas</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">Sijt</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">dm_aux</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wy.html#RWY"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wy.RWY" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Summary: Perform WY calculation in restricted scheme</p>
+<dl class="field-list simple" id="restrictedwy">
+<dt class="field-odd">Variables</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mol</strong> (<em>object</em>) – an instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">Mole</span></code></p></li>
+<li><p><strong>dm_tar</strong> (<em>ndarray</em>) – Density matrix of target density in atomic orbital basis representation</p></li>
+<li><p><strong>pbas</strong> (<em>dict</em><em> or </em><em>str</em>) – Potential basis set for WY. If not given, same with atomic orbital basis</p></li>
+<li><p><strong>Sijt</strong> (<em>ndarray</em>) – Three-center overlap integral. If not given, calculated analytically as overlap of atomic orbital basis</p></li>
+<li><p><strong>dm_aux</strong> (<em>ndarray</em>) – Auxilary density matrix to construct density-dependent part of guiding potential. Default is dm_tar</p></li>
+<li><p><strong>guide</strong> (<em>str</em>) – <p>Guiding potential. Can be set as</p>
+<div class="line-block">
+<div class="line">None : no guiding potential except external potential</div>
+<div class="line">’faxc’ : Exchange-correlation part of Fermi-Amaldi potential</div>
+<div class="line">xc   : ks.xc attribute in pyscf DFT</div>
+</div>
+</p></li>
+<li><p><strong>reg</strong> (<em>float</em>) – strength of regularization. Default is 0</p></li>
+<li><p><strong>tol</strong> (<em>float</em>) – tolarance of optimization (maximum gradient element). Default is 1e-6</p></li>
+<li><p><strong>method</strong> (<em>str</em>) – optimization algorithm used in SciPy. Can be (case insensitive) ‘cg’, ‘bfgs’, ‘newton-cg’,
+‘dogleg’, ‘trust-ncg’, ‘trust-krylov’, ‘trust-exact’. Defult is ‘trust-exact’</p></li>
+</ul>
+</dd>
+<dt class="field-even">Ivar</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>converged</strong> (bool) – optimization converged or not</p></li>
+<li><p><strong>mo_energy</strong> (ndarray) –  molecular orbital energies</p></li>
+<li><p><strong>mo_occ</strong> (ndarray) –  molecular orbital occupation numbers</p></li>
+<li><p><strong>mo_coeff</strong> (ndarray) – molecular orbital coefficients</p></li>
+<li><p><strong>dm</strong> (ndarray) – density matrix in atomic orbital basis representation</p></li>
+<li><p><strong>b</strong> (ndarray) – optimized linear combination coefficients</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="wy.RWY.run">
+<code class="sig-name descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#wy.RWY.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Summary: Minimize an objective function -Ws</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>mw</strong> – RWY or UWY object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="wy.RWY.time_profile">
+<code class="sig-name descname">time_profile</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#wy.RWY.time_profile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Summary: Print to terminal a collection of time data in seconds</p>
+<p>Terminal prints:
+* initialize : time for initialization
+* total_opt  : total elasped time
+* solve_eig  : time to construct fock matrix and diagonalize it
+* Ws_eval    : time to evaluate objective function Ws
+* Gd_eval    : time to evaluate gradient of objective function</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="wy.RWY.info">
+<code class="sig-name descname">info</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#wy.RWY.info" title="Permalink to this definition">¶</a></dt>
+<dd><p>Summary: Print summary of minimization</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>mw</strong> – RWY or UWY object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="wy.RWY.wyscf">
+<code class="sig-name descname">wyscf</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ddmtol</span><span class="o">=</span><span class="default_value">1e-06</span></em><span class="sig-paren">)</span><a class="headerlink" href="#wy.RWY.wyscf" title="Permalink to this definition">¶</a></dt>
+<dd><p>Summary: Run WY until its self-consistent. This is required for hybrid guiding potentials</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This function performs very simplied generalization of WY for non-local guiding potential, mimicking <a class="reference internal" href="#gngk2020" id="id7"><span>[GNGK2020]</span></a>.
+There is no theoretical proof that the result of this function can be trusted.
+The optimization of WY objective functional is only theoretically proven for local multiplicative potentials, not non-local potential.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mw</strong> – RWY or UWY object</p></li>
+<li><p><strong>ddmtol</strong> (<em>float</em><em>, </em><em>optional</em>) – Convergence criteria of density matrix.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="wy.RWY.initialize">
+<code class="sig-name descname">initialize</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/wy.html#RWY.initialize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wy.RWY.initialize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Summary: Construct a fixed part of fock matrix F0</p>
+<div class="math notranslate nohighlight">
+\[F_{0} = T + V_{ext} + V_{h} + V_{g}\]</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="wy.RWY.solve">
+<code class="sig-name descname">solve</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">b</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wy.html#RWY.solve"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wy.RWY.solve" title="Permalink to this definition">¶</a></dt>
+<dd><p>Summary: Under a given b vector, construct a fock matrix and diagonalize it</p>
+<p>F = F0 + V(b)</p>
+<p>FC = SCE</p>
+<p>resulting mo_coeff(C), mo_energy(E), and density matrix are stored as instance attributes</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="wy.RWY.eval_Ws">
+<code class="sig-name descname">eval_Ws</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">b</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wy.html#RWY.eval_Ws"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wy.RWY.eval_Ws" title="Permalink to this definition">¶</a></dt>
+<dd><p>Summary: Calculate objective function Ws under given b vector</p>
+<p>When mw.reg &gt; 0, regularization is added</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="wy.RWY.eval_Gd">
+<code class="sig-name descname">eval_Gd</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">b</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wy.html#RWY.eval_Gd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wy.RWY.eval_Gd" title="Permalink to this definition">¶</a></dt>
+<dd><p>Summary: -d(Ws)/b_t</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="wy.RWY.eval_Hs">
+<code class="sig-name descname">eval_Hs</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">b</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wy.html#RWY.eval_Hs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wy.RWY.eval_Hs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Summary: -d^2(Ws)/(b_t)(b_u)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="wy.RWY.Dvb">
+<code class="sig-name descname">Dvb</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">b</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wy.html#RWY.Dvb"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wy.RWY.Dvb" title="Permalink to this definition">¶</a></dt>
+<dd><p>Summary: Calcuate the norm of the correction potential derivative</p>
+<div class="math notranslate nohighlight">
+\[\| \nabla v_C ( \textbf{r} ) \|^2 = \int v_C ( \textbf{r} ) \nabla^2 v_C ( \textbf{r} ) d \textbf{r}\]</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="wy.UWY">
+<em class="property">class </em><code class="sig-prename descclassname">wy.</code><code class="sig-name descname">UWY</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mol</span></em>, <em class="sig-param"><span class="n">dm_tar</span></em>, <em class="sig-param"><span class="n">pbas</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">Sijt</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">dm_aux</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wy.html#UWY"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wy.UWY" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Summary: Perform WY calculation in unrestricted scheme</p>
+<dl class="field-list simple" id="unrestrictedwy">
+<dt class="field-odd">Variables</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mol</strong> (<em>object</em>) – an instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">Mole</span></code></p></li>
+<li><p><strong>dm_tar</strong> (<em>ndarray</em>) – Density matrix of target density in atomic orbital basis representation</p></li>
+<li><p><strong>pbas</strong> (<em>dict</em><em> or </em><em>str</em>) – Potential basis set for WY. If not given, same with atomic orbital basis</p></li>
+<li><p><strong>Sijt</strong> (<em>ndarray</em>) – Three-center overlap integral. If not given, calculated analytically as overlap of atomic orbital basis</p></li>
+<li><p><strong>dm_aux</strong> (<em>ndarray</em>) – Auxilary density matrix to construct density-dependent part of guiding potential. Default is dm_tar</p></li>
+<li><p><strong>guide</strong> (<em>str</em>) – <p>Guiding potential. Can be set as</p>
+<div class="line-block">
+<div class="line">None : no guiding potential except external potential</div>
+<div class="line">’faxc’ : Exchange-correlation part of Fermi-Amaldi potential</div>
+<div class="line">xc   : ks.xc attribute in pyscf DFT</div>
+</div>
+</p></li>
+<li><p><strong>reg</strong> (<em>float</em>) – strength of regularization. Default is 0</p></li>
+<li><p><strong>tol</strong> (<em>float</em>) – tolarance of optimization (maximum gradient element). Default is 1e-6</p></li>
+<li><p><strong>method</strong> (<em>str</em>) – optimization algorithm used in SciPy. Can be (case insensitive) ‘cg’, ‘bfgs’, ‘newton-cg’,
+‘dogleg’, ‘trust-ncg’, ‘trust-krylov’, ‘trust-exact’. Defult is ‘trust-exact’</p></li>
+</ul>
+</dd>
+<dt class="field-even">Ivar</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>converged</strong> (bool) – optimization converged or not</p></li>
+<li><p><strong>mo_energy</strong> (ndarray) –  molecular orbital energies</p></li>
+<li><p><strong>mo_occ</strong> (ndarray) –  molecular orbital occupation numbers</p></li>
+<li><p><strong>mo_coeff</strong> (ndarray) – molecular orbital coefficients</p></li>
+<li><p><strong>dm</strong> (ndarray) – density matrix in atomic orbital basis representation</p></li>
+<li><p><strong>b</strong> (ndarray) – optimized linear combination coefficients.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="wy.UWY.run">
+<code class="sig-name descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#wy.UWY.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Summary: Minimize an objective function -Ws</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>mw</strong> – RWY or UWY object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="wy.UWY.time_profile">
+<code class="sig-name descname">time_profile</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#wy.UWY.time_profile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Summary: Print to terminal a collection of time data in seconds</p>
+<p>Terminal prints:
+* initialize : time for initialization
+* total_opt  : total elasped time
+* solve_eig  : time to construct fock matrix and diagonalize it
+* Ws_eval    : time to evaluate objective function Ws
+* Gd_eval    : time to evaluate gradient of objective function</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="wy.UWY.info">
+<code class="sig-name descname">info</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#wy.UWY.info" title="Permalink to this definition">¶</a></dt>
+<dd><p>Summary: Print summary of minimization</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>mw</strong> – RWY or UWY object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="wy.UWY.wyscf">
+<code class="sig-name descname">wyscf</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ddmtol</span><span class="o">=</span><span class="default_value">1e-06</span></em><span class="sig-paren">)</span><a class="headerlink" href="#wy.UWY.wyscf" title="Permalink to this definition">¶</a></dt>
+<dd><p>Summary: Run WY until its self-consistent. This is required for hybrid guiding potentials</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This function performs very simplied generalization of WY for non-local guiding potential, mimicking <a class="reference internal" href="#gngk2020" id="id8"><span>[GNGK2020]</span></a>.
+There is no theoretical proof that the result of this function can be trusted.
+The optimization of WY objective functional is only theoretically proven for local multiplicative potentials, not non-local potential.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mw</strong> – RWY or UWY object</p></li>
+<li><p><strong>ddmtol</strong> (<em>float</em><em>, </em><em>optional</em>) – Convergence criteria of density matrix.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="wy.UWY.initialize">
+<code class="sig-name descname">initialize</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/wy.html#UWY.initialize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wy.UWY.initialize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Summary: Construct a fixed part of fock matrix F0</p>
+<div class="math notranslate nohighlight">
+\[F_{0} = T + V_{ext} + V_{h} + V_{g}\]</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="wy.UWY.solve">
+<code class="sig-name descname">solve</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">b</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wy.html#UWY.solve"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wy.UWY.solve" title="Permalink to this definition">¶</a></dt>
+<dd><p>Summary: Under a given b vector, construct a fock matrix and diagonalize it</p>
+<p>F = F0 + V(b)</p>
+<p>FC = SCE</p>
+<p>resulting mo_coeff(C), mo_energy(E), and density matrix are stored as instance attributes</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="wy.UWY.eval_Ws">
+<code class="sig-name descname">eval_Ws</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">b</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wy.html#UWY.eval_Ws"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wy.UWY.eval_Ws" title="Permalink to this definition">¶</a></dt>
+<dd><p>Summary: Calculate objective function Ws under given b vector</p>
+<p>When mw.reg &gt; 0, regularization is added</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="wy.UWY.eval_Gd">
+<code class="sig-name descname">eval_Gd</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">b</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wy.html#UWY.eval_Gd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wy.UWY.eval_Gd" title="Permalink to this definition">¶</a></dt>
+<dd><p>Summary: -d(Ws)/b_t</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="wy.UWY.eval_Hs">
+<code class="sig-name descname">eval_Hs</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">b</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wy.html#UWY.eval_Hs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wy.UWY.eval_Hs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Summary: -d^2(Ws)/(b_t)(b_u)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="wy.UWY.Dvb">
+<code class="sig-name descname">Dvb</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">b</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wy.html#UWY.Dvb"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wy.UWY.Dvb" title="Permalink to this definition">¶</a></dt>
+<dd><p>Summary: Calcuate the norm of correction potential derivative</p>
+<div class="math notranslate nohighlight">
+\[\| \nabla v_C ( \textbf{r} ) \| = \frac{1}{2} \sum_{\sigma} \int v_{C,\sigma} ( \textbf{r} ) \nabla^2 v_{C,\sigma} ( \textbf{r} ) d \textbf{r}\]</div>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<span class="target" id="module-zmp"></span><div class="section" id="zhao-morrison-parr">
+<h2>Zhao-Morrison-Parr<a class="headerlink" href="#zhao-morrison-parr" title="Permalink to this headline">¶</a></h2>
+<p><strong>Summary</strong> This script preforms a Zhao-Morrison-Parr <a class="reference internal" href="#zmp1994" id="id9"><span>[ZMP1994]</span></a> Kohn Sham inversion.</p>
+<p>Written for Python 3.7.4</p>
+<blockquote>
+<div><dl class="field-list">
+<dt class="field-odd">References</dt>
+<dd class="field-odd"><dl class="citation">
+<dt class="label" id="zmp1994"><span class="brackets">ZMP1994</span><span class="fn-backref">(<a href="#id9">1</a>,<a href="#id12">2</a>)</span></dt>
+<dd><p>Qingsheng Zhao, Robert C Morrison, and Robert G Parr.
+From electron densities to Kohn-Sham kinetic energies, orbital energies, exchange-correlation potentials, and exchange-correlation energies. (1994)
+&lt;<a class="reference external" href="https://doi.org/10.1103/PhysRevA.50.2138">https://doi.org/10.1103/PhysRevA.50.2138</a>&gt; Physical Review A, 50(3) 2138.</p>
+</dd>
+<dt class="label" id="thg1997"><span class="brackets"><a class="fn-backref" href="#id13">THG1997</a></span></dt>
+<dd><p>David J Tozer, Nicholas C Handy, and William H Green.
+Exchange-correlation functionals from ab initio electron densities (1997)
+&lt;<a class="reference external" href="https://doi.org/10.1016/S0009-2614(97)00586">https://doi.org/10.1016/S0009-2614(97)00586</a> and-1&gt; Chemical Physics Letters, 273(3-4) 183-194</p>
+</dd>
+<dt class="label" id="pulay1980"><span class="brackets"><a class="fn-backref" href="#id11">Pulay1980</a></span></dt>
+<dd><p>P Pulay.
+Convergence acceleration of iterative sequences. the case of SCF iteration (1980)
+&lt;<a class="reference external" href="https://doi.org/10.1016/0009-2614(80)80396-4">https://doi.org/10.1016/0009-2614(80)80396-4</a>&gt; Chemical Physics Letters, 73 (2): 393–398</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</div></blockquote>
+<p><em>Module author: Seungsoo Nam &lt;<a class="reference external" href="mailto:skaclitz&#37;&#52;&#48;yonsei&#46;ac&#46;kr">skaclitz<span>&#64;</span>yonsei<span>&#46;</span>ac<span>&#46;</span>kr</a>&gt; &lt;<a class="reference external" href="http://tccl.yonsei.ac.kr/mediawiki/index.php/Main_Page">http://tccl.yonsei.ac.kr/mediawiki/index.php/Main_Page</a>&gt; ORCID: <a class="reference external" href="https://orcid.org/0000-0001-9948-6140">000-0001-9948-6140</a></em></p>
+<div class="topic">
+<p class="topic-title">Funding</p>
+<p>This research was made possible by funding from the National Research Foundation of Korea (NRF-2020R1A2C2007468 and NRF-2020R1A4A1017737).</p>
+</div>
+<div class="topic">
+<p class="topic-title">Internal Log</p>
+<p><strong>2020-06-13</strong> RJM added doc string templates</p>
+<p><strong>2020-08-21</strong> SN corrected typos, minor changes in attribute names, etc.</p>
+</div>
+<dl class="py class">
+<dt id="zmp.DIIS">
+<em class="property">class </em><code class="sig-prename descclassname">zmp.</code><code class="sig-name descname">DIIS</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">S</span></em>, <em class="sig-param"><span class="n">diis_space</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zmp.html#DIIS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#zmp.DIIS" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Summary: Class for DIIS extrapolation used in ZMP</p>
+<p>See <a class="reference internal" href="#pulay1980" id="id11"><span>[Pulay1980]</span></a> for some extra context.</p>
+<dl class="py method">
+<dt id="zmp.DIIS.extrapolate">
+<code class="sig-name descname">extrapolate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">iteration</span></em>, <em class="sig-param"><span class="n">fock</span></em>, <em class="sig-param"><span class="n">dm</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zmp.html#DIIS.extrapolate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#zmp.DIIS.extrapolate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Summary: New fock matrix by linear combination of previous fock matrices</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>iteration</strong> (<em>integer</em>) – present SCF iteration</p></li>
+<li><p><strong>fock</strong> (<em>ndarray</em>) – fock matrix</p></li>
+<li><p><strong>dm</strong> (<em>ndarray</em>) – density matrix obtained from previous step</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p>tuple containing:</p>
+<blockquote>
+<div><p>(ndarray): <strong>newfock</strong> extrapolated fock matrix</p>
+<p>(float): <strong>diis_error</strong> DIIS error used in convergence criteria</p>
+</div></blockquote>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>(tuple)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt id="zmp.basic">
+<code class="sig-prename descclassname">zmp.</code><code class="sig-name descname">basic</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mz</span></em>, <em class="sig-param"><span class="n">mol</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zmp.html#basic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#zmp.basic" title="Permalink to this definition">¶</a></dt>
+<dd><p>Summary: Common basic initialization function for RZMP and UZMP objects</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mz</strong> – RZMP or UZMP object</p></li>
+<li><p><strong>mol</strong> (<em>object</em>) – an instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">Mole</span></code></p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt id="zmp.RZMP">
+<em class="property">class </em><code class="sig-prename descclassname">zmp.</code><code class="sig-name descname">RZMP</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mol</span></em>, <em class="sig-param"><span class="n">dm_tar</span></em>, <em class="sig-param"><span class="n">dm_aux</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zmp.html#RZMP"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#zmp.RZMP" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Summary: Perform ZMP calculation in restricted scheme, see <a class="reference internal" href="#zmp1994" id="id12"><span>[ZMP1994]</span></a> for detail.</p>
+<dl class="field-list simple" id="restricted-zmp">
+<dt class="field-odd">Variables</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mol</strong> (<em>object</em>) – an instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">Mole</span></code></p></li>
+<li><p><strong>dm_tar</strong> (<em>ndarray</em>) – Density matrix of target density in atomic orbital basis representation</p></li>
+<li><p><strong>dm_aux</strong> (<em>ndarray</em>) – Auxilary density matrix to construct a fixed part of fock matrix. Default is dm_tar</p></li>
+<li><p><strong>guide</strong> (<em>str</em>) – <p>Guiding potential. Can be set as</p>
+<div class="line-block">
+<div class="line">None : no guiding potential except external potential</div>
+<div class="line">’faxc’ : Exchange-correlation part of Fermi-Amaldi potential</div>
+<div class="line">xc   : ks.xc attribute in pyscf DFT</div>
+</div>
+</p></li>
+<li><p><strong>diis_space</strong> (<em>int</em>) – DIIS space size. Default is 40</p></li>
+<li><p><strong>level_shift</strong> (<em>float</em>) – Level shift (in AU) for virtual space. Default is 0.2</p></li>
+<li><p><strong>max_cycle</strong> (<em>int</em>) – max number of zscf iterations. Defalut is 400</p></li>
+<li><p><strong>conv_tol_dm</strong> (<em>float</em>) – converge threshold for density matrix. Default is 1e-7</p></li>
+<li><p><strong>conv_tol_diis</strong> (<em>float</em>) – converge threshold for DIIS error. Default is 1e-5</p></li>
+</ul>
+</dd>
+<dt class="field-even">Ivar</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>converged</strong> (bool) – zscf converged or not</p></li>
+<li><p><strong>mo_energy</strong> (ndarray) –  molecular orbital energies (Note that energies when level_shift = 0)</p></li>
+<li><p><strong>mo_occ</strong> (ndarray) –  molecular orbital occupation numbers</p></li>
+<li><p><strong>mo_coeff</strong> (ndarray) – molecular orbital coefficients</p></li>
+<li><p><strong>dm</strong> (ndarray) – density matrix in atomic orbital basis representation</p></li>
+<li><p><strong>l</strong> (float) – the last given lambda</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="zmp.RZMP.initialize">
+<code class="sig-name descname">initialize</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/zmp.html#RZMP.initialize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#zmp.RZMP.initialize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Summary: Construct a fixed part of fock matrix F0</p>
+<div class="math notranslate nohighlight">
+\[F_{0} = T + V_{ext} + V_{h} + V_{g}\]</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="zmp.RZMP.zscf">
+<code class="sig-name descname">zscf</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">l</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zmp.html#RZMP.zscf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#zmp.RZMP.zscf" title="Permalink to this definition">¶</a></dt>
+<dd><p>Summary:
+Run self-consistent ZMP equation under given lambda (l). Prints lambda,
+HOMO-LUMO, dN and C to terminal.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>l</strong> (<em>float</em>) – Lagrange multiplier lambda</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="zmp.UZMP">
+<em class="property">class </em><code class="sig-prename descclassname">zmp.</code><code class="sig-name descname">UZMP</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mol</span></em>, <em class="sig-param"><span class="n">dm_tar</span></em>, <em class="sig-param"><span class="n">dm_aux</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zmp.html#UZMP"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#zmp.UZMP" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Summary: Perform ZMP calculation in unrestricted scheme, see <a class="reference internal" href="#thg1997" id="id13"><span>[THG1997]</span></a>.</p>
+<dl class="field-list simple" id="unrestricted-zmp">
+<dt class="field-odd">Variables</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mol</strong> (<em>object</em>) – an instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">Mole</span></code></p></li>
+<li><p><strong>dm_tar</strong> (<em>ndarray</em>) – Density matrix of target density in atomic orbital basis representation</p></li>
+<li><p><strong>dm_aux</strong> (<em>ndarray</em>) – Auxilary density matrix to construct a fixed part of fock matrix. Default is dm_tar</p></li>
+<li><p><strong>guide</strong> (<em>str</em>) – <p>Guiding potential. Can be set as</p>
+<div class="line-block">
+<div class="line-block">
+<div class="line">None : no guiding potential except external potential</div>
+</div>
+<div class="line">’faxc’ : Exchange-correlation part of Fermi-Amaldi potential</div>
+<div class="line-block">
+<div class="line">xc   : ks.xc attribute in pyscf DFT</div>
+</div>
+</div>
+</p></li>
+<li><p><strong>diis_space</strong> (<em>int</em>) – DIIS space size. Default is 40</p></li>
+<li><p><strong>level_shift</strong> (<em>float</em>) – Level shift (in AU) for virtual space. Default is 0.2</p></li>
+<li><p><strong>max_cycle</strong> (<em>int</em>) – max number of zscf iterations. Defalut is 400</p></li>
+<li><p><strong>conv_tol_dm</strong> (<em>float</em>) – converge threshold for density matrix. Default is 1e-7</p></li>
+<li><p><strong>conv_tol_diis</strong> (<em>float</em>) – converge threshold for DIIS error. Default is 1e-5</p></li>
+</ul>
+</dd>
+<dt class="field-even">Ivar</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>converged</strong> (bool) – zscf converged or not</p></li>
+<li><p><strong>mo_energy</strong> (ndarray) –  molecular orbital energies (Note that energies when level_shift = 0)</p></li>
+<li><p><strong>mo_occ</strong> (ndarray) –  molecular orbital occupation numbers</p></li>
+<li><p><strong>mo_coeff</strong> (ndarray) – molecular orbital coefficients</p></li>
+<li><p><strong>dm</strong> (ndarray) – density matrix in atomic orbital basis representation</p></li>
+<li><p><strong>l</strong> (float) – the last given lambda</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="zmp.UZMP.initialize">
+<code class="sig-name descname">initialize</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/zmp.html#UZMP.initialize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#zmp.UZMP.initialize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Summary: Construct a fixed part of fock matrix F0</p>
+<div class="math notranslate nohighlight">
+\[F_{0} = T + V_{ext} + V_{h} + V_{g}\]</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="zmp.UZMP.zscf">
+<code class="sig-name descname">zscf</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">l</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zmp.html#UZMP.zscf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#zmp.UZMP.zscf" title="Permalink to this definition">¶</a></dt>
+<dd><p>Summary: Run self-consistent ZMP equation under given lambda (l)</p>
+<p>Args:
+l (float): Lagrange multiplier lambda</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<span class="target" id="module-util"></span><div class="section" id="utility-functions">
+<h2>Utility Functions<a class="headerlink" href="#utility-functions" title="Permalink to this headline">¶</a></h2>
+<p><strong>Summary</strong> Utility functions for KSPies.</p>
+<blockquote>
+<div><dl class="field-list">
+<dt class="field-odd">References</dt>
+<dd class="field-odd"><dl class="citation">
+<dt class="label" id="mirko2014"><span class="brackets"><a class="fn-backref" href="#id16">Mirko2014</a></span></dt>
+<dd><p>Mirko Franchini, Pierre Herman Theodoor Philipsen, Erik van Lenthe, and Lucas Visscher.
+Accurate Coulomb Potentials for Periodic and Molecular Systems through Density Fitting. (2014)
+&lt;<a class="reference external" href="https://doi.org/10.1021/ct500172n">https://doi.org/10.1021/ct500172n</a>&gt; Journal of Chemical Theory and Computation, 10(5), 1994-2004.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</div></blockquote>
+<p><em>Module author: Seungsoo Nam &lt;<a class="reference external" href="mailto:skaclitz&#37;&#52;&#48;yonsei&#46;ac&#46;kr">skaclitz<span>&#64;</span>yonsei<span>&#46;</span>ac<span>&#46;</span>kr</a>&gt; &lt;<a class="reference external" href="http://tccl.yonsei.ac.kr/mediawiki/index.php/Main_Page">http://tccl.yonsei.ac.kr/mediawiki/index.php/Main_Page</a>&gt; ORCID: <a class="reference external" href="https://orcid.org/0000-0001-9948-6140">000-0001-9948-6140</a>
+Hansol Park &lt;<a class="reference external" href="mailto:hansol7954&#37;&#52;&#48;yonsei&#46;ac&#46;kr">hansol7954<span>&#64;</span>yonsei<span>&#46;</span>ac<span>&#46;</span>kr</a>&gt; &lt;<a class="reference external" href="http://tccl.yonsei.ac.kr/mediawiki/index.php/Main_Page">http://tccl.yonsei.ac.kr/mediawiki/index.php/Main_Page</a>&gt; ORCID: <a class="reference external" href="https://orcid.org/0000-0001-8706-5015">000-0001-8706-5015</a></em></p>
+<div class="topic">
+<p class="topic-title">functions</p>
+<p>mo2ao</p>
+<p>eval_vh</p>
+<p>eval_vxc</p>
+</div>
+<div class="topic">
+<p class="topic-title">Internal Log</p>
+<p><strong>2020-06-06</strong> SN made edits</p>
+<p><strong>2020-07-26</strong> Updates on eval_vh (Hansol ver.)</p>
+<p><strong>2020-08-21</strong> SN corrected typos, minor changes in attribute names, etc.</p>
+</div>
+<dl class="py function">
+<dt id="util.mo2ao">
+<code class="sig-prename descclassname">util.</code><code class="sig-name descname">mo2ao</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mo</span></em>, <em class="sig-param"><span class="n">p1</span></em>, <em class="sig-param"><span class="n">p2</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/util.html#mo2ao"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#util.mo2ao" title="Permalink to this definition">¶</a></dt>
+<dd><p>Summary: Convert mo-basis density matrices to basis-set representation density matrices</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mo</strong> (<em>ndarray</em>) – molecular orbital coefficients</p></li>
+<li><p><strong>p1</strong> (<em>ndarray</em>) – mo-basis one-particle density matrices</p></li>
+<li><p><strong>p2</strong> (<em>ndarray</em>) – mo-basis two-particle density matrices, optional</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p>tuple containing:</p>
+<blockquote>
+<div><p>(ndarray): <strong>dm1</strong> ao-basis one-particle density matrices</p>
+<p>(ndarray): <strong>dm2</strong> ao-basis two-particle density matrices, returned only when p2 is given</p>
+</div></blockquote>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>(tuple)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="util.eval_vh">
+<code class="sig-prename descclassname">util.</code><code class="sig-name descname">eval_vh</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mol</span></em>, <em class="sig-param"><span class="n">coords</span></em>, <em class="sig-param"><span class="n">dm</span></em>, <em class="sig-param"><span class="n">Lvl</span><span class="o">=</span><span class="default_value">3</span></em>, <em class="sig-param"><span class="n">ang_lv</span><span class="o">=</span><span class="default_value">2</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/util.html#eval_vh"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#util.eval_vh" title="Permalink to this definition">¶</a></dt>
+<dd><p>Summary: Calculate real-space Hartree potential from given density matrix. See <a class="reference internal" href="#mirko2014" id="id16"><span>[Mirko2014]</span></a> for some extra context.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mol</strong> (<em>object</em>) – an instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">Mole</span></code></p></li>
+<li><p><strong>coords</strong> (<em>ndarray</em>) – grids space used for calculating Hartree potential</p></li>
+<li><p><strong>dm</strong> (<em>ndarray</em>) – one-particle reduced density matrix in basis set representation</p></li>
+<li><p><strong>Lvl</strong> (<em>integer</em>) – Interpolation grids space level (input : 0 ~ 9, default 3)</p></li>
+<li><p><strong>ang_lv</strong> (<em>integer</em>) – setting a limit of angular momentum of spherical harmonics (input : 0 ~ 4, default 2)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>vh</strong> Pointwise Hartree potential</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>(ndarray)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="util.eval_vxc">
+<code class="sig-prename descclassname">util.</code><code class="sig-name descname">eval_vxc</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mol</span></em>, <em class="sig-param"><span class="n">dm</span></em>, <em class="sig-param"><span class="n">xc_code</span></em>, <em class="sig-param"><span class="n">coords</span></em>, <em class="sig-param"><span class="n">delta</span><span class="o">=</span><span class="default_value">1e-07</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/util.html#eval_vxc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#util.eval_vxc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Summary: Calculate real-space exchange-correlation potential for GGA from given density matrix</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mol</strong> (<em>object</em>) – an instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">Mole</span></code></p></li>
+<li><p><strong>coords</strong> (<em>ndarray</em>) – grids space used for calculating XC potential</p></li>
+<li><p><strong>dm</strong> (<em>ndarray</em>) – one-particle reduced density matrix in basis set representation</p></li>
+<li><p><strong>xc_code</strong> (<em>str</em>) – XC functional description.</p></li>
+<li><p><strong>delta</strong> (<em>float</em>) – amount of finite difference to calculate numerical differentiation, default is 1e-7 a.u.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p>tuple containing:</p>
+<blockquote>
+<div><p>(ndarray) Pointwise XC potential, vxc(r) for RKS dm, vxc_alpha(r) for UKS dm</p>
+<p>(ndarray) Pointwise XC potential, vxc(r) for RKS dm, vxc_beta(r) for UKS dm</p>
+</div></blockquote>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>(tuple)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="userguide.html" class="btn btn-neutral float-right" title="User guide" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="index.html" class="btn btn-neutral float-left" title="KS Pies! Kohn-Sham Python Inversion Evaluation Software" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Seungsoo Nam, Ryan J. McCarty, Hansol Park, Eunji Sim
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
