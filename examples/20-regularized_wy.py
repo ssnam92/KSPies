@@ -1,6 +1,6 @@
-from pyscf import gto, scf
 import numpy as np
-import wy_dev as wy
+from pyscf import gto, scf
+from kspies import wy
 
 mol = gto.M(atom = 'N 0 0 0 ; N 1.1 0 0', 
             basis = 'cc-pVDZ')

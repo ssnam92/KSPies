@@ -61,8 +61,12 @@ Further details can be found in the module documentation for :ref:`unrestricted 
 
 The examples directory includes:
 
-- :ref:`Regularized ZMP on a beryllium atom <Full-example>`
-- :ref:`ZMP on a benzene molecule <ZMP-benzene>`
+- :ref:`Restricted ZMP on a beryllium atom <Full-example>`
+- :ref:`Restricted ZMP on a benzene molecule <ZMP-benzene>`
+- :ref:`Unrestricted ZMP on a benzene molecule <ZMP-benzene>`
+- :ref:`Unrestricted ZMP on molecular oxygen <WY-ZMP-oxygen>`
+- :ref:`ZMP usage for plotting a FA guiding potential <plot-xc-zmp>`
+
 
 Wu and Yang
 ###########
@@ -81,9 +85,12 @@ For detailed settings or outputs, please see the module documentation.
 
 The examples directory includes:
 
-- :ref:`Regularized WY on a beryllium atom <Full-example>`
-- :ref:`Regularized WY on molecular nitrogen <WY-regular>`
-- :ref:`WY usage for plotting FA potential <plot-xc>`
+- :ref:`Restricted WY on a beryllium atom <Full-example>`
+- :ref:`Restricted WY on benzene <ZMP-benzene>`
+- :ref:`Restricted WY on molecular nitrogen <WY-regular>`
+- :ref:`Unrestricted WY on benzene <ZMP-benzene>`
+- :ref:`Unrestricted WY on molecular oxygen <WY-ZMP-oxygen>`
+- :ref:`WY usage for plotting a PBE guiding potential <plot-xc-wy>`
 - :ref:`WY usage on a user defined potential <userdefined-systems>`
 
 

@@ -1,8 +1,6 @@
-from pyscf import gto, scf, dft 
 import numpy as np
-import wy_dev as wy
-import zmp_dev as zmp
-import util_dev as util
+from pyscf import gto, scf, dft
+from kspies import wy, zmp, util
 '''Blackbox test script'''
 
 #Reference simple HF run

@@ -1,8 +1,7 @@
-from pyscf import gto, scf
-import matplotlib.pyplot as plt
 import numpy as np
-import util_dev as util
-import zmp_dev as zmp
+from pyscf import gto, scf
+from kspies import zmp, util
+import matplotlib.pyplot as plt
 
 #Target density from HF
 mol = gto.M(atom='Ne',
@@ -12,9 +11,11 @@ dm_tar = mf.make_rdm1()
 
 #Define plotting domain
 coords = []
-for x in np.linspace(0, 5, 1001):
+for x in np.linspace(0, 3, 1001):
     coords.append((x, 0., 0.))
 coords = np.array(coords)
+
+plt.figure(figsize=(3,4))
 
 #ZMP calculations
 mz = zmp.RZMP(mol, dm_tar)
@@ -26,9 +27,10 @@ for l in [ 16, 128, 1024 ]:
     vxc = util.eval_vh(mol, coords, dmxc )
     plt.plot(coords[:, 0], vxc, label = r'$\lambda$='+str(l))
 
-plt.xlim(0, 5)
-plt.ylim(-9, 0)
+plt.xlabel("x")
+plt.ylabel("vx(r)")
+plt.xlim(0, 3)
+plt.ylim(-5, 0)
 plt.legend()
-#plt.savefig('vxc_zmp_fa.pdf', format='pdf')
-#plt.savefig('vxc_zmp_fa.eps', format='eps')
+plt.subplots_adjust(left=0.2, right=0.93, bottom=0.12, top=0.97)
 plt.show()

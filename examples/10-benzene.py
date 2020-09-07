@@ -1,7 +1,6 @@
-from pyscf import gto,scf,lib,dft
 import numpy as np
-import zmp_dev as zmp
-import wy_dev as wy
+from pyscf import gto, scf, lib, dft
+from kspies import zmp, wy
 lib.num_threads(8)
 
 #Define system

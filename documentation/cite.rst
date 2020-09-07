@@ -26,12 +26,12 @@ BibTex
 ::
 
     @article{NamMcCartySim2020,
-        Title   = {TITIE HERE}
-        Author     = {Seungsoo Nam, and Ryan J. McCarty, and Eunji Sim},
+        Title   = {Kohn-Sham Inversion Toolkit}
+        Author     = {Seungsoo Nam, and Ryan J. McCarty, and Hansol Park, and Eunji Sim},
         Year  = {2020},
         Month  = {July},
         Journal  = {Submitted},
-        arXiv  = {arXiv:####.######},
+        arXiv  = {arXiv:2008.08783},
         }
 
 EndNote RIS

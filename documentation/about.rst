@@ -2,6 +2,12 @@
 About and Contact
 =================
 
+License
+#######
+
+KS-Pies is distributed under the `Apache License 2.0 license <http://www.apache.org/licenses/>`_ .
+
+
 Authors
 #######
 
@@ -35,4 +41,5 @@ Prof. Sim is a professor at `Yonsei University <https://www.yonsei.ac.kr/>`_ in 
 Acknowledgments
 ###############
 
-S.N. and E.S. are thankful for support from the Korean Research Foundation (2017R1A2B2003552). R.J.M. is thankful for support from the University of California President's Postdoctoral Fellowship Program.
+S.N.,  H.P.,  and  E.S. are thankful for support from the the  National  Research  Foundation  of  Korea (NRF-2020R1A2C2007468  and  NRF-2020R1A4A1017737). R.J.M. is thankful for support from the University of California President's Postdoctoral Fellowship Program and the National Science Foundation (CHE 1856165).
+
