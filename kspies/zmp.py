@@ -135,7 +135,7 @@ def basic(mz, mol):
     mz.V = mz.mol.intor_symmetric('int1e_nuc')
 
 class RZMP:
-    """Summary: Perform ZMP calculation in restricted scheme, see [ZMP1994]_ for detail. 
+    """Summary: Perform ZMP calculation in restricted scheme, see [ZMP1994]_ for detail.
 
     .. _restricted-zmp:
 
@@ -221,29 +221,29 @@ class RZMP:
                 l (float): Lagrange multiplier lambda
         """
         if not self.initialized:
-          self.initialize()
-        self.l=l
+            self.initialize()
+        self.l = l
 
-        self.converged=False
-        self.zdiis=DIIS(self.S,self.diis_space)
+        self.converged = False
+        self.zdiis = DIIS(self.S, self.diis_space)
 
-        for cycle in range(1,self.max_cycle):
-            self.J=self.mf.get_jk(self.mol,self.dm)[0]
+        for cycle in range(1, self.max_cycle):
+            self.J = self.mf.get_jk(self.mol, self.dm)[0]
 
-            self.F=self.F0+l*(self.J-self.J_tar)
-            self.F=scf.hf.level_shift(self.S, self.dm*.5, self.F, self.level_shift)
-            self.F,diis_e=self.zdiis.extrapolate(cycle, self.F, self.dm) #DIIS
+            self.F = self.F0 + l*(self.J - self.J_tar)
+            self.F = scf.hf.level_shift(self.S, self.dm*.5, self.F, self.level_shift)
+            self.F, diis_e = self.zdiis.extrapolate(cycle, self.F, self.dm) #DIIS
 
-            self.mo_energy,self.mo_coeff=scf.hf.eig(self.F,self.S)
-            self.mo_occ=self.get_occ(self.mo_energy, self.mo_coeff)
-            self.dm=self.make_rdm1(self.mo_coeff, self.mo_occ)
+            self.mo_energy, self.mo_coeff = scf.hf.eig(self.F, self.S)
+            self.mo_occ = self.get_occ(self.mo_energy, self.mo_coeff)
+            self.dm = self.make_rdm1(self.mo_coeff, self.mo_occ)
 
-            ddm=self.dm_old-self.dm
-            dm_e=np.max(np.abs(ddm))
-            self.dm_old=self.dm
-            dm_converged=dm_e < self.conv_tol_dm
-            diis_converged=diis_e < self.conv_tol_diis
-            self.mo_energy[self.mo_occ==0]-=self.level_shift
+            ddm = self.dm_old - self.dm
+            dm_e = np.max(np.abs(ddm))
+            self.dm_old = self.dm
+            dm_converged = dm_e < self.conv_tol_dm
+            diis_converged = diis_e < self.conv_tol_diis
+            self.mo_energy[self.mo_occ==0] -= self.level_shift
 
             nocc = self.mol.nelectron // 2
             HOMO, LUMO =self.mo_energy[nocc-1], self.mo_energy[nocc]
@@ -255,10 +255,10 @@ class RZMP:
             if self.converged and cycle > 1:
                 break
 
-        self.J=self.mf.get_jk(self.mol,self.dm)[0]
-        dn=dft.numint.eval_rho(self.mol, self.ao, self.dm-self.dm_tar)
-        dN=1000*np.einsum('r,r',abs(dn),self.weights)
-        C=np.einsum('ij,ji',self.dm-self.dm_tar,self.J-self.J_tar) #Objective of minimization
+        self.J = self.mf.get_jk(self.mol, self.dm)[0]
+        dn = dft.numint.eval_rho(self.mol, self.ao, self.dm - self.dm_tar)
+        dN = 1000*np.einsum('r,r', abs(dn), self.weights)
+        C = np.einsum('ij,ji', self.dm-self.dm_tar, self.J - self.J_tar) #Objective of minimization
         print(f'lambda= {l:7.2f} niter: {cycle:4d} gap= {LUMO-HOMO:10.7f} dN= {dN:7.2f} C= {C:.2e} ')
 
 class UZMP:
@@ -293,18 +293,18 @@ class UZMP:
     """
     def __init__(self, mol, dm_tar, dm_aux=None):
         basic(self, mol)
-        self.nelec=[int((mol.nelectron+mol.spin)//2), int((mol.nelectron-mol.spin)//2)]
+        self.nelec = [int((mol.nelectron + mol.spin)//2), int((mol.nelectron - mol.spin)//2)]
 
-        self.dm_tar=dm_tar
-        self.initialized=False
-        self.dm=dm_tar
-        self.dm_aux=dm_aux
-        self.dm_old=dm_tar
-        self.verbose=mol.verbose
+        self.dm_tar = dm_tar
+        self.initialized = False
+        self.dm = dm_tar
+        self.dm_aux = dm_aux
+        self.dm_old = dm_tar
+        self.verbose = mol.verbose
 
-    get_occ=scf.uhf.get_occ
-    make_rdm1=scf.uhf.UHF.make_rdm1
-    spin_square=scf.uhf.UHF.spin_square
+    get_occ = scf.uhf.get_occ
+    make_rdm1 = scf.uhf.UHF.make_rdm1
+    spin_square = scf.uhf.UHF.spin_square
 
     def initialize(self):
         """Summary: Construct a fixed part of fock matrix F0
@@ -317,31 +317,31 @@ class UZMP:
         self.get_ovlp=lambda *args: self.S
 
         if self.with_df:
-            self.mf=dft.UKS(self.mol).density_fit()
+            self.mf = dft.UKS(self.mol).density_fit()
         else:
-            self.mf=dft.UKS(self.mol)
+            self.mf = dft.UKS(self.mol)
         self.mf.grids.build()
-        self.coords=self.mf.grids.coords
-        self.weights=self.mf.grids.weights
-        self.ao=dft.numint.eval_ao(self.mol,self.coords)
+        self.coords = self.mf.grids.coords
+        self.weights = self.mf.grids.weights
+        self.ao = dft.numint.eval_ao(self.mol,self.coords)
 
         if self.dm_aux is None:
-            self.dm_aux=self.dm_tar
-        self.J_tar=self.mf.get_jk(self.mol,self.dm_tar)[0]
+            self.dm_aux = self.dm_tar
+        self.J_tar = self.mf.get_jk(self.mol,self.dm_tar)[0]
 
         if self.guide is None:
-            self.V0=np.zeros_like(self.dm_tar)
-        elif self.guide.lower()=='faxc':
-            N=self.mol.nelectron
-            self.J_aux=self.mf.get_jk(self.mol,self.dm_aux)[0]
-            VFA=((N-1.)/N)*(self.J_aux[0]+self.J_aux[1])
-            self.V0=(VFA,VFA)
+            self.V0 = np.zeros_like(self.dm_tar)
+        elif self.guide.lower() == 'faxc':
+            N = self.mol.nelectron
+            self.J_aux = self.mf.get_jk(self.mol,self.dm_aux)[0]
+            VFA = ((N-1.)/N)*(self.J_aux[0]+self.J_aux[1])
+            self.V0 = (VFA,VFA)
         else :
-            self.mf.xc=self.guide
-            self.V0=self.mf.get_veff(self.mol,dm=self.dm_aux)
-        self.F0=(self.T+self.V+self.V0[0],
-                 self.T+self.V+self.V0[1])
-        self.initialized=True
+            self.mf.xc = self.guide
+            self.V0 = self.mf.get_veff(self.mol, dm=self.dm_aux)
+        self.F0 = (self.T + self.V+self.V0[0],
+                 self.T + self.V+self.V0[1])
+        self.initialized = True
 
     def zscf(self, l):
         """Summary: Run self-consistent ZMP equation under given lambda (l)
@@ -351,46 +351,46 @@ class UZMP:
 
         """
         if not self.initialized:
-          self.initialize()
-        self.l=l
+            self.initialize()
+        self.l = l
 
-        self.converged=False
-        self.zdiis_a=DIIS(self.S,self.diis_space)
-        self.zdiis_b=DIIS(self.S,self.diis_space)
+        self.converged = False
+        self.zdiis_a = DIIS(self.S, self.diis_space)
+        self.zdiis_b = DIIS(self.S, self.diis_space)
 
-        for cycle in range(1,self.max_cycle):
-            self.J=self.mf.get_jk(self.mol,self.dm)[0]
+        for cycle in range(1, self.max_cycle):
+            self.J = self.mf.get_jk(self.mol, self.dm)[0]
 
-            self.Fa=self.F0[0]+2*l*(self.J[0]-self.J_tar[0])
-            self.Fb=self.F0[1]+2*l*(self.J[1]-self.J_tar[1])
+            self.Fa = self.F0[0] + 2*l*(self.J[0] - self.J_tar[0])
+            self.Fb = self.F0[1] + 2*l*(self.J[1] - self.J_tar[1])
 
-            self.Fa=scf.hf.level_shift(self.S, self.dm[0], self.Fa, self.level_shift)
-            self.Fb=scf.hf.level_shift(self.S, self.dm[1], self.Fb, self.level_shift)
+            self.Fa = scf.hf.level_shift(self.S, self.dm[0], self.Fa, self.level_shift)
+            self.Fb = scf.hf.level_shift(self.S, self.dm[1], self.Fb, self.level_shift)
 
-            self.Fa,diis_e_a=self.zdiis_a.extrapolate(cycle, self.Fa, self.dm[0])
-            self.Fb,diis_e_b=self.zdiis_b.extrapolate(cycle, self.Fb, self.dm[1])
+            self.Fa, diis_e_a = self.zdiis_a.extrapolate(cycle, self.Fa, self.dm[0])
+            self.Fb, diis_e_b = self.zdiis_b.extrapolate(cycle, self.Fb, self.dm[1])
 
-            e_a,c_a=scf.hf.eig(self.Fa,self.S)
-            e_b,c_b=scf.hf.eig(self.Fb,self.S)
-            self.mo_energy=np.array((e_a,e_b))
-            self.mo_coeff=np.array((c_a,c_b))
+            e_a, c_a = scf.hf.eig(self.Fa, self.S)
+            e_b, c_b = scf.hf.eig(self.Fb, self.S)
+            self.mo_energy = np.array((e_a,e_b))
+            self.mo_coeff = np.array((c_a,c_b))
 
-            self.mo_occ=self.get_occ(self.mo_energy, self.mo_coeff)
-            self.dm=self.make_rdm1(self.mo_coeff, self.mo_occ)
+            self.mo_occ = self.get_occ(self.mo_energy, self.mo_coeff)
+            self.dm = self.make_rdm1(self.mo_coeff, self.mo_occ)
 
-            ddm=self.dm_old-self.dm
-            dm_e=np.max(np.abs(ddm))
-            self.dm_old=self.dm
-            dm_converged=dm_e < self.conv_tol_dm
-            diis_converged=diis_e_a+diis_e_b < self.conv_tol_diis
-            self.mo_energy[0][self.mo_occ[0]==0]-=self.level_shift
-            self.mo_energy[1][self.mo_occ[1]==0]-=self.level_shift
+            ddm = self.dm_old - self.dm
+            dm_e = np.max(np.abs(ddm))
+            self.dm_old = self.dm
+            dm_converged = dm_e < self.conv_tol_dm
+            diis_converged = diis_e_a+diis_e_b < self.conv_tol_diis
+            self.mo_energy[0][self.mo_occ[0]==0] -= self.level_shift
+            self.mo_energy[1][self.mo_occ[1]==0] -= self.level_shift
 
-            HOMO=np.maximum(self.mo_energy[0][self.nelec[0]-1],
-                            self.mo_energy[1][self.nelec[1]-1])
-            LUMO=np.minimum(self.mo_energy[0][self.nelec[0]],
-                            self.mo_energy[1][self.nelec[1]])
-            gap=LUMO-HOMO
+            HOMO = np.maximum(self.mo_energy[0][self.nelec[0]-1],
+                              self.mo_energy[1][self.nelec[1]-1])
+            LUMO = np.minimum(self.mo_energy[0][self.nelec[0]],
+                              self.mo_energy[1][self.nelec[1]])
+            gap = LUMO-HOMO
 
             print(f'\rlambda= {l:7.2f}  iter: {cycle:4d} gap= {gap:10.7f}   ',end='\r')
 
@@ -398,16 +398,16 @@ class UZMP:
             if self.converged and cycle > 1:
                 break
 
-        self.J=self.mf.get_jk(self.mol,self.dm)[0]
-        #Calculate alpha/beta density difference seperately
-        #dn_a=dft.numint.eval_rho(self.mol, self.ao, (self.dm-self.dm_tar)[0])
-        #dn_b=dft.numint.eval_rho(self.mol, self.ao, (self.dm-self.dm_tar)[1])
-        #dN=1000*np.einsum('r,r',abs(dn_a)+abs(dn_b),self.weights)
-        dn=dft.numint.eval_rho(self.mol, self.ao, (self.dm[0]+self.dm[1]-self.dm_tar[0]-self.dm_tar[1]))
-        dN=1000*np.einsum('r,r',abs(dn),self.weights)
+        self.J = self.mf.get_jk(self.mol, self.dm)[0]
+        #Calculate alpha/beta density difference separately
+        #dn_a = dft.numint.eval_rho(self.mol, self.ao, (self.dm-self.dm_tar)[0])
+        #dn_b = dft.numint.eval_rho(self.mol, self.ao, (self.dm-self.dm_tar)[1])
+        #dN = 1000*np.einsum('r,r', abs(dn_a)+abs(dn_b), self.weights)
+        dn = dft.numint.eval_rho(self.mol, self.ao, (self.dm[0]+self.dm[1]-self.dm_tar[0]-self.dm_tar[1]))
+        dN = 1000*np.einsum('r,r', abs(dn), self.weights)
 
-        Ca=np.einsum('ij,ji',self.dm[0]-self.dm_tar[0],self.J[0]-self.J_tar[0])
-        Cb=np.einsum('ij,ji',self.dm[1]-self.dm_tar[1],self.J[1]-self.J_tar[1])
-        C=2*(Ca+Cb)
+        Ca = np.einsum('ij,ji', self.dm[0]-self.dm_tar[0], self.J[0]-self.J_tar[0])
+        Cb = np.einsum('ij,ji', self.dm[1]-self.dm_tar[1], self.J[1]-self.J_tar[1])
+        C = 2*(Ca+Cb)
         print(f'lambda= {l:7.2f} niter: {cycle:4d} gap= {gap:10.7f} dN= {dN:7.2f} C= {C:.2e}  ')
 

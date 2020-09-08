@@ -13,8 +13,21 @@
 import os
 import sys
 
-currentpath = os.path.abspath('.')
-sys.path.insert(0, os.path.dirname(currentpath))
+#currentpath = os.path.dirname(os.path.abspath('.'))
+#currentpath = os.path.join(currentpath, 'kspies')
+#print(currentpath)
+#sys.path.insert(0, os.path.dirname(currentpath))
+
+
+documentation_path = os.path.abspath('.')
+top_dir = os.path.dirname(documentation_path)
+print(top_dir)
+code_path = os.path.join(top_dir, 'kspies')
+print(code_path)
+#print(os.path.abspath(top_dir))
+sys.path.insert(0, code_path)
+#print(os.path.abspath("..kspies"))
+#sys.path.insert(0, os.path.abspath("..kspies"))
 
 
 

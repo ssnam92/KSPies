@@ -40,7 +40,7 @@ import numpy as np
 from scipy.optimize import minimize
 from pyscf import scf, dft
 try:
-    import kspies.kspies_fort as kf
+    import kspies_fort
     kf_imported=True
 except:
     kf_imported=False
@@ -71,7 +71,7 @@ def numint_3c2b(mol, pbas, level=5):
     ao2 = dft.numint.eval_ao(mol2, coords, deriv=0)
     t0 = time.time()
     if kf_imported: #Utilize faster numerical integration
-        Sijt = kf.ovlp_aab(weights, ao1, ao2, mol.nao_nr(), mol2.nao_nr(), len(weights))
+        Sijt = kspies_fort.ovlp_aab(weights, ao1, ao2, mol.nao_nr(), mol2.nao_nr(), len(weights))
     else: #kspies_fort not imported, us numpy
         Sijt = np.einsum('ri, rj, rk, r->ijk', ao1, ao1, ao2, weights, optimize = 'greedy')
     n1 = mol.nao_nr()
@@ -330,7 +330,7 @@ class RWY:
 
             t = time.time()
             if kf_imported:
-                self.grad = kf.einsum_ij_ijt_2t((self.dm-self.dm_tar), self.Sijt, self.nbas, self.npot)
+                self.grad = kspies_fort.einsum_ij_ijt_2t((self.dm-self.dm_tar), self.Sijt, self.nbas, self.npot)
             else:
                 self.grad = np.einsum('ij,ijt->t', (self.dm-self.dm_tar), self.Sijt)
             self.t_gd += time.time()-t
@@ -377,7 +377,7 @@ class RWY:
         eia = self.mo_energy[:nocc, None] - self.mo_energy[None, nocc:]
 
         if kf_imported:
-            self.Hs=kf.wy_hess(self.Sijt,self.mo_coeff,eia,nocc,self.nbas-nocc,self.npot)
+            self.Hs=kspies_fort.wy_hess(self.Sijt,self.mo_coeff,eia,nocc,self.nbas-nocc,self.npot)
         else:
             Siat = np.einsum('mi,va,mvt->iat',
                              self.mo_coeff[:,:nocc],self.mo_coeff[:,nocc:],self.Sijt)
@@ -508,8 +508,8 @@ class UWY:
 
             t = time.time()
             if kf_imported:
-                self.grad_a = kf.einsum_ij_ijt_2t((self.dm[0]-self.dm_tar[0]), self.Sijt, self.nbas, self.npot)
-                self.grad_b = kf.einsum_ij_ijt_2t((self.dm[1]-self.dm_tar[1]), self.Sijt, self.nbas, self.npot)
+                self.grad_a = kspies_fort.einsum_ij_ijt_2t((self.dm[0]-self.dm_tar[0]), self.Sijt, self.nbas, self.npot)
+                self.grad_b = kspies_fort.einsum_ij_ijt_2t((self.dm[1]-self.dm_tar[1]), self.Sijt, self.nbas, self.npot)
             else:
                 self.grad_a = np.einsum('ij,ijt->t', (self.dm[0]-self.dm_tar[0]), self.Sijt)
                 self.grad_b = np.einsum('ij,ijt->t', (self.dm[1]-self.dm_tar[1]), self.Sijt)
@@ -566,8 +566,8 @@ class UWY:
         eia_b = self.mo_energy[1][:n_b, None] - self.mo_energy[1][None, n_b:]
 
         if kf_imported:
-            self.Ha = .5*kf.wy_hess(self.Sijt, mo_a, eia_a, n_a, self.nbas-n_a, self.npot)
-            self.Hb = .5*kf.wy_hess(self.Sijt, mo_b, eia_b, n_b, self.nbas-n_b, self.npot)
+            self.Ha = .5*kspies_fort.wy_hess(self.Sijt, mo_a, eia_a, n_a, self.nbas-n_a, self.npot)
+            self.Hb = .5*kspies_fort.wy_hess(self.Sijt, mo_b, eia_b, n_b, self.nbas-n_b, self.npot)
         else:
             Siat_a = np.einsum('mi,va,mvt->iat', mo_a[:,:n_a], mo_a[:,n_a:], self.Sijt)
             Siat_b = np.einsum('mi,va,mvt->iat', mo_b[:,:n_b], mo_b[:,n_b:], self.Sijt)

@@ -12,16 +12,15 @@ Included in the KS-pies download is an example folder including several scripts 
 1. Test Script
 ##############
 
-A complete example showing ZMP, WY and the util functions. 
+A complete example using ZMP, WY and the util functions. 
     A Be atom is used for the test density. 
     Prints to terminal results and expected results, that can
     be compared to confirm that the code is working correctly.
 
-
 .. _ZMP-benzene:
 
-2 Benzene
-#########
+2. Benzene
+##########
 
 Use ZMP to create a KS potential of Benzene.
 
@@ -30,14 +29,14 @@ Use ZMP to create a KS potential of Benzene.
 
     wy.RWY(mol, dm_tar)
 
-Showing use restricted WY instance with **run**, **info**, and use of the stored density matrix **dm**.
+Demonstrating a restricted WY instance with **run**, **info**, and use of the stored density matrix **dm**.
 
 .. code-block:: python
   :linenos:
 
     wy.UWY(mol, udm_tar)
 
-Showing use unrestricted WY instance with **run**, **info**, and use of the stored density matrix **dm**.
+Demonstrating an unrestricted WY instance with **run**, **info**, and use of the stored density matrix **dm**.
 
 
 .. code-block:: python
@@ -45,7 +44,7 @@ Showing use unrestricted WY instance with **run**, **info**, and use of the stor
 
     zmp.RZMP(mol, dm_tar)
 
-Showing use restricted ZMP instance with and without the density fitting procedure (**with_df = True**). Also shows use of **level_shift**, **zscf**, and how various lambda can be used.
+Demonstrating a restricted ZMP instance with and without the density fitting procedure (**with_df = True**). Also shows use of **level_shift**, **zscf**, and how various lambda can be used.
 
 
 .. code-block:: python
@@ -53,7 +52,7 @@ Showing use restricted ZMP instance with and without the density fitting procedu
 
     zmp.UZMP(mol, dm_tar)
 
-Showing use unrestricted ZMP instance with and without the density fitting procedure (**with_df = True**). Also shows use of **level_shift**, **zscf**, and how various lambda can be used.
+Demonstrating an unrestricted ZMP instance with and without the density fitting procedure (**with_df = True**). Also shows use of **level_shift**, **zscf**, and how various lambda can be used.
 
 
 
@@ -134,7 +133,7 @@ Calculate and plot regularized ZMP using the util functions with exchange-correl
 
     zmp.RZMP(mol, dm_tar)
 
-Showing the **guide**, **level_shift**, **dm**, and **zscf** routines.
+Demonstrating the **guide**, **level_shift**, **dm**, and **zscf** routines.
 
 .. code-block:: python
   :linenos:

@@ -1,8 +1,7 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
   
@@ -12,6 +11,10 @@
   
 
   
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
   
     <link rel="shortcut icon" href="_static/favicon-32x32.png"/>
   
@@ -19,7 +22,9 @@
   
 
   
-  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -27,15 +32,11 @@
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
         <script src="_static/language_data.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="author" title="About these documents" href="about.html" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -54,7 +55,7 @@
           
 
           
-            <a href="index.html" class="icon icon-home"> KS Pies
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> KS Pies
           
 
           
@@ -77,6 +78,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -90,12 +92,16 @@
 <li class="toctree-l1"><a class="reference internal" href="userguide.html">User guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Installation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#python-3">Python 3</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#dependencies">Dependencies</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#download-ks-pies">Download KS-Pies</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#extract-zip-to-a-folder">Extract zip to a folder</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#check-download">Check download</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#finished">Finished</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pip-install">Pip install</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#manual-install">Manual install</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#python-3">Python 3</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dependencies">Dependencies</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#download-ks-pies">Download KS-Pies</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#extract-zip-to-a-folder">Extract zip to a folder</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#check-download">Check download</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#finished">Finished</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="in_action.html">KS-Pies in Use</a></li>
@@ -106,6 +112,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -144,7 +151,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="index.html">Docs</a> &raquo;</li>
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
         
       <li>Installation</li>
     
@@ -167,13 +174,26 @@
             
   <div class="section" id="installation">
 <span id="installkspies"></span><h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
-<p>Due to the developmental and experimental nature of our scripts, we provide it as a set of run files instead of as a python package.</p>
+<div class="section" id="pip-install">
+<h2>Pip install<a class="headerlink" href="#pip-install" title="Permalink to this headline">¶</a></h2>
+<p>The easiest way to install this package is using the PyPI pip install</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python -m pip install kspies
+</pre></div>
+</div>
+<p>This distribution does not come with the extras (the example files used the in the tutorial), but these can be downloaded here: <a class="reference external" href="https://github.com/ssnam92/KSPies/tree/master/examples">example folder</a></p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Please note that our software can run on any operating system, but typical use is dependent on pySCF which is limited to Linux environments only.</p>
+</div>
+</div>
+<div class="section" id="manual-install">
+<h2>Manual install<a class="headerlink" href="#manual-install" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="python-3">
-<h2>Python 3<a class="headerlink" href="#python-3" title="Permalink to this headline">¶</a></h2>
+<h3>Python 3<a class="headerlink" href="#python-3" title="Permalink to this headline">¶</a></h3>
 <p>This software is written in python, so be sure to have an up to date instillation of python. We have verified use on python 3.6 and higher.</p>
 </div>
 <div class="section" id="dependencies">
-<h2>Dependencies<a class="headerlink" href="#dependencies" title="Permalink to this headline">¶</a></h2>
+<h3>Dependencies<a class="headerlink" href="#dependencies" title="Permalink to this headline">¶</a></h3>
 <p>KS-Pies requires the following dependencies, which were the most current versions at the time of this writing:</p>
 <dl class="field-list simple">
 <dt class="field-odd">numpy</dt>
@@ -187,23 +207,23 @@
 </dd>
 </dl>
 <p>Its entirely like that it works with previous versions, but we have not verified this.</p>
-<p>Its entirely like that it works with previous versions, but we have not verified this.</p>
 </div>
 <div class="section" id="download-ks-pies">
-<h2>Download KS-Pies<a class="headerlink" href="#download-ks-pies" title="Permalink to this headline">¶</a></h2>
+<h3>Download KS-Pies<a class="headerlink" href="#download-ks-pies" title="Permalink to this headline">¶</a></h3>
 <p>Download KS-Pies from our git: <a class="reference external" href="https://github.com/ssnam92/KSPies">https://github.com/ssnam92/KSPies</a></p>
 </div>
 <div class="section" id="extract-zip-to-a-folder">
-<h2>Extract zip to a folder<a class="headerlink" href="#extract-zip-to-a-folder" title="Permalink to this headline">¶</a></h2>
+<h3>Extract zip to a folder<a class="headerlink" href="#extract-zip-to-a-folder" title="Permalink to this headline">¶</a></h3>
 <p>On your system, extract to a local folder and note the full path of the folder.</p>
 </div>
 <div class="section" id="check-download">
-<h2>Check download<a class="headerlink" href="#check-download" title="Permalink to this headline">¶</a></h2>
+<h3>Check download<a class="headerlink" href="#check-download" title="Permalink to this headline">¶</a></h3>
 <p>A test example is provided as the example folder which can be used to verify that KS-pies is working correctly: <a class="reference internal" href="examples.html#full-example"><span class="std std-ref">1. Test Script</span></a> .</p>
 </div>
 <div class="section" id="finished">
-<h2>Finished<a class="headerlink" href="#finished" title="Permalink to this headline">¶</a></h2>
+<h3>Finished<a class="headerlink" href="#finished" title="Permalink to this headline">¶</a></h3>
 <p>At this point the program should be ready to run.</p>
+</div>
 </div>
 </div>
 
@@ -227,11 +247,19 @@
 
   <div role="contentinfo">
     <p>
+        
         &copy; Copyright 2020, Seungsoo Nam, Ryan J. McCarty, Hansol Park, Eunji Sim
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -242,7 +270,6 @@
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {

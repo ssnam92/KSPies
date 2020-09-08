@@ -1,3 +1,8 @@
+import sys
+
+currentpath = os.path.abspath('.')
+sys.path.insert(0, os.path.dirname(currentpath))
+
 import numpy as np
 from pyscf import gto, scf, dft
 from kspies import wy, zmp, util

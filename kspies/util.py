@@ -23,6 +23,10 @@ Utility Functions
 
     eval_vxc
 
+.. todo::
+
+    * Make IF statment for kspies_fort
+
 .. topic:: Internal Log
 
     **2020-06-06** SN made edits
@@ -36,7 +40,7 @@ from functools import reduce
 import numpy as np
 from scipy.special import sph_harm
 from scipy.spatial import distance_matrix
-import kspies.kspies_fort as kf
+import kspies_fort
 from pyscf import gto, dft
 from pyscf.dft import numint
 
@@ -265,7 +269,7 @@ def eval_vh(mol, coords, dm, Lvl=3, ang_lv=2): #only atoms dependent values
         rho_here = rho_here.reshape(n_rad, n_ang) #(r,\theta \phi)
         #r : n_rad, a : n_ang, l : (lmax+1)**2
         C = np.matmul(rho_here, ZI[i])
-        vH[idx] += kf.eval_vhm(C, ZvH[i, idx, :], d_atom[i, idx], rad, lmax, coords.shape[0], n_rad)
+        vH[idx] += kspies_fort.eval_vhm(C, ZvH[i, idx, :], d_atom[i, idx], rad, lmax, coords.shape[0], n_rad)
 
     return vH
 
