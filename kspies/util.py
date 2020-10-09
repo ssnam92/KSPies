@@ -40,7 +40,7 @@ from functools import reduce
 import numpy as np
 from scipy.special import sph_harm
 from scipy.spatial import distance_matrix
-import kspies_fort
+import kspies.kspies_fort as kspies_fort
 from pyscf import gto, dft
 from pyscf.dft import numint
 
