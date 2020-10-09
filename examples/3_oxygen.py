@@ -11,12 +11,12 @@ O 0.0   0.0 0.0
 basis = 'cc-pVQZ',spin=2,  verbose=3)
 
 #Reference calculation
-#mf=scf.UHF(mol)
-#mf.kernel()
-#mc=cc.CCSD(mf)
-#mc.kernel()
-#dm_tar = util.mo2ao(mf.mo_coeff, mc.make_rdm1())
-#np.save('P_tar',dm_tar)
+mf=scf.UHF(mol)
+mf.kernel()
+mc=cc.CCSD(mf)
+mc.kernel()
+dm_tar = util.mo2ao(mf.mo_coeff, mc.make_rdm1())
+np.save('P_tar',dm_tar)
 
 dm_tar=np.load('P_tar.npy')
 

@@ -1,8 +1,3 @@
-import sys
-
-currentpath = os.path.abspath('.')
-sys.path.insert(0, os.path.dirname(currentpath))
-
 import numpy as np
 from pyscf import gto, scf, dft
 from kspies import wy, zmp, util
@@ -20,7 +15,7 @@ dm_uhf = mf.make_rdm1()
 
 print("#####Check WY#####")
 print("!Expected -Ws = -14.57272496 !")
-
+#Check wy giving correct answers
 mw1 = wy.RWY(mol, dm_rhf)
 mw1.reg = 1e-5
 mw1.run()
@@ -32,19 +27,16 @@ mw2.run()
 mw2.info()
 
 print()
-
 print("#####Check ZMP#####")
 print("!Expected :                 gap=  0.1262392 dN=   78.65 C= 6.75e-04 !")
-
+#Check zmp giving correct answers
 mz1 = zmp.RZMP(mol, dm_rhf)
 mz1.zscf(16)
 
 mz2 = zmp.UZMP(mol, dm_uhf)
 mz2.zscf(16)
 
-print()
-
-#Check util giving correct answer
+#Check util giving correct answers
 grids = dft.gen_grid.Grids(mol)
 grids.build()
 coords = grids.coords
@@ -55,6 +47,7 @@ rho = dft.numint.eval_rho(mol, ao, dm_rhf, xctype='GGA')
 vj_ana = scf.hf.get_jk(mol, dm_rhf)[0]
 Eh_ana = .5*np.einsum('ij,ji', vj_ana, dm_rhf)
 
+print()
 print("#####Check util.eval_vh#####")
 print("Eh(numerical) - Eh(analytic) in Hartrees")
 saved = [-0.000269882, -0.000132191, -0.000072399, 
