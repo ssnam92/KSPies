@@ -28,7 +28,8 @@ Installation
   Note this downloads compiled Fortran binary directly (compiled on x86\_64 system) and this may not work properly depending on your system.
   If so, re-compile `kspies/kspies_fort.f90` with `f2py`. (See `kspies/compile.sh` for compile command)
   Or you can download directly from our git.
-  For example, if source file `wy.py` is in `/pylibs/kspies/wy.py`, please set `PYTHONPATH` as
+  If you download our source and if the source file `wy.py` is in `/pylibs/kspies/wy.py`, please set `PYTHONPATH` as
 
-        export PYTHONPATH=/pylibs:$PYTHONPATH
+        export PYTHONPATH="/pylibs:$PYTHONPATH"
+
 
