@@ -33,14 +33,17 @@ Written for Python 3.7.4 Lots of other text here, like details about how this us
 
     **2020-08-21** SN corrected typos, minor changes in attribute names, etc.
 
+    **2020-11-12** guiding potential parser
+
 """
 
 import time
 import numpy as np
 from scipy.optimize import minimize
 from pyscf import scf, dft
+from kspies import util
 try:
-    import kspies_fort
+    from kspies import kspies_fort
     kf_imported=True
 except:
     kf_imported=False
@@ -232,6 +235,7 @@ def basic(mw, mol, pbas, Sijt):
             raise AssertionError("dimension of given basis are not consistent with Sijt")
     mw.Tp = mw.mol2.intor_symmetric('int1e_kin')
 
+
 class RWY:
     """Summary: Perform WY calculation in restricted scheme
 
@@ -300,14 +304,19 @@ class RWY:
 
         if self.guide is None:
             self.V0 = np.zeros_like(self.dm_tar)
-        elif self.guide.lower() == 'faxc':
+        else:
+            fac_faxc, dft_xc = util.parse_guide(self.guide)
+
             N = self.mol.nelectron
             J_tar = scf.hf.get_jk(self.mol, self.dm_aux)[0]
-            self.V0 = ((N-1.)/N)*(J_tar)
-        else:
+            VFA = -(1./N)*(J_tar)
+
             mydft = dft.RKS(self.mol)
-            mydft.xc = self.guide
-            self.V0 = mydft.get_veff(self.mol, dm=self.dm_aux)
+            mydft.xc = dft_xc
+            Vxcdft = mydft.get_veff(self.mol, dm=self.dm_aux)
+
+            self.V0 = fac_faxc * VFA + Vxcdft
+
         self.F0 = self.T+self.V+self.V0
 
     def solve(self, b):
@@ -470,15 +479,19 @@ class UWY:
 
         if self.guide is None:
             self.V0 = np.zeros_like(self.dm_tar)
-        elif self.guide.lower() == 'faxc':
+        else:
+            fac_faxc, dft_xc = util.parse_guide(self.guide)
+
             N = self.mol.nelectron
             J_tar = scf.hf.get_jk(self.mol, self.dm_aux)[0]
-            VFA = ((N-1.)/N)*(J_tar[0]+J_tar[1])
-            self.V0 = (VFA, VFA)
-        else:
+            VFA = -(1./N)*(J_tar[0]+J_tar[1])
+
             mydft = dft.UKS(self.mol)
-            mydft.xc = self.guide
-            self.V0 = mydft.get_veff(self.mol, dm=self.dm_aux)
+            mydft.xc = dft_xc
+            Vxcdft = mydft.get_veff(self.mol, dm=self.dm_aux)
+
+            self.V0 = fac_faxc * np.array((VFA, VFA)) + Vxcdft
+
         self.F0 = (self.T+self.V+self.V0[0],
                    self.T+self.V+self.V0[1])
 

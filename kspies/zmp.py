@@ -37,6 +37,7 @@ Written for Python 3.7.4
 
 from functools import reduce
 import numpy as np
+from kspies import util
 from pyscf import scf, dft
 
 
@@ -202,13 +203,18 @@ class RZMP:
 
         if self.guide is None:
             self.V0=np.zeros_like(self.dm_tar)
-        elif self.guide.lower()=='faxc':
-            N=self.mol.nelectron
-            self.J_aux=self.mf.get_jk(self.mol,self.dm_aux)[0]
-            self.V0=((N-1.)/N)*(self.J_aux)
         else:
-            self.mf.xc=self.guide
-            self.V0=self.mf.get_veff(self.mol,dm=self.dm_aux)
+            fac_faxc, dft_xc = util.parse_guide(self.guide)
+
+            N = self.mol.nelectron
+            J_tar = scf.hf.get_jk(self.mol, self.dm_aux)[0]
+            VFA = -(1./N)*(J_tar)
+
+            self.mf.xc = dft_xc
+            Vxcdft = self.mf.get_veff(self.mol, dm=self.dm_aux)
+
+            self.V0 = fac_faxc * VFA + Vxcdft
+
         self.F0=self.T+self.V+self.V0
         self.initialized=True
 
@@ -331,16 +337,21 @@ class UZMP:
 
         if self.guide is None:
             self.V0 = np.zeros_like(self.dm_tar)
-        elif self.guide.lower() == 'faxc':
+
+        else:
+            fac_faxc, dft_xc = util.parse_guide(self.guide)
+
             N = self.mol.nelectron
-            self.J_aux = self.mf.get_jk(self.mol,self.dm_aux)[0]
-            VFA = ((N-1.)/N)*(self.J_aux[0]+self.J_aux[1])
-            self.V0 = (VFA,VFA)
-        else :
-            self.mf.xc = self.guide
-            self.V0 = self.mf.get_veff(self.mol, dm=self.dm_aux)
+            J_tar = scf.hf.get_jk(self.mol, self.dm_aux)[0]
+            VFA = -(1./N)*(J_tar[0]+J_tar[1])
+
+            self.mf.xc = dft_xc
+            Vxcdft = self.mf.get_veff(self.mol, dm=self.dm_aux)
+
+            self.V0 = fac_faxc * np.array((VFA, VFA)) + Vxcdft
+
         self.F0 = (self.T + self.V+self.V0[0],
-                 self.T + self.V+self.V0[1])
+                   self.T + self.V+self.V0[1])
         self.initialized = True
 
     def zscf(self, l):

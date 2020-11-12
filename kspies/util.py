@@ -19,6 +19,8 @@ Utility Functions
 
     mo2ao
 
+    wfnreader
+
     eval_vh
 
     eval_vxc
@@ -35,12 +37,14 @@ Utility Functions
 
     **2020-08-21** SN corrected typos, minor changes in attribute names, etc.
 
+    **2020-11-11** Added wfnreader
+
 """
 from functools import reduce
 import numpy as np
 from scipy.special import sph_harm
 from scipy.spatial import distance_matrix
-import kspies.kspies_fort as kspies_fort
+from kspies import kspies_fort 
 from pyscf import gto, dft
 from pyscf.dft import numint
 
@@ -96,10 +100,216 @@ def mo2ao(mo, p1, p2=None):
         dm2bb = _convert_rdm2(mo_b, mo_b, p2[2])
         return (dm1a, dm1b), (dm2aa, dm2ab, dm2bb)
 
+TYPE_MAP = [
+    [1],  # S
+    [2, 3, 4],  # P
+    [5, 8, 9, 6, 10, 7],  # D
+    [11,14,15,17,20,18,12,16,19,13],  # F
+    [21,24,25,30,33,31,26,34,35,28,22,27,32,29,23],  # G
+    [56,55,54,53,52,51,50,49,48,47,46,45,44,43,42,41,40,39,38,37,36],  # H
+]
+
+def readwfn(filename,mol):
+    """Summary: Convert wfn file to PySCF format
+
+        Args:
+            filename (string) : name of wfn file to convert
+            mol (object) : an instance of :class:`Mole`
+
+        Returns:
+            (tuple): tuple containing:
+
+                (ndarray): **mo_coeff** molecular orbital coefficient from wfn
+
+                (ndarray): **mo_occ** molecular orbital occupation number from wfn
+
+                (ndarray): **mo_energy** molecular orbital energy from wfn
+
+    """
+    if mol.cart:
+        raise NotImplementedError('Cartesian basis not available')
+      
+    import warnings
+    with open(filename, 'r') as f:
+        f.readline()
+        dat = f.readline().split()
+        norb = int(dat[-7])
+        nprm = int(dat[-4])
+        natm = int(dat[-2])
+        achrg = [] #For sanity check
+        coord = []
+        for i in range(natm):
+            dat = f.readline().split()
+            achrg.append(float(dat[-1]))
+            coord.append([float(c) for c in dat[4:7]])
+        chrg_criteria = sum(abs(mol.atom_charges() - np.array(achrg))) > 1e-10
+        coord_criteria = np.linalg.norm(mol.atom_coords() - np.array(coord)) >  1e-6
+        if chrg_criteria or coord_criteria:
+            warnings.warn("Different molecule!")
+
+        centr = []
+        typea = []
+        expos = []
+        for i in range(nprm//20+1):
+            centr += [int(a) for a in f.readline().split()[2:]]
+        for i in range(nprm//20+1):
+            typea += [int(a) for a in f.readline().split()[2:]]
+        for i in range(nprm//5+1):
+            expos += [float(a.replace('D', 'E')) for a in f.readline().split()[1:]]
+
+        MOs = []
+        occ = []
+        eng = []
+        for n in range(norb):
+            dat = f.readline().split()
+            eng.append(float(dat[-1]))
+            occ.append(float(dat[-5]))
+            orb = []
+            for i in range(nprm//5+1):
+                orb += [float(a.replace('D','E')) for a in f.readline().split()]
+            MOs.append(orb)
+    MOs = np.array(MOs).T
+
+    c2s=[]
+    for l in range(5):
+        c2s.append(np.linalg.pinv(gto.cart2sph(l)))
+    from pyscf.x2c import x2c
+    uncmol, ctr = x2c._uncontract_mol(mol, True, 0.)
+    uncmol_info = []
+    for ib in range(uncmol.nbas):
+        ia = uncmol.bas_atom(ib)
+        l = uncmol.bas_angular(ib)
+        es = uncmol.bas_exp(ib)
+        uncmol_info.append([ia+1, l, es[0]])
+
+    match = []
+    for ip in range(nprm):
+        am = [l for l in range(5) if typea[ip] in TYPE_MAP[l]]
+        match.append(uncmol_info.index([centr[ip], am, expos[ip]]))
+
+    Rot = np.zeros((uncmol.nao_nr(), nprm))
+    bidx = 0
+    for ib in range(uncmol.nbas):
+        l = uncmol.bas_angular(ib)
+        indices = [i for i, ip2b in enumerate(match) if ip2b==ib]
+        matchtype = [typea[idx] for idx in indices]
+        reorder = [TYPE_MAP[l].index(i) for i in matchtype]
+        trans = c2s[l]*1./float(uncmol._libcint_ctr_coeff(ib))
+        Rot[bidx:bidx+2*l+1, indices] = trans[:, reorder]
+        bidx += 2*l+1
+
+    #Outputs
+    cof = np.linalg.pinv(ctr)@Rot@MOs
+    eng = np.array(eng)
+    occ = np.array(occ)
+
+    restri = False
+    isvirt = False
+    if max(occ) > 1.3: 
+        #Assuming NO occupation numbers of unrestricted calculation 
+        #does not exceed 1.3
+        restri = True
+    if restri and norb > mol.nelectron//2:
+        isvirt = True
+    elif not restri and norb > mol.nelectron:
+        isvirt = True
+
+    s1e = mol.intor_symmetric('int1e_ovlp')
+    if restri:
+        if isvirt:
+            mo_occ = occ
+            mo_energy = eng
+            mo_coeff = cof
+        else:
+            mo_occ = np.zeros((mol.nao_nr()))
+            mo_energy = np.zeros((mol.nao_nr()))
+            mo_coeff = np.zeros((mol.nao_nr(), mol.nao_nr()))
+            mo_occ[:len(occ)] = occ
+            mo_energy[:len(eng)] = eng
+            mo_coeff[:, :len(occ)] = cof
+        chk = np.einsum('ki,kl,lj->ij', cof, s1e, cof)
+        condi = np.linalg.norm(chk - np.eye(len(chk[0])))
+    else: #assuming orbital order (alpha_0, alpha_1, ... beta_0, beta_1 ...)
+        if isvirt:
+            na = norb//2
+            mo_occ = np.array([occ[:na], occ[na:]])
+            mo_energy = np.array([eng[:na], eng[na:]])
+            mo_coeff = np.array([cof[:, :na], cof[:, na:]])
+        else:
+            na, nb = mol.nelec
+            if not na+nb == norb:
+                warnings.warn("Proper number of electron should give from Mole object")
+                return cof, occ, eng
+            mo_occ = np.zeros((2, mol.nao_nr()))
+            mo_energy = np.zeros((2, mol.nao_nr()))
+            mo_coeff = np.zeros((2, mol.nao_nr(), mol.nao_nr()))
+            mo_occ[0, :na] = occ[:na]
+            mo_occ[1, :nb] = occ[na:]
+            mo_energy[0, :na] = eng[:na]
+            mo_energy[1, :nb] = eng[na:]
+            mo_coeff[0,: ,:na] = cof[:, :na]
+            mo_coeff[1,: ,:nb] = cof[:, na:]
+        chk_a = np.einsum('ki,kl,lj->ij', cof[:, :na], s1e, cof[:, :na])
+        chk_b = np.einsum('ki,kl,lj->ij', cof[:, na:], s1e, cof[:, na:])
+        condi = np.linalg.norm(chk_a - np.eye(len(chk_a[0])))
+        condi += np.linalg.norm(chk_b - np.eye(len(chk_b[0])))
+
+    if condi > 1e-5:
+        print("Orthonrmal conditonal number:", condi, "> 1e-5")
+        warnings.warn("Converted MOs are not orthonormal")
+    return mo_coeff, mo_occ, mo_energy
+
+def parse_guide(description):
+    """Summary: Guiding potential parser
+
+        Args:
+            description (str) : guiding potential description for inversion
+
+        Returns:
+            (tuple): tuple containing:
+
+                (float): **fac_faxc** factor for Fermi-Amaldi potential (faxc)
+
+                (string): **dft_xc** description of dft xc
+
+    """
+    def _parse_guide(description):
+        fac_faxc = 0
+        dftxc = ''
+        for token in description.replace('-', '+-').replace(';+', ';').split('+'):
+            if token[0] == '-':
+                sign = -1
+                token = token[1:]
+            else:
+                sign = 1
+
+            if '*' in token:
+                fac, key = token.split('*')
+                if fac[0].isalpha():
+                    fac, key = key, fac
+                fac = sign * float(fac)
+            else:
+                fac, key = sign, token
+            if key.lower() == 'faxc':
+                fac_faxc += fac
+            else:
+                dftxc += '+'+str(fac)+'*'+key
+        return fac_faxc, dftxc[1:]
+
+    if ',' in description:
+        x_code, c_code = description.split(',')
+        fx,dft_x = _parse_guide(x_code)
+        fc,dft_c = _parse_guide(c_code)
+        fac_faxc = fx + fc
+        dft_xc = dft_x + ',' + dft_c
+    else:
+        fac_faxc, dft_xc = _parse_guide(description)
+    return fac_faxc, dft_xc
+
 #controller
 radi_method = dft.radi.gauss_chebyshev
 
-def eval_vh(mol, coords, dm, Lvl=3, ang_lv=2): #only atoms dependent values
+def eval_vh(mol, coords, dm, Lvl=3, ang_lv=2): #only atom dependent values
     """Summary: Calculate real-space Hartree potential from given density matrix. See [Mirko2014]_ for some extra context.
 
         Args:
@@ -115,12 +325,9 @@ def eval_vh(mol, coords, dm, Lvl=3, ang_lv=2): #only atoms dependent values
     def _Cart_Spharm(xyz, lmax):
         """Summary: Cartesian spherical harmonics Z for given xyz coordinate
 
-        .. todo::
-            Seungsoo, PLease address arguments here
-
         Args:
-            xyz (?) :
-            lmax (?) :
+            xyz (ndarray) : 3D coordinates to calculate spherical harmonics
+            lmax (integer) : Maximum angular momentum quantum number to calculate spherical harmonics
 
         Returns:
             (array): from m = -l to l, return array Z of shape (ncoord, lmax+1, 2*lmax+1)
@@ -152,13 +359,10 @@ def eval_vh(mol, coords, dm, Lvl=3, ang_lv=2): #only atoms dependent values
     def _grid_refine(n_rad, n_ang, grid):
         """Summary: Reorder grids generated by PySCF for easy handling
 
-        .. todo::
-            Seungsoo, PLease address arguments here
-
         Args:
-            n_rad (?) :
-            n_ang (?) :
-            grid (?) :
+            n_rad (integer) : the number of radial grid
+            n_ang (integer) : the number of angular grid
+            grid (ndarray) : 1D sliced grid info (x, y, z coordinates or weights) generated by PySCF
 
         Returns:
             (ndarray): **Reordered gridpoints** n_ang grids belonging to the same radial grid
