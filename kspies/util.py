@@ -42,11 +42,18 @@ Utility Functions
 """
 from functools import reduce
 import numpy as np
+import warnings
+
 from scipy.special import sph_harm
 from scipy.spatial import distance_matrix
-from kspies import kspies_fort 
-from pyscf import gto, dft
+from scipy.interpolate import CubicSpline
+from pyscf import gto, dft, scf
 from pyscf.dft import numint
+try:
+    from kspies import kspies_fort
+    kf_imported=True
+except:
+    kf_imported=False
 
 def mo2ao(mo, p1, p2=None):
     """Summary: Convert mo-basis density matrices to basis-set representation density matrices
@@ -109,7 +116,7 @@ TYPE_MAP = [
     [56,55,54,53,52,51,50,49,48,47,46,45,44,43,42,41,40,39,38,37,36],  # H
 ]
 
-def readwfn(filename,mol):
+def readwfn(filename, mol, makerdm=False):
     """Summary: Convert wfn file to PySCF format
 
         Args:
@@ -126,10 +133,10 @@ def readwfn(filename,mol):
                 (ndarray): **mo_energy** molecular orbital energy from wfn
 
     """
+
     if mol.cart:
         raise NotImplementedError('Cartesian basis not available')
       
-    import warnings
     with open(filename, 'r') as f:
         f.readline()
         dat = f.readline().split()
@@ -227,8 +234,10 @@ def readwfn(filename,mol):
             mo_occ[:len(occ)] = occ
             mo_energy[:len(eng)] = eng
             mo_coeff[:, :len(occ)] = cof
-        chk = np.einsum('ki,kl,lj->ij', cof, s1e, cof)
+        chk = np.einsum('ki,kl,lj->ij', cof, s1e, cof, optimize='greedy')
         condi = np.linalg.norm(chk - np.eye(len(chk[0])))
+        if makerdm:
+            dm = scf.hf.make_rdm1(mo_coeff, mo_occ)
     else: #assuming orbital order (alpha_0, alpha_1, ... beta_0, beta_1 ...)
         if isvirt:
             na = norb//2
@@ -249,18 +258,24 @@ def readwfn(filename,mol):
             mo_energy[1, :nb] = eng[na:]
             mo_coeff[0,: ,:na] = cof[:, :na]
             mo_coeff[1,: ,:nb] = cof[:, na:]
-        chk_a = np.einsum('ki,kl,lj->ij', cof[:, :na], s1e, cof[:, :na])
-        chk_b = np.einsum('ki,kl,lj->ij', cof[:, na:], s1e, cof[:, na:])
+        chk_a = np.einsum('ki,kl,lj->ij', cof[:, :na], s1e, cof[:, :na], optimize='greedy')
+        chk_b = np.einsum('ki,kl,lj->ij', cof[:, na:], s1e, cof[:, na:], optimize='greedy')
         condi = np.linalg.norm(chk_a - np.eye(len(chk_a[0])))
         condi += np.linalg.norm(chk_b - np.eye(len(chk_b[0])))
+        if makerdm:
+            dm = scf.uhf.make_rdm1(mo_coeff, mo_occ)
 
     if condi > 1e-5:
         print("Orthonrmal conditonal number:", condi, "> 1e-5")
         warnings.warn("Converted MOs are not orthonormal")
-    return mo_coeff, mo_occ, mo_energy
+    if makerdm:
+        return mo_coeff, mo_occ, mo_energy, dm
+    else:
+        return mo_coeff, mo_occ, mo_energy
+
 
 def parse_guide(description):
-    """Summary: Guiding potential parser
+    """Summary: Guiding potential parser for ZMP and WY
 
         Args:
             description (str) : guiding potential description for inversion
@@ -270,7 +285,7 @@ def parse_guide(description):
 
                 (float): **fac_faxc** factor for Fermi-Amaldi potential (faxc)
 
-                (string): **dft_xc** description of dft xc
+                (string): **dft_xc** description of dft part of xc
 
     """
     def _parse_guide(description):
@@ -399,6 +414,75 @@ def eval_vh(mol, coords, dm, Lvl=3, ang_lv=2): #only atom dependent values
         n_ang = dft.gen_grid.LEBEDEV_ORDER[LEBEDEV_ORDER_IDX[minarg]]
         return n_ang
 
+    def eval_vhm(C, ZvH, d_atom, rad, lmax, n_coords, n_rad):
+        """Summary: Python version of eval_vhm
+        """
+
+        def _eval_I1(C, rad, l, n_rad):
+            I1 = np.zeros(n_rad)
+            integrand = np.zeros((n_rad-1,4))
+            tmp = np.zeros(n_rad-1)
+
+            for j in range(4):
+                integrand[:,j] = ( rad[1:]**(6.+l-j) - rad[:n_rad-1]**(6.+l-j) ) / (6.+l-j)
+
+            for i in range(n_rad-2):
+                tmp[i] = np.dot(integrand[i,:], C[:,i])
+        
+            for i in range(1,n_rad):
+                I1[i] = I1[i-1] + tmp[i-1]
+        
+            return I1
+
+        def _eval_I2(C, rad, l, n_rad):
+            I2 =  np.zeros(n_rad)
+            integrand = np.zeros((n_rad-1,4))
+            tmp = np.zeros(n_rad-1)
+            l = int(l)
+
+            for j in range(4):
+                if (5.-l-j) != 0 :
+                    integrand[:,j] = ( rad[1:]**(5.-l-j) - rad[:n_rad-1]**(5.-l-j) ) / (5.-l-j)
+                else:
+                    integrand[:,6-l-1] = np.log(rad[1:]/rad[:n_rad-1])
+        
+            for i in range(n_rad-1):
+                tmp[i] = np.dot(integrand[i,:], C[:,i])
+        
+            for i in range(1,n_rad):
+                I2[n_rad-i-1] = I2[n_rad-i] + tmp[n_rad-i-1]
+
+            return I2
+
+        def _convert_coeff(c,x):
+            nc=np.zeros_like(c)
+            nx=np.size(x)
+            for i in range(nx-1):
+                nc[0,:]=c[0,:]
+                nc[1,:]=c[1,:]-3*c[0,:]*x[:nx-1]
+                nc[2,:]=c[2,:]-2*c[1,:]*x[:nx-1]+3*c[0,:]*x[:nx-1]**2
+                nc[3,:]=c[3,:]-1*c[2,:]*x[:nx-1]+1*c[1,:]*x[:nx-1]**2-1*c[0,:]*x[:nx-1]**3
+            return nc
+
+        vh = np.zeros((ZvH.shape[0]))
+
+        l = np.zeros((lmax+1)**2)
+        for i in range(lmax+1):
+            for j in range(-i, i):
+                l[i*(i+1)+j] = i
+
+        for i in range((lmax+1)**2):
+            f=CubicSpline(rad,C[:,i])
+            c=f.c
+            c=_convert_coeff(c,rad)
+            I1 = _eval_I1(c, rad, l[i], n_rad)
+            I2 = _eval_I2(c, rad, l[i], n_rad)
+            I = I1/(rad**(l[i]+1.)) + I2*(rad**(l[i]))
+            f = CubicSpline(rad,I)
+            v=f(d_atom)
+            vh += ZvH[:,i]*v/(2.*l[i]+1.)
+        return 4*np.pi*vh
+
     l_basis = np.max((mol._bas[:, 1]))
     l_margin = np.array([4, 6, 8, 12, 16])
     lmax = max(2*l_basis, l_basis + l_margin[ang_lv])
@@ -473,7 +557,10 @@ def eval_vh(mol, coords, dm, Lvl=3, ang_lv=2): #only atom dependent values
         rho_here = rho_here.reshape(n_rad, n_ang) #(r,\theta \phi)
         #r : n_rad, a : n_ang, l : (lmax+1)**2
         C = np.matmul(rho_here, ZI[i])
-        vH[idx] += kspies_fort.eval_vhm(C, ZvH[i, idx, :], d_atom[i, idx], rad, lmax, coords.shape[0], n_rad)
+        if kf_imported:
+            vH[idx] += kspies_fort.eval_vhm(C, ZvH[i, idx, :], d_atom[i, idx], rad, lmax, coords.shape[0], n_rad)
+        else:
+            vH[idx] += eval_vhm(C, ZvH[i, idx, :], d_atom[i, idx], rad, lmax, coords.shape[0], n_rad)
 
     return vH
 
