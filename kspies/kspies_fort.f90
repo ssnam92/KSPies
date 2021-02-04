@@ -1,11 +1,10 @@
       SUBROUTINE wy_hess(SIJT, MO, EIA, NOCC, NVIR, NPOT, HESS)
 !*  =====================================================================
-!     GET CUBIC SPLINE COEFFICIENT FROM X, Y
-!     X : VECTOR SIZE N
-!     Y : VECTOR SIZE N
-!     N : VECTOR SIZE
-!     RETURN: CUBIC_COEFF(4,N-1)
-!     SCIPY.CUBICSPLINE
+!     CALCULATE WY HESSIAN
+!     SIJT : ARRAY SHAPE (NOCC+NVIR,NOCC+NVIR,NPOT)
+!     MO : ARRAY SHAPE (NOCC+NVIR,NOCC+NVIR)
+!     EIA : ARRAY SHAPE (NOCC,NVIR)
+!     RETURN: HESSIAN(NOCC+NVIR,NOCC+NVIR)
 !*  =====================================================================
       USE omp_lib
       IMPLICIT NONE
@@ -35,8 +34,8 @@
 !$OMP END PARALLEL DO
 
       !$OMP PARALLEL DO REDUCTION(+:HESS)
-      DO T=1,NBAS
-          DO U=1,NBAS
+      DO T=1,NPOT
+          DO U=1,NPOT
               DO A=1,NVIR
                   DO I=1,NOCC
                       HESS(U,T) = HESS(U,T) &

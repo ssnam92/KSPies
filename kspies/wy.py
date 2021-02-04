@@ -35,25 +35,29 @@ Written for Python 3.7.4 Lots of other text here, like details about how this us
 
     **2020-11-12** guiding potential parser
 
+    **2021-01-07** Analytical three-center overlap integral with auxiliary basis
+
 """
 
 import time
 import numpy as np
 from scipy.optimize import minimize
-from pyscf import scf, dft
+from pyscf import gto, scf, dft, df
 from kspies import util
+from opt_einsum import contract
 try:
     from kspies import kspies_fort
     kf_imported=True
 except:
     kf_imported=False
+#kf_imported=False
 
 def numint_3c2b(mol, pbas, level=5):
     """Summary: Three-center overlap integral with different atomic- and potential- basis sets with numerical integration
 
     Args:
         mol : an instance of :class:`Mole`
-        pbas (dict or str) : potential basis set for WY
+        pbas (list) : potential basis set for WY, given as a list of functions 
         level (int 0~9) : PySCF preset mesh grid used for numerical integration. Default is 5
 
     Returns:
@@ -62,23 +66,27 @@ def numint_3c2b(mol, pbas, level=5):
         and n2 is the length of potential basis set
 
     """
-    mol2 = mol.copy()
-    mol2.basis = pbas
-    mol2.build()
     grids = dft.gen_grid.Grids(mol)
     grids.level = level
     grids.build()
     coords = grids.coords
     weights = grids.weights
     ao1 = dft.numint.eval_ao(mol, coords, deriv=0)
-    ao2 = dft.numint.eval_ao(mol2, coords, deriv=0)
+    ao2 = []
+    n1 = mol.nao_nr()
+    n2 = 0
+
+    for vr_generator in pbas:
+       n2 += 1
+       ao2.append(vr_generator(coords))
+    ao2=np.array(ao2).T
+
     t0 = time.time()
     if kf_imported: #Utilize faster numerical integration
-        Sijt = kspies_fort.ovlp_aab(weights, ao1, ao2, mol.nao_nr(), mol2.nao_nr(), len(weights))
+        Sijt = kspies_fort.ovlp_aab(weights, ao1, ao2, n1, n2, len(weights))
     else: #kspies_fort not imported, us numpy
-        Sijt = np.einsum('ri, rj, rk, r->ijk', ao1, ao1, ao2, weights, optimize = 'greedy')
+        Sijt = contract('ri, rj, rk, r->ijk', ao1, ao1, ao2, weights)
     n1 = mol.nao_nr()
-    n2 = mol2.nao_nr()
     t = (time.time()-t0)/60.
     print("Three-center overlap integral by numerical integration")
     print("n1  : %4i"%n1)
@@ -95,6 +103,7 @@ def time_profile(mw):
     * solve_eig  : time to construct fock matrix and diagonalize it
     * Ws_eval    : time to evaluate objective function Ws
     * Gd_eval    : time to evaluate gradient of objective function
+    * Hs_eval    : time to evaluate hessian of objective function
 
     """
     print("*********Time Profile*********")
@@ -174,17 +183,20 @@ def info(mw):
     print("func_value : %15.8f"%mw.res.fun)
     print("max_grad   : %15.8f"%maxgrd)
 
-def basic(mw, mol, pbas, Sijt):
+def basic(mw, mol, pbas, Sijt, tbas, Smnt):
     """Summary: Common basic initialization function for RWY and UWY objects
 
     Args:
         mw : RWY or UWY object
         mol : an instance of :class:`Mole`
-        pbas (dict or str) : to define potential basis set for WY
-        Sijt (ndarray) : three-center overlap integral with shape ((n1, n1, n2))
-          where n1 is the length of atomic orbital basis set defined in mol,
-          while n2 is the length of potential basis set
-
+        pbas (dict or str) : potential basis set for WY
+        Sijt (ndarray) : three-center overlap integral with shape ((no, no, np))
+          where no is the length of atomic orbital basis set defined in mol,
+          while np is the length of potential basis set
+        tbas (dict or str) : basis set of target density matrix
+        Smnt (ndarray) : three-center overlap integral with shape ((nt, nt, np))
+          where nt is the length of atomic orbital basis set that defines target density matrix,
+          while np is the length of potential basis set
     """
 
     mw.mol = mol
@@ -194,23 +206,66 @@ def basic(mw, mol, pbas, Sijt):
     mw.method = 'trust-exact'
     mw.verbose = mw.mol.verbose
     mw.stdout = mw.mol.stdout
+    mw.Smnt = None
 
     is_model1 = len(mw.mol._atm) == 0
     is_model2 = len(mw.mol._bas) == 0
     mw.model = is_model1 and is_model2
-    if mw.model: #Check if defined mol is molecule or model
+    if mw.model: #Check if defined mol is a molecule or model
+        mw.guide = None
         if Sijt is None:
             raise AssertionError("Three-center overlap integeral should be given for model system")
         if kf_imported:
             mw.Sijt = np.array(Sijt, order='F')
+            if Smnt is not None:
+                mw.Smnt = np.array(Smnt, order='F')
         else:
             mw.Sijt = np.array(Sijt, order='C')
+            if Smnt is not None:
+                mw.Smnt = np.array(Smnt, order='C')
         return
 
     mw.S = mw.mol.intor_symmetric('int1e_ovlp')
     mw.T = mw.mol.intor_symmetric('int1e_kin')
     mw.V = mw.mol.intor_symmetric('int1e_nuc')
 
+    mw.Sijt = None
+    mw.Smnt = None
+    mw.tmol = mol
+    mw.Tp = None
+    if pbas is None:
+        #aobas = potbas
+        mw.Tp = mw.T
+        mw.Sijt = mol.intor('int3c1e')
+        if tbas is not None:
+            tmol = df.make_auxmol(mol, auxbasis=tbas)
+            if not gto.mole.same_basis_set(mol, tmol): #bas = pbas != tbas
+                mw.Smnt = df.incore.aux_e2(tmol, mol, intor='int3c1e')
+                mw.tmol = tmol
+
+    elif not callable(pbas[0]):
+        #bas != pbas, where pbas is pyscf-supported style gto
+        mw.pmol = df.make_auxmol(mol, auxbasis=pbas)
+        mw.Tp = mw.pmol.intor_symmetric('int1e_kin')
+        mw.Sijt = df.incore.aux_e2(mol, mw.pmol, intor='int3c1e')
+        if tbas is not None:
+            tmol = df.make_auxmol(mol, auxbasis=tbas)
+            if not gto.mole.same_basis_set(mw.pmol, tmol): #pbas != tbas
+                mw.Smnt = df.incore.aux_e2(tmol, mw.pmol, intor='int3c1e')
+                mw.tmol = tmol
+
+    else: 
+        #potential basis is given a list of user-defined functions
+        #In this case, mw.Tp should be given by the user
+        if Sijt is None:
+            mw.Sijt = numint_3c2b(mol, pbas)
+        else : 
+            mw.Sijt = Sijt
+
+    mw.nbas = len(mw.Sijt[:, 0, 0])
+    mw.npot = len(mw.Sijt[0, 0, :])
+
+    '''
     def mol2build(pbas):
         mw.mol2 = mol.copy()
         mw.mol2.basis = pbas
@@ -234,6 +289,7 @@ def basic(mw, mol, pbas, Sijt):
         else:
             raise AssertionError("dimension of given basis are not consistent with Sijt")
     mw.Tp = mw.mol2.intor_symmetric('int1e_kin')
+    '''
 
 
 class RWY:
@@ -244,8 +300,9 @@ class RWY:
     Attributes:
         mol (object) : an instance of :class:`Mole`
         dm_tar (ndarray) : Density matrix of target density in atomic orbital basis representation
-        pbas (dict or str) : Potential basis set for WY. If not given, same with atomic orbital basis
-        Sijt (ndarray) : Three-center overlap integral. If not given, calculated analytically as overlap of atomic orbital basis
+        pbas (dict or str or list) : Potential basis set for WY. If not given, same with atomic orbital basis. 
+                                     If this is given as a list of function, those functions are recognized as potential basis set.
+        Sijt (ndarray) : Three-center overlap integral. Ignored (calculated analitically) when pbas is given as dict or str.
         dm_aux (ndarray) : Auxilary density matrix to construct density-dependent part of guiding potential. Default is dm_tar
         guide (str) : Guiding potential. Can be set as
 
@@ -267,9 +324,9 @@ class RWY:
         * **b** (ndarray) – optimized linear combination coefficients
 
     """
-    def __init__(self, mol, dm_tar, pbas=None, Sijt=None, dm_aux=None):
+    def __init__(self, mol, dm_tar, pbas=None, Sijt=None, tbas=None, Smnt=None, dm_aux=None):
         t = time.time()
-        basic(self, mol, pbas, Sijt)
+        basic(self, mol, pbas, Sijt, tbas, Smnt)
 
         self.nbas = len(self.Sijt[:, 0, 0])
         self.npot = len(self.Sijt[0, 0, :])
@@ -308,14 +365,26 @@ class RWY:
             fac_faxc, dft_xc = util.parse_guide(self.guide)
 
             N = self.mol.nelectron
-            J_tar = scf.hf.get_jk(self.mol, self.dm_aux)[0]
+            dm_aux_ao=scf.addons.project_dm_nr2nr(self.tmol, self.dm_aux, self.mol)
+            #Make same dimension 
+
+            J_tar = scf.hf.get_jk(self.mol, dm_aux_ao)[0]
             VFA = -(1./N)*(J_tar)
 
             mydft = dft.RKS(self.mol)
             mydft.xc = dft_xc
-            Vxcdft = mydft.get_veff(self.mol, dm=self.dm_aux)
+            Vxcdft = mydft.get_veff(self.mol, dm=dm_aux_ao)
 
             self.V0 = fac_faxc * VFA + Vxcdft
+
+            if self.Smnt is not None:
+                #Make target dm ao representation counterparts
+                self.V_tbas = self.tmol.intor('int1e_nuc')
+                VFA_tbas = -(1./N)*scf.hf.get_jk(self.tmol, self.dm_aux)[0]
+                mydft_tbas = dft.RKS(self.tmol)
+                mydft_tbas.xc = dft_xc
+                Vxcdft_tbas = mydft_tbas.get_veff(self.tmol, dm=self.dm_aux)
+                self.V0_tbas = fac_faxc * VFA_tbas + Vxcdft_tbas
 
         self.F0 = self.T+self.V+self.V0
 
@@ -331,7 +400,7 @@ class RWY:
         if not np.allclose(b, self.internal_b, rtol=1e-12, atol=1e-12):
             t = time.time()
             self.internal_b = b.copy()
-            self.fock = self.F0+np.einsum('t,ijt->ij', b, self.Sijt)
+            self.fock = self.F0+np.einsum('t,ijt->ij', b, self.Sijt) 
             self.mo_energy, self.mo_coeff = scf.hf.eig(self.fock, self.S)
             self.mo_occ = self.get_occ(self.mo_energy, self.mo_coeff)
             self.dm = self.make_rdm1(self.mo_coeff, self.mo_occ)
@@ -339,9 +408,19 @@ class RWY:
 
             t = time.time()
             if kf_imported:
-                self.grad = kspies_fort.einsum_ij_ijt_2t((self.dm-self.dm_tar), self.Sijt, self.nbas, self.npot)
+                if self.Smnt is None:
+                    #AO basis for WY is same with AO basis of target density
+                    self.grad = kspies_fort.einsum_ij_ijt_2t((self.dm-self.dm_tar), self.Sijt, self.nbas, self.npot)
+                else:
+                    self.grad = kspies_fort.einsum_ij_ijt_2t(self.dm, self.Sijt, self.nbas, self.npot)
+                    self.grad -= kspies_fort.einsum_ij_ijt_2t(self.dm_tar, self.Smnt, len(self.Smnt[:, 0, 0]), self.npot)
             else:
-                self.grad = np.einsum('ij,ijt->t', (self.dm-self.dm_tar), self.Sijt)
+                if self.Smnt is None:
+                    self.grad = contract('ij,ijt->t', (self.dm-self.dm_tar), self.Sijt)
+                else:
+                    self.grad = contract('ij,ijt->t', self.dm, self.Sijt)
+                    self.grad -= contract('ij,ijt->t', self.dm_tar, self.Smnt)
+
             self.t_gd += time.time()-t
 
     def eval_Ws(self, b):
@@ -353,7 +432,12 @@ class RWY:
         t = time.time()
 
         Ws = np.einsum('ij,ji', self.T, self.dm)
-        Ws += np.einsum('ij,ji', (self.V+self.V0), (self.dm-self.dm_tar))
+
+        if self.Smnt is None:
+            Ws += np.einsum('ij,ji', (self.V+self.V0), (self.dm-self.dm_tar))
+        else:
+            Ws += np.einsum('ij,ji', (self.V+self.V0), self.dm)
+            Ws -= np.einsum('ij,ji', (self.V_tbas+self.V0_tbas), self.dm_tar)
         Ws += np.einsum('t,t', b, self.grad)
         self.Ws = Ws
 
@@ -385,12 +469,15 @@ class RWY:
         nocc = self.mol.nelectron//2
         eia = self.mo_energy[:nocc, None] - self.mo_energy[None, nocc:]
 
+        tol_zero = 1e+20
+        with np.errstate(divide='ignore'):
+            eia = np.nan_to_num(eia**-1, posinf=tol_zero, neginf=-tol_zero)**-1
+
         if kf_imported:
-            self.Hs=kspies_fort.wy_hess(self.Sijt,self.mo_coeff,eia,nocc,self.nbas-nocc,self.npot)
+            self.Hs=kspies_fort.wy_hess(self.Sijt, self.mo_coeff, eia, nocc, self.nbas-nocc, self.npot)
         else:
-            Siat = np.einsum('mi,va,mvt->iat',
-                             self.mo_coeff[:,:nocc],self.mo_coeff[:,nocc:],self.Sijt)
-            self.Hs= 4*np.einsum('iau,iat,ia->ut',Siat,Siat,eia**-1)
+            Siat = contract('mi,va,mvt->iat', self.mo_coeff[:,:nocc], self.mo_coeff[:,nocc:], self.Sijt)
+            self.Hs= 4*contract('iau,iat,ia->ut', Siat, Siat, eia**-1)
 
         if self.reg > 0:
             self.Hs -= 4*self.reg*self.Tp
@@ -407,7 +494,7 @@ class RWY:
         """
         if b is None:
             b = self.b
-        Dvb = 2*np.einsum('s,st,t', b, self.Tp, b)
+        Dvb = 2*np.einsum('s,st,t', b, self.Tp, b, optimize=True)
         return Dvb
 
 class UWY:
@@ -441,9 +528,9 @@ class UWY:
         * **b** (ndarray) – optimized linear combination coefficients.
 
     """
-    def __init__(self, mol, dm_tar, pbas=None, Sijt=None, dm_aux=None):
+    def __init__(self, mol, dm_tar, pbas=None, Sijt=None, tbas=None, Smnt=None, dm_aux=None):
         t = time.time()
-        basic(self, mol, pbas, Sijt)
+        basic(self, mol, pbas, Sijt, tbas, Smnt)
 
         self.nelec = [int((mol.nelectron+mol.spin)//2), int((mol.nelectron-mol.spin)//2)]
         self.nbas = len(self.Sijt[:, 0, 0])
@@ -483,12 +570,24 @@ class UWY:
             fac_faxc, dft_xc = util.parse_guide(self.guide)
 
             N = self.mol.nelectron
-            J_tar = scf.hf.get_jk(self.mol, self.dm_aux)[0]
+            dm_aux_ao=scf.addons.project_dm_nr2nr(self.tmol, self.dm_aux, self.mol)
+
+            J_tar = scf.hf.get_jk(self.mol, dm_aux_ao)[0]
             VFA = -(1./N)*(J_tar[0]+J_tar[1])
 
             mydft = dft.UKS(self.mol)
             mydft.xc = dft_xc
-            Vxcdft = mydft.get_veff(self.mol, dm=self.dm_aux)
+            Vxcdft = mydft.get_veff(self.mol, dm=dm_aux_ao)
+
+            if self.Smnt is not None:
+                #Make tbas matrix representation
+                self.V_tar = self.tmol.intor('int1e_nuc')
+                J_tbas = scf.hf.get_jk(self.tarmol, self.dm_aux)[0]
+                VFA_tbas = -(1./N)*(J_tbas[0]+J_tbas[1])
+                mydft_tbas = dft.UKS(self.tmol)
+                mydft_tbas.xc = dft_xc
+                Vxcdft_tbas = mydft_tar.get_veff(self.tmol, dm=self.dm_aux)
+                self.V0_tbas = fac_faxc * VFA_tbas + Vxcdft_tbas
 
             self.V0 = fac_faxc * np.array((VFA, VFA)) + Vxcdft
 
@@ -507,8 +606,8 @@ class UWY:
         if not np.allclose(b, self.internal_b, rtol=1e-12, atol=1e-12):
             t = time.time()
             self.internal_b = b.copy()
-            Fa = self.F0[0]+np.einsum('t,ijt->ij', b[:self.npot], self.Sijt)
-            Fb = self.F0[1]+np.einsum('t,ijt->ij', b[self.npot:], self.Sijt)
+            Fa = self.F0[0]+contract('t,ijt->ij', b[:self.npot], self.Sijt)
+            Fb = self.F0[1]+contract('t,ijt->ij', b[self.npot:], self.Sijt)
             self.fock = ((Fa, Fb))
             e_a, c_a = scf.hf.eig(Fa, self.S)
             e_b, c_b = scf.hf.eig(Fb, self.S)
@@ -521,11 +620,25 @@ class UWY:
 
             t = time.time()
             if kf_imported:
-                self.grad_a = kspies_fort.einsum_ij_ijt_2t((self.dm[0]-self.dm_tar[0]), self.Sijt, self.nbas, self.npot)
-                self.grad_b = kspies_fort.einsum_ij_ijt_2t((self.dm[1]-self.dm_tar[1]), self.Sijt, self.nbas, self.npot)
+                if self.Smnt is None:
+                    #AO basis for WY is same with AO basis of target density
+                    self.grad_a = kspies_fort.einsum_ij_ijt_2t((self.dm[0]-self.dm_tar[0]), self.Sijt, self.nbas, self.npot)
+                    self.grad_b = kspies_fort.einsum_ij_ijt_2t((self.dm[1]-self.dm_tar[1]), self.Sijt, self.nbas, self.npot)
+                else:
+                    self.grad_a = kspies_fort.einsum_ij_ijt_2t(self.dm[0], self.Sijt, self.nbas, self.npot)
+                    self.grad_a -= kspies_fort.einsum_ij_ijt_2t(self.dm_tar[0], self.Smnt, len(self.Smnt[:, 0, 0]), self.npot)
+                    self.grad_b = kspies_fort.einsum_ij_ijt_2t(self.dm[1], self.Sijt, self.nbas, self.npot)
+                    self.grad_b -= kspies_fort.einsum_ij_ijt_2t(self.dm_tar[1], self.Smnt, len(self.Smnt[:, 0, 0]), self.npot)
             else:
-                self.grad_a = np.einsum('ij,ijt->t', (self.dm[0]-self.dm_tar[0]), self.Sijt)
-                self.grad_b = np.einsum('ij,ijt->t', (self.dm[1]-self.dm_tar[1]), self.Sijt)
+                if self.Smnt is None:
+                    self.grad_a = contract('ij,ijt->t', (self.dm[0]-self.dm_tar[0]), self.Sijt)
+                    self.grad_b = contract('ij,ijt->t', (self.dm[1]-self.dm_tar[1]), self.Sijt)
+                else:
+                    self.grad_a = contract('ij,ijt->t', self.dm[0], self.Sijt)
+                    self.grad_a -= contract('ij,ijt->t', self.dm_tar[0], self.Smnt)
+                    self.grad_b = contract('ij,ijt->t', self.dm[1], self.Sijt)
+                    self.grad_b -= contract('ij,ijt->t', self.dm_tar[1], self.Smnt)
+
             self.t_gd += time.time()-t
 
     def eval_Ws(self, b):
@@ -537,9 +650,20 @@ class UWY:
         t = time.time()
 
         Ws = np.einsum('ij,ji', self.T, (self.dm[0]+self.dm[1]))
-        Ws += np.einsum('ij,ji', self.V, (self.dm[0]+self.dm[1]-self.dm_tar[0]-self.dm_tar[1]))
-        Ws += np.einsum('ij,ji', self.V0[0], (self.dm[0]-self.dm_tar[0]))
-        Ws += np.einsum('ij,ji', self.V0[1], (self.dm[1]-self.dm_tar[1]))
+
+        if self.Smnt is None:
+            Ws += np.einsum('ij,ji', self.V, (self.dm[0]+self.dm[1]-self.dm_tar[0]-self.dm_tar[1]))
+            Ws += np.einsum('ij,ji', self.V0[0], (self.dm[0]-self.dm_tar[0]))
+            Ws += np.einsum('ij,ji', self.V0[1], (self.dm[1]-self.dm_tar[1]))
+
+        else:
+            Ws += np.einsum('ij,ji', self.V, (self.dm[0]+self.dm[1]))
+            Ws -= np.einsum('ij,ji', self.V_tbas, (self.dm_tar[0]+self.dm_tar[1]))
+            Ws += np.einsum('ij,ji', self.V0[0], self.dm[0])
+            Ws -= np.einsum('ij,ji', self.V0_tbas[0], self.dm_tar[0])
+            Ws += np.einsum('ij,ji', self.V0[1], self.dm[1])
+            Ws -= np.einsum('ij,ji', self.V0_tbas[1], self.dm_tar[1])
+
         Ws += np.einsum('t,t', b[:self.npot], self.grad_a)
         Ws += np.einsum('t,t', b[self.npot:], self.grad_b)
         self.Ws = Ws
@@ -578,14 +702,19 @@ class UWY:
         eia_a = self.mo_energy[0][:n_a, None] - self.mo_energy[0][None, n_a:]
         eia_b = self.mo_energy[1][:n_b, None] - self.mo_energy[1][None, n_b:]
 
+        tol_zero = 1e+20
+        with np.errstate(divide='ignore'):
+            eia_a = np.nan_to_num(eia_a**-1, posinf=tol_zero, neginf=-tol_zero)**-1
+            eia_b = np.nan_to_num(eia_b**-1, posinf=tol_zero, neginf=-tol_zero)**-1
+
         if kf_imported:
             self.Ha = .5*kspies_fort.wy_hess(self.Sijt, mo_a, eia_a, n_a, self.nbas-n_a, self.npot)
             self.Hb = .5*kspies_fort.wy_hess(self.Sijt, mo_b, eia_b, n_b, self.nbas-n_b, self.npot)
         else:
-            Siat_a = np.einsum('mi,va,mvt->iat', mo_a[:,:n_a], mo_a[:,n_a:], self.Sijt)
-            Siat_b = np.einsum('mi,va,mvt->iat', mo_b[:,:n_b], mo_b[:,n_b:], self.Sijt)
-            self.Ha = 2*np.einsum('iau,iat,ia->ut', Siat_a, Siat_a, eia_a**-1)
-            self.Hb = 2*np.einsum('iau,iat,ia->ut', Siat_b, Siat_b, eia_b**-1)
+            Siat_a = contract('mi,va,mvt->iat', mo_a[:,:n_a], mo_a[:,n_a:], self.Sijt)
+            Siat_b = contract('mi,va,mvt->iat', mo_b[:,:n_b], mo_b[:,n_b:], self.Sijt)
+            self.Ha = 2*contract('iau,iat,ia->ut', Siat_a, Siat_a, eia_a**-1)
+            self.Hb = 2*contract('iau,iat,ia->ut', Siat_b, Siat_b, eia_b**-1)
         self.Hs = np.block([[self.Ha, np.zeros((self.npot, self.npot))],
                             [np.zeros((self.npot, self.npot)), self.Hb]])
 
@@ -609,6 +738,6 @@ class UWY:
         else:
             ba = b[:len(b)//2]
             bb = b[len(b)//2:]
-        Dvb = np.einsum('s,st,t', ba, self.Tp, ba)
-        Dvb += np.einsum('s,st,t', bb, self.Tp, bb)
+        Dvb = contract('s,st,t', ba, self.Tp, ba)
+        Dvb += contract('s,st,t', bb, self.Tp, bb)
         return Dvb

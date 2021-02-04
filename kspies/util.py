@@ -247,7 +247,7 @@ def readwfn(filename, mol, makerdm=False):
         else:
             na, nb = mol.nelec
             if not na+nb == norb:
-                warnings.warn("Proper number of electron should give from Mole object")
+                warnings.warn("Proper number of electron should be given from Mole object")
                 return cof, occ, eng
             mo_occ = np.zeros((2, mol.nao_nr()))
             mo_energy = np.zeros((2, mol.nao_nr()))
