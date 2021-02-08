@@ -217,7 +217,7 @@ def basic(mw, mol, pbas, Sijt, tbas, Smnt):
     mw.Sijt = None
     mw.Smnt = None
     mw.Tp = None
-    #mw.pbas = pbas
+    mw.pbas = pbas
     mw.tbas = tbas
 
     is_model1 = len(mw.mol._atm) == 0
