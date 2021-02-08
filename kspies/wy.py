@@ -37,6 +37,8 @@ Written for Python 3.7.4 Lots of other text here, like details about how this us
 
     **2021-01-07** Analytical three-center overlap integral with auxiliary basis
 
+    **2021-02-08** Support target density matrix in different basis representation
+
 """
 
 import time
@@ -114,14 +116,14 @@ def time_profile(mw):
     print("Gd_eval    : %15.3f"%mw.t_gd)
     print("Hs_eval    : %15.3f"%mw.t_hs)
 
-def run(mw):
+def run(mw, xbas=None):
     """Summary: Minimize an objective function -Ws
 
     Args:
         mw : RWY or UWY object
 
     """
-    mw.initialize()
+    mw.initialize(xbas)
     t = time.time()
     if mw.method.lower()=='cg' or mw.method.lower()=='bfgs':
         mw.res = minimize(mw.eval_Ws, x0=mw.b, method=mw.method, jac=mw.eval_Gd,
@@ -150,11 +152,12 @@ def wyscf(mw, ddmtol=1e-6):
     mw.run()
     mw.totnit += mw.res.nit
     mw.scfcycle = 0
+
     for i in range(40):
         mw.scfcycle = i+1
         dm_old = mw.dm
         mw.dm_aux = dm_old
-        mw.run()
+        mw.run(xbas=mw.mol.basis)
         mw.totnit += mw.res.nit
         mw.ddm = np.max(np.abs(np.array(dm_old)-np.array(mw.dm)))
         if mw.ddm < ddmtol:
@@ -193,10 +196,14 @@ def basic(mw, mol, pbas, Sijt, tbas, Smnt):
         Sijt (ndarray) : three-center overlap integral with shape ((no, no, np))
           where no is the length of atomic orbital basis set defined in mol,
           while np is the length of potential basis set
+          Only effective for model systems and molecular systems with user-defined pbs.
+          Otherwise, this is ignored and analytical integration is performed.
         tbas (dict or str) : basis set of target density matrix
         Smnt (ndarray) : three-center overlap integral with shape ((nt, nt, np))
           where nt is the length of atomic orbital basis set that defines target density matrix,
           while np is the length of potential basis set
+          Only effective for model systems and molecular systems with user-defined pbs.
+          Otherwise, this is ignored and analytical integration is performed.
     """
 
     mw.mol = mol
@@ -206,7 +213,12 @@ def basic(mw, mol, pbas, Sijt, tbas, Smnt):
     mw.method = 'trust-exact'
     mw.verbose = mw.mol.verbose
     mw.stdout = mw.mol.stdout
+
+    mw.Sijt = None
     mw.Smnt = None
+    mw.Tp = None
+    #mw.pbas = pbas
+    mw.tbas = tbas
 
     is_model1 = len(mw.mol._atm) == 0
     is_model2 = len(mw.mol._bas) == 0
@@ -229,67 +241,37 @@ def basic(mw, mol, pbas, Sijt, tbas, Smnt):
     mw.T = mw.mol.intor_symmetric('int1e_kin')
     mw.V = mw.mol.intor_symmetric('int1e_nuc')
 
-    mw.Sijt = None
-    mw.Smnt = None
-    mw.tmol = mol
-    mw.Tp = None
-    if pbas is None:
-        #aobas = potbas
-        mw.Tp = mw.T
-        mw.Sijt = mol.intor('int3c1e')
-        if tbas is not None:
-            tmol = df.make_auxmol(mol, auxbasis=tbas)
-            if not gto.mole.same_basis_set(mol, tmol): #bas = pbas != tbas
-                mw.Smnt = df.incore.aux_e2(tmol, mol, intor='int3c1e')
-                mw.tmol = tmol
+    if tbas is None:
+        mw.tbas = mol.basis
+    mw.tmol = df.make_auxmol(mol, auxbasis=mw.tbas)
 
-    elif not callable(pbas[0]):
-        #bas != pbas, where pbas is pyscf-supported style gto
-        mw.pmol = df.make_auxmol(mol, auxbasis=pbas)
-        mw.Tp = mw.pmol.intor_symmetric('int1e_kin')
-        mw.Sijt = df.incore.aux_e2(mol, mw.pmol, intor='int3c1e')
-        if tbas is not None:
-            tmol = df.make_auxmol(mol, auxbasis=tbas)
-            if not gto.mole.same_basis_set(mw.pmol, tmol): #pbas != tbas
-                mw.Smnt = df.incore.aux_e2(tmol, mw.pmol, intor='int3c1e')
-                mw.tmol = tmol
 
-    else: 
-        #potential basis is given a list of user-defined functions
-        #In this case, mw.Tp should be given by the user
+    if pbas is not None and callable(pbas[0]):
+        #potential basis is given as a list of user-defined functions
+        #In this case, mw.Tp should be given by the user to use regularization
+        mw.Sijt = Sijt
         if Sijt is None:
             mw.Sijt = numint_3c2b(mol, pbas)
-        else : 
-            mw.Sijt = Sijt
+
+        if not gto.mole.same_basis_set(mol, mw.tmol):
+            mw.Smnt = Smnt
+            if Smnt is None:
+                mw.Smnt = numint_3c2b(mw.tmol, pbas)
+
+    else:
+        #potential basis is given as a pyscf-supported format
+        if pbas is None:
+            mw.pbas = mol.basis
+
+        mw.pmol = df.make_auxmol(mol, auxbasis=mw.pbas)
+
+        mw.Tp = mw.pmol.intor_symmetric('int1e_kin')
+        mw.Sijt = df.incore.aux_e2(mol, mw.pmol, intor='int3c1e')
+        if not gto.mole.same_basis_set(mol, mw.tmol):
+            mw.Smnt = df.incore.aux_e2(mw.tmol, mw.pmol, intor='int3c1e')
 
     mw.nbas = len(mw.Sijt[:, 0, 0])
     mw.npot = len(mw.Sijt[0, 0, :])
-
-    '''
-    def mol2build(pbas):
-        mw.mol2 = mol.copy()
-        mw.mol2.basis = pbas
-        mw.mol2.build()
-
-    if pbas is None and Sijt is not None:
-        raise AssertionError("potential basis should be given for given Sijt")
-
-    if pbas is None and Sijt is None:
-        mol2build(mol.basis)
-        mw.Sijt = mol.intor('int3c1e')
-    elif pbas is not None and Sijt is None:
-        mol2build(pbas)
-        mw.Sijt = numint_3c2b(mol, pbas)
-    else:
-        mol2build(pbas)
-        is_same_pbas = mw.mol2.nao_nr() == len(Sijt[0, 0, :])
-        is_same_bas = mw.mol.nao_nr() == len(Sijt[:, 0, 0])
-        if is_same_pbas and is_same_bas:
-            mw.Sijt = Sijt
-        else:
-            raise AssertionError("dimension of given basis are not consistent with Sijt")
-    mw.Tp = mw.mol2.intor_symmetric('int1e_kin')
-    '''
 
 
 class RWY:
@@ -345,7 +327,7 @@ class RWY:
     info = info
     wyscf = wyscf
 
-    def initialize(self):
+    def initialize(self, xbas=None):
         """Summary: Construct a fixed part of fock matrix F0
 
         .. math::
@@ -359,14 +341,18 @@ class RWY:
         if self.dm_aux is None:
             self.dm_aux = self.dm_tar
 
+        if xbas is None:
+            xbas = self.tbas
+
         if self.guide is None:
             self.V0 = np.zeros_like(self.dm_tar)
         else:
             fac_faxc, dft_xc = util.parse_guide(self.guide)
 
             N = self.mol.nelectron
-            dm_aux_ao=scf.addons.project_dm_nr2nr(self.tmol, self.dm_aux, self.mol)
-            #Make same dimension 
+
+            self.xmol = df.make_auxmol(self.mol, auxbasis=xbas)
+            dm_aux_ao = scf.addons.project_dm_nr2nr(self.xmol, self.dm_aux, self.mol)
 
             J_tar = scf.hf.get_jk(self.mol, dm_aux_ao)[0]
             VFA = -(1./N)*(J_tar)
@@ -378,12 +364,14 @@ class RWY:
             self.V0 = fac_faxc * VFA + Vxcdft
 
             if self.Smnt is not None:
-                #Make target dm ao representation counterparts
+                #Generate potential matrix in target DM basis representation
+                dm_aux_tbas = scf.addons.project_dm_nr2nr(self.xmol, self.dm_aux, self.tmol)
+ 
                 self.V_tbas = self.tmol.intor('int1e_nuc')
-                VFA_tbas = -(1./N)*scf.hf.get_jk(self.tmol, self.dm_aux)[0]
+                VFA_tbas = -(1./N)*scf.hf.get_jk(self.tmol, dm_aux_tbas)[0]
                 mydft_tbas = dft.RKS(self.tmol)
                 mydft_tbas.xc = dft_xc
-                Vxcdft_tbas = mydft_tbas.get_veff(self.tmol, dm=self.dm_aux)
+                Vxcdft_tbas = mydft_tbas.get_veff(self.tmol, dm=dm_aux_tbas)
                 self.V0_tbas = fac_faxc * VFA_tbas + Vxcdft_tbas
 
         self.F0 = self.T+self.V+self.V0
@@ -550,7 +538,7 @@ class UWY:
     info = info
     wyscf = wyscf
 
-    def initialize(self):
+    def initialize(self, xbas=None):
         """Summary: Construct a fixed part of fock matrix F0
 
         .. math::
@@ -563,6 +551,8 @@ class UWY:
 
         if self.dm_aux is None:
             self.dm_aux = self.dm_tar
+        if xbas is None:
+            xbas = self.tbas
 
         if self.guide is None:
             self.V0 = np.zeros_like(self.dm_tar)
@@ -570,7 +560,8 @@ class UWY:
             fac_faxc, dft_xc = util.parse_guide(self.guide)
 
             N = self.mol.nelectron
-            dm_aux_ao=scf.addons.project_dm_nr2nr(self.tmol, self.dm_aux, self.mol)
+            self.xmol = df.make_auxmol(self.mol, auxbasis=xbas)
+            dm_aux_ao = scf.addons.project_dm_nr2nr(self.xmol, self.dm_aux, self.mol)
 
             J_tar = scf.hf.get_jk(self.mol, dm_aux_ao)[0]
             VFA = -(1./N)*(J_tar[0]+J_tar[1])
@@ -580,13 +571,15 @@ class UWY:
             Vxcdft = mydft.get_veff(self.mol, dm=dm_aux_ao)
 
             if self.Smnt is not None:
-                #Make tbas matrix representation
-                self.V_tar = self.tmol.intor('int1e_nuc')
-                J_tbas = scf.hf.get_jk(self.tarmol, self.dm_aux)[0]
+                #Generate potential matrix in target DM basis representation
+                dm_aux_tbas = scf.addons.project_dm_nr2nr(self.xmol, self.dm_aux, self.tmol)
+
+                self.V_tbas = self.tmol.intor('int1e_nuc')
+                J_tbas = scf.hf.get_jk(self.tmol, dm_aux_tbas)[0]
                 VFA_tbas = -(1./N)*(J_tbas[0]+J_tbas[1])
                 mydft_tbas = dft.UKS(self.tmol)
                 mydft_tbas.xc = dft_xc
-                Vxcdft_tbas = mydft_tar.get_veff(self.tmol, dm=self.dm_aux)
+                Vxcdft_tbas = mydft_tbas.get_veff(self.tmol, dm=dm_aux_tbas)
                 self.V0_tbas = fac_faxc * VFA_tbas + Vxcdft_tbas
 
             self.V0 = fac_faxc * np.array((VFA, VFA)) + Vxcdft
