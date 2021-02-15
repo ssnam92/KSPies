@@ -41,7 +41,7 @@ Written for Python 3.7.4 Lots of other text here, like details about how this us
 
 """
 
-import time
+import time, warnings
 import numpy as np
 from scipy.optimize import minimize
 from pyscf import gto, scf, dft, df
@@ -53,6 +53,23 @@ try:
 except:
     kf_imported=False
 #kf_imported=False
+
+def project_b(mw1, mw2):
+    """Summary: Transfer b vector from one WY calculation to other
+    """
+    mol1 = mw1.pmol
+    npbs1 = mol1.nao_nr()
+    b1 = mw1.b
+    mol2 = mw2.pmol
+    if type(mw1).__name__ == 'RWY' and type(mw2).__name__ == 'RWY':
+        b1 = np.array([b1]).T
+        mw2.b = scf.addons.project_mo_nr2nr(mol1, b1, mol2)[:,0]
+    elif type(mw1).__name__ == 'UWY' and type(mw2).__name__ == 'UWY':
+        b1 = np.vstack((b1[:npbs1],b1[npbs1:])).T
+        b2 = scf.addons.project_mo_nr2nr(mol1, b1, mol2)
+        mw2.b = np.hstack((b2[:,0],b2[:,1]))
+    else:
+        warnings.warn("Two WY objects are not same!")
 
 def numint_3c2b(mol, pbas, level=5):
     """Summary: Three-center overlap integral with different atomic- and potential- basis sets with numerical integration
@@ -245,7 +262,6 @@ def basic(mw, mol, pbas, Sijt, tbas, Smnt):
         mw.tbas = mol.basis
     mw.tmol = df.make_auxmol(mol, auxbasis=mw.tbas)
 
-
     if pbas is not None and callable(pbas[0]):
         #potential basis is given as a list of user-defined functions
         #In this case, mw.Tp should be given by the user to use regularization
@@ -267,6 +283,7 @@ def basic(mw, mol, pbas, Sijt, tbas, Smnt):
 
         mw.Tp = mw.pmol.intor_symmetric('int1e_kin')
         mw.Sijt = df.incore.aux_e2(mol, mw.pmol, intor='int3c1e')
+
         if not gto.mole.same_basis_set(mol, mw.tmol):
             mw.Smnt = df.incore.aux_e2(mw.tmol, mw.pmol, intor='int3c1e')
 
@@ -457,7 +474,7 @@ class RWY:
         nocc = self.mol.nelectron//2
         eia = self.mo_energy[:nocc, None] - self.mo_energy[None, nocc:]
 
-        tol_zero = 1e+20
+        tol_zero = 1e+15
         with np.errstate(divide='ignore'):
             eia = np.nan_to_num(eia**-1, posinf=tol_zero, neginf=-tol_zero)**-1
 
@@ -587,6 +604,7 @@ class UWY:
         self.F0 = (self.T+self.V+self.V0[0],
                    self.T+self.V+self.V0[1])
 
+
     def solve(self, b):
         """Summary: Under a given b vector, construct a fock matrix and diagonalize it
 
@@ -695,7 +713,7 @@ class UWY:
         eia_a = self.mo_energy[0][:n_a, None] - self.mo_energy[0][None, n_a:]
         eia_b = self.mo_energy[1][:n_b, None] - self.mo_energy[1][None, n_b:]
 
-        tol_zero = 1e+20
+        tol_zero = 1e+15
         with np.errstate(divide='ignore'):
             eia_a = np.nan_to_num(eia_a**-1, posinf=tol_zero, neginf=-tol_zero)**-1
             eia_b = np.nan_to_num(eia_b**-1, posinf=tol_zero, neginf=-tol_zero)**-1
