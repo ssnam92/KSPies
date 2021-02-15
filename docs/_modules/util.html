@@ -1,7 +1,8 @@
 
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
 <head>
   <meta charset="utf-8">
   
@@ -11,10 +12,6 @@
   
 
   
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-
-  
   
     <link rel="shortcut icon" href="../_static/favicon-32x32.png"/>
   
@@ -22,9 +19,7 @@
   
 
   
-  <!--[if lt IE 9]>
-    <script src="../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -32,11 +27,15 @@
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
         <script src="../_static/language_data.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
     
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="author" title="About these documents" href="../about.html" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
@@ -53,7 +52,7 @@
           
 
           
-            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> KS Pies
+            <a href="../index.html" class="icon icon-home"> KS Pies
           
 
           
@@ -76,7 +75,6 @@
           
         </div>
 
-        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -98,7 +96,6 @@
             
           
         </div>
-        
       </div>
     </nav>
 
@@ -137,7 +134,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li><a href="../index.html">Docs</a> &raquo;</li>
         
           <li><a href="index.html">Module code</a> &raquo;</li>
         
@@ -178,6 +175,8 @@
 
 <span class="sd">    mo2ao</span>
 
+<span class="sd">    wfnreader</span>
+
 <span class="sd">    eval_vh</span>
 
 <span class="sd">    eval_vxc</span>
@@ -194,14 +193,23 @@
 
 <span class="sd">    **2020-08-21** SN corrected typos, minor changes in attribute names, etc.</span>
 
+<span class="sd">    **2020-11-11** Added wfnreader</span>
+
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">reduce</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+
 <span class="kn">from</span> <span class="nn">scipy.special</span> <span class="kn">import</span> <span class="n">sph_harm</span>
 <span class="kn">from</span> <span class="nn">scipy.spatial</span> <span class="kn">import</span> <span class="n">distance_matrix</span>
-<span class="kn">import</span> <span class="nn">kspies_fort</span>
-<span class="kn">from</span> <span class="nn">pyscf</span> <span class="kn">import</span> <span class="n">gto</span><span class="p">,</span> <span class="n">dft</span>
+<span class="kn">from</span> <span class="nn">scipy.interpolate</span> <span class="kn">import</span> <span class="n">CubicSpline</span>
+<span class="kn">from</span> <span class="nn">pyscf</span> <span class="kn">import</span> <span class="n">gto</span><span class="p">,</span> <span class="n">dft</span><span class="p">,</span> <span class="n">scf</span>
 <span class="kn">from</span> <span class="nn">pyscf.dft</span> <span class="kn">import</span> <span class="n">numint</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">kspies</span> <span class="kn">import</span> <span class="n">kspies_fort</span>
+    <span class="n">kf_imported</span><span class="o">=</span><span class="kc">True</span>
+<span class="k">except</span><span class="p">:</span>
+    <span class="n">kf_imported</span><span class="o">=</span><span class="kc">False</span>
 
 <div class="viewcode-block" id="mo2ao"><a class="viewcode-back" href="../modules.html#util.mo2ao">[docs]</a><span class="k">def</span> <span class="nf">mo2ao</span><span class="p">(</span><span class="n">mo</span><span class="p">,</span> <span class="n">p1</span><span class="p">,</span> <span class="n">p2</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Summary: Convert mo-basis density matrices to basis-set representation density matrices</span>
@@ -255,10 +263,224 @@
         <span class="n">dm2bb</span> <span class="o">=</span> <span class="n">_convert_rdm2</span><span class="p">(</span><span class="n">mo_b</span><span class="p">,</span> <span class="n">mo_b</span><span class="p">,</span> <span class="n">p2</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
         <span class="k">return</span> <span class="p">(</span><span class="n">dm1a</span><span class="p">,</span> <span class="n">dm1b</span><span class="p">),</span> <span class="p">(</span><span class="n">dm2aa</span><span class="p">,</span> <span class="n">dm2ab</span><span class="p">,</span> <span class="n">dm2bb</span><span class="p">)</span></div>
 
+<span class="n">TYPE_MAP</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">[</span><span class="mi">1</span><span class="p">],</span>  <span class="c1"># S</span>
+    <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span>  <span class="c1"># P</span>
+    <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">7</span><span class="p">],</span>  <span class="c1"># D</span>
+    <span class="p">[</span><span class="mi">11</span><span class="p">,</span><span class="mi">14</span><span class="p">,</span><span class="mi">15</span><span class="p">,</span><span class="mi">17</span><span class="p">,</span><span class="mi">20</span><span class="p">,</span><span class="mi">18</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mi">16</span><span class="p">,</span><span class="mi">19</span><span class="p">,</span><span class="mi">13</span><span class="p">],</span>  <span class="c1"># F</span>
+    <span class="p">[</span><span class="mi">21</span><span class="p">,</span><span class="mi">24</span><span class="p">,</span><span class="mi">25</span><span class="p">,</span><span class="mi">30</span><span class="p">,</span><span class="mi">33</span><span class="p">,</span><span class="mi">31</span><span class="p">,</span><span class="mi">26</span><span class="p">,</span><span class="mi">34</span><span class="p">,</span><span class="mi">35</span><span class="p">,</span><span class="mi">28</span><span class="p">,</span><span class="mi">22</span><span class="p">,</span><span class="mi">27</span><span class="p">,</span><span class="mi">32</span><span class="p">,</span><span class="mi">29</span><span class="p">,</span><span class="mi">23</span><span class="p">],</span>  <span class="c1"># G</span>
+    <span class="p">[</span><span class="mi">56</span><span class="p">,</span><span class="mi">55</span><span class="p">,</span><span class="mi">54</span><span class="p">,</span><span class="mi">53</span><span class="p">,</span><span class="mi">52</span><span class="p">,</span><span class="mi">51</span><span class="p">,</span><span class="mi">50</span><span class="p">,</span><span class="mi">49</span><span class="p">,</span><span class="mi">48</span><span class="p">,</span><span class="mi">47</span><span class="p">,</span><span class="mi">46</span><span class="p">,</span><span class="mi">45</span><span class="p">,</span><span class="mi">44</span><span class="p">,</span><span class="mi">43</span><span class="p">,</span><span class="mi">42</span><span class="p">,</span><span class="mi">41</span><span class="p">,</span><span class="mi">40</span><span class="p">,</span><span class="mi">39</span><span class="p">,</span><span class="mi">38</span><span class="p">,</span><span class="mi">37</span><span class="p">,</span><span class="mi">36</span><span class="p">],</span>  <span class="c1"># H</span>
+<span class="p">]</span>
+
+<div class="viewcode-block" id="readwfn"><a class="viewcode-back" href="../modules.html#util.readwfn">[docs]</a><span class="k">def</span> <span class="nf">readwfn</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">mol</span><span class="p">,</span> <span class="n">makerdm</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Summary: Convert wfn file to PySCF format</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            filename (string) : name of wfn file to convert</span>
+<span class="sd">            mol (object) : an instance of :class:`Mole`</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            (tuple): tuple containing:</span>
+
+<span class="sd">                (ndarray): **mo_coeff** molecular orbital coefficient from wfn</span>
+
+<span class="sd">                (ndarray): **mo_occ** molecular orbital occupation number from wfn</span>
+
+<span class="sd">                (ndarray): **mo_energy** molecular orbital energy from wfn</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">mol</span><span class="o">.</span><span class="n">cart</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s1">&#39;Cartesian basis not available&#39;</span><span class="p">)</span>
+      
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+        <span class="n">dat</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+        <span class="n">norb</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">dat</span><span class="p">[</span><span class="o">-</span><span class="mi">7</span><span class="p">])</span>
+        <span class="n">nprm</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">dat</span><span class="p">[</span><span class="o">-</span><span class="mi">4</span><span class="p">])</span>
+        <span class="n">natm</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">dat</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">])</span>
+        <span class="n">achrg</span> <span class="o">=</span> <span class="p">[]</span> <span class="c1">#For sanity check</span>
+        <span class="n">coord</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">natm</span><span class="p">):</span>
+            <span class="n">dat</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+            <span class="n">achrg</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">dat</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
+            <span class="n">coord</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="nb">float</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">dat</span><span class="p">[</span><span class="mi">4</span><span class="p">:</span><span class="mi">7</span><span class="p">]])</span>
+        <span class="n">chrg_criteria</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">mol</span><span class="o">.</span><span class="n">atom_charges</span><span class="p">()</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">achrg</span><span class="p">)))</span> <span class="o">&gt;</span> <span class="mf">1e-10</span>
+        <span class="n">coord_criteria</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">mol</span><span class="o">.</span><span class="n">atom_coords</span><span class="p">()</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">coord</span><span class="p">))</span> <span class="o">&gt;</span>  <span class="mf">1e-6</span>
+        <span class="k">if</span> <span class="n">chrg_criteria</span> <span class="ow">or</span> <span class="n">coord_criteria</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Different molecule!&quot;</span><span class="p">)</span>
+
+        <span class="n">centr</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">typea</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">expos</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nprm</span><span class="o">//</span><span class="mi">20</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+            <span class="n">centr</span> <span class="o">+=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">2</span><span class="p">:]]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nprm</span><span class="o">//</span><span class="mi">20</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+            <span class="n">typea</span> <span class="o">+=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">2</span><span class="p">:]]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nprm</span><span class="o">//</span><span class="mi">5</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+            <span class="n">expos</span> <span class="o">+=</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;D&#39;</span><span class="p">,</span> <span class="s1">&#39;E&#39;</span><span class="p">))</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">1</span><span class="p">:]]</span>
+
+        <span class="n">MOs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">occ</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">eng</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">norb</span><span class="p">):</span>
+            <span class="n">dat</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+            <span class="n">eng</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">dat</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
+            <span class="n">occ</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">dat</span><span class="p">[</span><span class="o">-</span><span class="mi">5</span><span class="p">]))</span>
+            <span class="n">orb</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nprm</span><span class="o">//</span><span class="mi">5</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+                <span class="n">orb</span> <span class="o">+=</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;D&#39;</span><span class="p">,</span><span class="s1">&#39;E&#39;</span><span class="p">))</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">()]</span>
+            <span class="n">MOs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">orb</span><span class="p">)</span>
+    <span class="n">MOs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">MOs</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+
+    <span class="n">c2s</span><span class="o">=</span><span class="p">[]</span>
+    <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">):</span>
+        <span class="n">c2s</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">pinv</span><span class="p">(</span><span class="n">gto</span><span class="o">.</span><span class="n">cart2sph</span><span class="p">(</span><span class="n">l</span><span class="p">)))</span>
+    <span class="kn">from</span> <span class="nn">pyscf.x2c</span> <span class="kn">import</span> <span class="n">x2c</span>
+    <span class="n">uncmol</span><span class="p">,</span> <span class="n">ctr</span> <span class="o">=</span> <span class="n">x2c</span><span class="o">.</span><span class="n">_uncontract_mol</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="mf">0.</span><span class="p">)</span>
+    <span class="n">uncmol_info</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">ib</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">uncmol</span><span class="o">.</span><span class="n">nbas</span><span class="p">):</span>
+        <span class="n">ia</span> <span class="o">=</span> <span class="n">uncmol</span><span class="o">.</span><span class="n">bas_atom</span><span class="p">(</span><span class="n">ib</span><span class="p">)</span>
+        <span class="n">l</span> <span class="o">=</span> <span class="n">uncmol</span><span class="o">.</span><span class="n">bas_angular</span><span class="p">(</span><span class="n">ib</span><span class="p">)</span>
+        <span class="n">es</span> <span class="o">=</span> <span class="n">uncmol</span><span class="o">.</span><span class="n">bas_exp</span><span class="p">(</span><span class="n">ib</span><span class="p">)</span>
+        <span class="n">uncmol_info</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">ia</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">es</span><span class="p">[</span><span class="mi">0</span><span class="p">]])</span>
+
+    <span class="n">match</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">ip</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nprm</span><span class="p">):</span>
+        <span class="n">am</span> <span class="o">=</span> <span class="p">[</span><span class="n">l</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span> <span class="k">if</span> <span class="n">typea</span><span class="p">[</span><span class="n">ip</span><span class="p">]</span> <span class="ow">in</span> <span class="n">TYPE_MAP</span><span class="p">[</span><span class="n">l</span><span class="p">]]</span>
+        <span class="n">match</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">uncmol_info</span><span class="o">.</span><span class="n">index</span><span class="p">([</span><span class="n">centr</span><span class="p">[</span><span class="n">ip</span><span class="p">],</span> <span class="n">am</span><span class="p">,</span> <span class="n">expos</span><span class="p">[</span><span class="n">ip</span><span class="p">]]))</span>
+
+    <span class="n">Rot</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">uncmol</span><span class="o">.</span><span class="n">nao_nr</span><span class="p">(),</span> <span class="n">nprm</span><span class="p">))</span>
+    <span class="n">bidx</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">ib</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">uncmol</span><span class="o">.</span><span class="n">nbas</span><span class="p">):</span>
+        <span class="n">l</span> <span class="o">=</span> <span class="n">uncmol</span><span class="o">.</span><span class="n">bas_angular</span><span class="p">(</span><span class="n">ib</span><span class="p">)</span>
+        <span class="n">indices</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">ip2b</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">match</span><span class="p">)</span> <span class="k">if</span> <span class="n">ip2b</span><span class="o">==</span><span class="n">ib</span><span class="p">]</span>
+        <span class="n">matchtype</span> <span class="o">=</span> <span class="p">[</span><span class="n">typea</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="n">indices</span><span class="p">]</span>
+        <span class="n">reorder</span> <span class="o">=</span> <span class="p">[</span><span class="n">TYPE_MAP</span><span class="p">[</span><span class="n">l</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">matchtype</span><span class="p">]</span>
+        <span class="n">trans</span> <span class="o">=</span> <span class="n">c2s</span><span class="p">[</span><span class="n">l</span><span class="p">]</span><span class="o">*</span><span class="mf">1.</span><span class="o">/</span><span class="nb">float</span><span class="p">(</span><span class="n">uncmol</span><span class="o">.</span><span class="n">_libcint_ctr_coeff</span><span class="p">(</span><span class="n">ib</span><span class="p">))</span>
+        <span class="n">Rot</span><span class="p">[</span><span class="n">bidx</span><span class="p">:</span><span class="n">bidx</span><span class="o">+</span><span class="mi">2</span><span class="o">*</span><span class="n">l</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">indices</span><span class="p">]</span> <span class="o">=</span> <span class="n">trans</span><span class="p">[:,</span> <span class="n">reorder</span><span class="p">]</span>
+        <span class="n">bidx</span> <span class="o">+=</span> <span class="mi">2</span><span class="o">*</span><span class="n">l</span><span class="o">+</span><span class="mi">1</span>
+
+    <span class="c1">#Outputs</span>
+    <span class="n">cof</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">pinv</span><span class="p">(</span><span class="n">ctr</span><span class="p">)</span><span class="nd">@Rot@MOs</span>
+    <span class="n">eng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">eng</span><span class="p">)</span>
+    <span class="n">occ</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">occ</span><span class="p">)</span>
+
+    <span class="n">restri</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">isvirt</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">if</span> <span class="nb">max</span><span class="p">(</span><span class="n">occ</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mf">1.3</span><span class="p">:</span> 
+        <span class="c1">#Assuming NO occupation numbers of unrestricted calculation </span>
+        <span class="c1">#does not exceed 1.3</span>
+        <span class="n">restri</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">if</span> <span class="n">restri</span> <span class="ow">and</span> <span class="n">norb</span> <span class="o">&gt;</span> <span class="n">mol</span><span class="o">.</span><span class="n">nelectron</span><span class="o">//</span><span class="mi">2</span><span class="p">:</span>
+        <span class="n">isvirt</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">elif</span> <span class="ow">not</span> <span class="n">restri</span> <span class="ow">and</span> <span class="n">norb</span> <span class="o">&gt;</span> <span class="n">mol</span><span class="o">.</span><span class="n">nelectron</span><span class="p">:</span>
+        <span class="n">isvirt</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="n">s1e</span> <span class="o">=</span> <span class="n">mol</span><span class="o">.</span><span class="n">intor_symmetric</span><span class="p">(</span><span class="s1">&#39;int1e_ovlp&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">restri</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">isvirt</span><span class="p">:</span>
+            <span class="n">mo_occ</span> <span class="o">=</span> <span class="n">occ</span>
+            <span class="n">mo_energy</span> <span class="o">=</span> <span class="n">eng</span>
+            <span class="n">mo_coeff</span> <span class="o">=</span> <span class="n">cof</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">mo_occ</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">mol</span><span class="o">.</span><span class="n">nao_nr</span><span class="p">()))</span>
+            <span class="n">mo_energy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">mol</span><span class="o">.</span><span class="n">nao_nr</span><span class="p">()))</span>
+            <span class="n">mo_coeff</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">mol</span><span class="o">.</span><span class="n">nao_nr</span><span class="p">(),</span> <span class="n">mol</span><span class="o">.</span><span class="n">nao_nr</span><span class="p">()))</span>
+            <span class="n">mo_occ</span><span class="p">[:</span><span class="nb">len</span><span class="p">(</span><span class="n">occ</span><span class="p">)]</span> <span class="o">=</span> <span class="n">occ</span>
+            <span class="n">mo_energy</span><span class="p">[:</span><span class="nb">len</span><span class="p">(</span><span class="n">eng</span><span class="p">)]</span> <span class="o">=</span> <span class="n">eng</span>
+            <span class="n">mo_coeff</span><span class="p">[:,</span> <span class="p">:</span><span class="nb">len</span><span class="p">(</span><span class="n">occ</span><span class="p">)]</span> <span class="o">=</span> <span class="n">cof</span>
+        <span class="n">chk</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s1">&#39;ki,kl,lj-&gt;ij&#39;</span><span class="p">,</span> <span class="n">cof</span><span class="p">,</span> <span class="n">s1e</span><span class="p">,</span> <span class="n">cof</span><span class="p">,</span> <span class="n">optimize</span><span class="o">=</span><span class="s1">&#39;greedy&#39;</span><span class="p">)</span>
+        <span class="n">condi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">chk</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">chk</span><span class="p">[</span><span class="mi">0</span><span class="p">])))</span>
+        <span class="k">if</span> <span class="n">makerdm</span><span class="p">:</span>
+            <span class="n">dm</span> <span class="o">=</span> <span class="n">scf</span><span class="o">.</span><span class="n">hf</span><span class="o">.</span><span class="n">make_rdm1</span><span class="p">(</span><span class="n">mo_coeff</span><span class="p">,</span> <span class="n">mo_occ</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span> <span class="c1">#assuming orbital order (alpha_0, alpha_1, ... beta_0, beta_1 ...)</span>
+        <span class="k">if</span> <span class="n">isvirt</span><span class="p">:</span>
+            <span class="n">na</span> <span class="o">=</span> <span class="n">norb</span><span class="o">//</span><span class="mi">2</span>
+            <span class="n">mo_occ</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">occ</span><span class="p">[:</span><span class="n">na</span><span class="p">],</span> <span class="n">occ</span><span class="p">[</span><span class="n">na</span><span class="p">:]])</span>
+            <span class="n">mo_energy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">eng</span><span class="p">[:</span><span class="n">na</span><span class="p">],</span> <span class="n">eng</span><span class="p">[</span><span class="n">na</span><span class="p">:]])</span>
+            <span class="n">mo_coeff</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">cof</span><span class="p">[:,</span> <span class="p">:</span><span class="n">na</span><span class="p">],</span> <span class="n">cof</span><span class="p">[:,</span> <span class="n">na</span><span class="p">:]])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">na</span><span class="p">,</span> <span class="n">nb</span> <span class="o">=</span> <span class="n">mol</span><span class="o">.</span><span class="n">nelec</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">na</span><span class="o">+</span><span class="n">nb</span> <span class="o">==</span> <span class="n">norb</span><span class="p">:</span>
+                <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Proper number of electron should be given from Mole object&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">cof</span><span class="p">,</span> <span class="n">occ</span><span class="p">,</span> <span class="n">eng</span>
+            <span class="n">mo_occ</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="n">mol</span><span class="o">.</span><span class="n">nao_nr</span><span class="p">()))</span>
+            <span class="n">mo_energy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="n">mol</span><span class="o">.</span><span class="n">nao_nr</span><span class="p">()))</span>
+            <span class="n">mo_coeff</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="n">mol</span><span class="o">.</span><span class="n">nao_nr</span><span class="p">(),</span> <span class="n">mol</span><span class="o">.</span><span class="n">nao_nr</span><span class="p">()))</span>
+            <span class="n">mo_occ</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:</span><span class="n">na</span><span class="p">]</span> <span class="o">=</span> <span class="n">occ</span><span class="p">[:</span><span class="n">na</span><span class="p">]</span>
+            <span class="n">mo_occ</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="p">:</span><span class="n">nb</span><span class="p">]</span> <span class="o">=</span> <span class="n">occ</span><span class="p">[</span><span class="n">na</span><span class="p">:]</span>
+            <span class="n">mo_energy</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:</span><span class="n">na</span><span class="p">]</span> <span class="o">=</span> <span class="n">eng</span><span class="p">[:</span><span class="n">na</span><span class="p">]</span>
+            <span class="n">mo_energy</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="p">:</span><span class="n">nb</span><span class="p">]</span> <span class="o">=</span> <span class="n">eng</span><span class="p">[</span><span class="n">na</span><span class="p">:]</span>
+            <span class="n">mo_coeff</span><span class="p">[</span><span class="mi">0</span><span class="p">,:</span> <span class="p">,:</span><span class="n">na</span><span class="p">]</span> <span class="o">=</span> <span class="n">cof</span><span class="p">[:,</span> <span class="p">:</span><span class="n">na</span><span class="p">]</span>
+            <span class="n">mo_coeff</span><span class="p">[</span><span class="mi">1</span><span class="p">,:</span> <span class="p">,:</span><span class="n">nb</span><span class="p">]</span> <span class="o">=</span> <span class="n">cof</span><span class="p">[:,</span> <span class="n">na</span><span class="p">:]</span>
+        <span class="n">chk_a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s1">&#39;ki,kl,lj-&gt;ij&#39;</span><span class="p">,</span> <span class="n">cof</span><span class="p">[:,</span> <span class="p">:</span><span class="n">na</span><span class="p">],</span> <span class="n">s1e</span><span class="p">,</span> <span class="n">cof</span><span class="p">[:,</span> <span class="p">:</span><span class="n">na</span><span class="p">],</span> <span class="n">optimize</span><span class="o">=</span><span class="s1">&#39;greedy&#39;</span><span class="p">)</span>
+        <span class="n">chk_b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s1">&#39;ki,kl,lj-&gt;ij&#39;</span><span class="p">,</span> <span class="n">cof</span><span class="p">[:,</span> <span class="n">na</span><span class="p">:],</span> <span class="n">s1e</span><span class="p">,</span> <span class="n">cof</span><span class="p">[:,</span> <span class="n">na</span><span class="p">:],</span> <span class="n">optimize</span><span class="o">=</span><span class="s1">&#39;greedy&#39;</span><span class="p">)</span>
+        <span class="n">condi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">chk_a</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">chk_a</span><span class="p">[</span><span class="mi">0</span><span class="p">])))</span>
+        <span class="n">condi</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">chk_b</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">chk_b</span><span class="p">[</span><span class="mi">0</span><span class="p">])))</span>
+        <span class="k">if</span> <span class="n">makerdm</span><span class="p">:</span>
+            <span class="n">dm</span> <span class="o">=</span> <span class="n">scf</span><span class="o">.</span><span class="n">uhf</span><span class="o">.</span><span class="n">make_rdm1</span><span class="p">(</span><span class="n">mo_coeff</span><span class="p">,</span> <span class="n">mo_occ</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">condi</span> <span class="o">&gt;</span> <span class="mf">1e-5</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Orthonrmal conditonal number:&quot;</span><span class="p">,</span> <span class="n">condi</span><span class="p">,</span> <span class="s2">&quot;&gt; 1e-5&quot;</span><span class="p">)</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Converted MOs are not orthonormal&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">makerdm</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">mo_coeff</span><span class="p">,</span> <span class="n">mo_occ</span><span class="p">,</span> <span class="n">mo_energy</span><span class="p">,</span> <span class="n">dm</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">mo_coeff</span><span class="p">,</span> <span class="n">mo_occ</span><span class="p">,</span> <span class="n">mo_energy</span></div>
+
+
+<div class="viewcode-block" id="parse_guide"><a class="viewcode-back" href="../modules.html#util.parse_guide">[docs]</a><span class="k">def</span> <span class="nf">parse_guide</span><span class="p">(</span><span class="n">description</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Summary: Guiding potential parser for ZMP and WY</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            description (str) : guiding potential description for inversion</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            (tuple): tuple containing:</span>
+
+<span class="sd">                (float): **fac_faxc** factor for Fermi-Amaldi potential (faxc)</span>
+
+<span class="sd">                (string): **dft_xc** description of dft part of xc</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">_parse_guide</span><span class="p">(</span><span class="n">description</span><span class="p">):</span>
+        <span class="n">fac_faxc</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">dftxc</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="k">for</span> <span class="n">token</span> <span class="ow">in</span> <span class="n">description</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="s1">&#39;+-&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;;+&#39;</span><span class="p">,</span> <span class="s1">&#39;;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;+&#39;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">token</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;-&#39;</span><span class="p">:</span>
+                <span class="n">sign</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+                <span class="n">token</span> <span class="o">=</span> <span class="n">token</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">sign</span> <span class="o">=</span> <span class="mi">1</span>
+
+            <span class="k">if</span> <span class="s1">&#39;*&#39;</span> <span class="ow">in</span> <span class="n">token</span><span class="p">:</span>
+                <span class="n">fac</span><span class="p">,</span> <span class="n">key</span> <span class="o">=</span> <span class="n">token</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;*&#39;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">fac</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">isalpha</span><span class="p">():</span>
+                    <span class="n">fac</span><span class="p">,</span> <span class="n">key</span> <span class="o">=</span> <span class="n">key</span><span class="p">,</span> <span class="n">fac</span>
+                <span class="n">fac</span> <span class="o">=</span> <span class="n">sign</span> <span class="o">*</span> <span class="nb">float</span><span class="p">(</span><span class="n">fac</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">fac</span><span class="p">,</span> <span class="n">key</span> <span class="o">=</span> <span class="n">sign</span><span class="p">,</span> <span class="n">token</span>
+            <span class="k">if</span> <span class="n">key</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;faxc&#39;</span><span class="p">:</span>
+                <span class="n">fac_faxc</span> <span class="o">+=</span> <span class="n">fac</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">dftxc</span> <span class="o">+=</span> <span class="s1">&#39;+&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">fac</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;*&#39;</span><span class="o">+</span><span class="n">key</span>
+        <span class="k">return</span> <span class="n">fac_faxc</span><span class="p">,</span> <span class="n">dftxc</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+
+    <span class="k">if</span> <span class="s1">&#39;,&#39;</span> <span class="ow">in</span> <span class="n">description</span><span class="p">:</span>
+        <span class="n">x_code</span><span class="p">,</span> <span class="n">c_code</span> <span class="o">=</span> <span class="n">description</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)</span>
+        <span class="n">fx</span><span class="p">,</span><span class="n">dft_x</span> <span class="o">=</span> <span class="n">_parse_guide</span><span class="p">(</span><span class="n">x_code</span><span class="p">)</span>
+        <span class="n">fc</span><span class="p">,</span><span class="n">dft_c</span> <span class="o">=</span> <span class="n">_parse_guide</span><span class="p">(</span><span class="n">c_code</span><span class="p">)</span>
+        <span class="n">fac_faxc</span> <span class="o">=</span> <span class="n">fx</span> <span class="o">+</span> <span class="n">fc</span>
+        <span class="n">dft_xc</span> <span class="o">=</span> <span class="n">dft_x</span> <span class="o">+</span> <span class="s1">&#39;,&#39;</span> <span class="o">+</span> <span class="n">dft_c</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">fac_faxc</span><span class="p">,</span> <span class="n">dft_xc</span> <span class="o">=</span> <span class="n">_parse_guide</span><span class="p">(</span><span class="n">description</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">fac_faxc</span><span class="p">,</span> <span class="n">dft_xc</span></div>
+
 <span class="c1">#controller</span>
 <span class="n">radi_method</span> <span class="o">=</span> <span class="n">dft</span><span class="o">.</span><span class="n">radi</span><span class="o">.</span><span class="n">gauss_chebyshev</span>
 
-<div class="viewcode-block" id="eval_vh"><a class="viewcode-back" href="../modules.html#util.eval_vh">[docs]</a><span class="k">def</span> <span class="nf">eval_vh</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="n">coords</span><span class="p">,</span> <span class="n">dm</span><span class="p">,</span> <span class="n">Lvl</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">ang_lv</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span> <span class="c1">#only atoms dependent values</span>
+<div class="viewcode-block" id="eval_vh"><a class="viewcode-back" href="../modules.html#util.eval_vh">[docs]</a><span class="k">def</span> <span class="nf">eval_vh</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="n">coords</span><span class="p">,</span> <span class="n">dm</span><span class="p">,</span> <span class="n">Lvl</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">ang_lv</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span> <span class="c1">#only atom dependent values</span>
     <span class="sd">&quot;&quot;&quot;Summary: Calculate real-space Hartree potential from given density matrix. See [Mirko2014]_ for some extra context.</span>
 
 <span class="sd">        Args:</span>
@@ -274,12 +496,9 @@
     <span class="k">def</span> <span class="nf">_Cart_Spharm</span><span class="p">(</span><span class="n">xyz</span><span class="p">,</span> <span class="n">lmax</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Summary: Cartesian spherical harmonics Z for given xyz coordinate</span>
 
-<span class="sd">        .. todo::</span>
-<span class="sd">            Seungsoo, PLease address arguments here</span>
-
 <span class="sd">        Args:</span>
-<span class="sd">            xyz (?) :</span>
-<span class="sd">            lmax (?) :</span>
+<span class="sd">            xyz (ndarray) : 3D coordinates to calculate spherical harmonics</span>
+<span class="sd">            lmax (integer) : Maximum angular momentum quantum number to calculate spherical harmonics</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            (array): from m = -l to l, return array Z of shape (ncoord, lmax+1, 2*lmax+1)</span>
@@ -311,13 +530,10 @@
     <span class="k">def</span> <span class="nf">_grid_refine</span><span class="p">(</span><span class="n">n_rad</span><span class="p">,</span> <span class="n">n_ang</span><span class="p">,</span> <span class="n">grid</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Summary: Reorder grids generated by PySCF for easy handling</span>
 
-<span class="sd">        .. todo::</span>
-<span class="sd">            Seungsoo, PLease address arguments here</span>
-
 <span class="sd">        Args:</span>
-<span class="sd">            n_rad (?) :</span>
-<span class="sd">            n_ang (?) :</span>
-<span class="sd">            grid (?) :</span>
+<span class="sd">            n_rad (integer) : the number of radial grid</span>
+<span class="sd">            n_ang (integer) : the number of angular grid</span>
+<span class="sd">            grid (ndarray) : 1D sliced grid info (x, y, z coordinates or weights) generated by PySCF</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            (ndarray): **Reordered gridpoints** n_ang grids belonging to the same radial grid</span>
@@ -353,6 +569,75 @@
         <span class="n">minarg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">lgrids</span> <span class="o">-</span> <span class="n">LEBEDEV_ORDER_IDX</span><span class="p">))</span>
         <span class="n">n_ang</span> <span class="o">=</span> <span class="n">dft</span><span class="o">.</span><span class="n">gen_grid</span><span class="o">.</span><span class="n">LEBEDEV_ORDER</span><span class="p">[</span><span class="n">LEBEDEV_ORDER_IDX</span><span class="p">[</span><span class="n">minarg</span><span class="p">]]</span>
         <span class="k">return</span> <span class="n">n_ang</span>
+
+    <span class="k">def</span> <span class="nf">eval_vhm</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">ZvH</span><span class="p">,</span> <span class="n">d_atom</span><span class="p">,</span> <span class="n">rad</span><span class="p">,</span> <span class="n">lmax</span><span class="p">,</span> <span class="n">n_coords</span><span class="p">,</span> <span class="n">n_rad</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Summary: Python version of eval_vhm</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">def</span> <span class="nf">_eval_I1</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">rad</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">n_rad</span><span class="p">):</span>
+            <span class="n">I1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n_rad</span><span class="p">)</span>
+            <span class="n">integrand</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_rad</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">4</span><span class="p">))</span>
+            <span class="n">tmp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n_rad</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">):</span>
+                <span class="n">integrand</span><span class="p">[:,</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span> <span class="n">rad</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="o">**</span><span class="p">(</span><span class="mf">6.</span><span class="o">+</span><span class="n">l</span><span class="o">-</span><span class="n">j</span><span class="p">)</span> <span class="o">-</span> <span class="n">rad</span><span class="p">[:</span><span class="n">n_rad</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">**</span><span class="p">(</span><span class="mf">6.</span><span class="o">+</span><span class="n">l</span><span class="o">-</span><span class="n">j</span><span class="p">)</span> <span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mf">6.</span><span class="o">+</span><span class="n">l</span><span class="o">-</span><span class="n">j</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_rad</span><span class="o">-</span><span class="mi">2</span><span class="p">):</span>
+                <span class="n">tmp</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">integrand</span><span class="p">[</span><span class="n">i</span><span class="p">,:],</span> <span class="n">C</span><span class="p">[:,</span><span class="n">i</span><span class="p">])</span>
+        
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">n_rad</span><span class="p">):</span>
+                <span class="n">I1</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">I1</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">tmp</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        
+            <span class="k">return</span> <span class="n">I1</span>
+
+        <span class="k">def</span> <span class="nf">_eval_I2</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">rad</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">n_rad</span><span class="p">):</span>
+            <span class="n">I2</span> <span class="o">=</span>  <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n_rad</span><span class="p">)</span>
+            <span class="n">integrand</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_rad</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">4</span><span class="p">))</span>
+            <span class="n">tmp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n_rad</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">l</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">l</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">):</span>
+                <span class="k">if</span> <span class="p">(</span><span class="mf">5.</span><span class="o">-</span><span class="n">l</span><span class="o">-</span><span class="n">j</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span> <span class="p">:</span>
+                    <span class="n">integrand</span><span class="p">[:,</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span> <span class="n">rad</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="o">**</span><span class="p">(</span><span class="mf">5.</span><span class="o">-</span><span class="n">l</span><span class="o">-</span><span class="n">j</span><span class="p">)</span> <span class="o">-</span> <span class="n">rad</span><span class="p">[:</span><span class="n">n_rad</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">**</span><span class="p">(</span><span class="mf">5.</span><span class="o">-</span><span class="n">l</span><span class="o">-</span><span class="n">j</span><span class="p">)</span> <span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mf">5.</span><span class="o">-</span><span class="n">l</span><span class="o">-</span><span class="n">j</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">integrand</span><span class="p">[:,</span><span class="mi">6</span><span class="o">-</span><span class="n">l</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">rad</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="o">/</span><span class="n">rad</span><span class="p">[:</span><span class="n">n_rad</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_rad</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+                <span class="n">tmp</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">integrand</span><span class="p">[</span><span class="n">i</span><span class="p">,:],</span> <span class="n">C</span><span class="p">[:,</span><span class="n">i</span><span class="p">])</span>
+        
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">n_rad</span><span class="p">):</span>
+                <span class="n">I2</span><span class="p">[</span><span class="n">n_rad</span><span class="o">-</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">I2</span><span class="p">[</span><span class="n">n_rad</span><span class="o">-</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">tmp</span><span class="p">[</span><span class="n">n_rad</span><span class="o">-</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+            <span class="k">return</span> <span class="n">I2</span>
+
+        <span class="k">def</span> <span class="nf">_convert_coeff</span><span class="p">(</span><span class="n">c</span><span class="p">,</span><span class="n">x</span><span class="p">):</span>
+            <span class="n">nc</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+            <span class="n">nx</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nx</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+                <span class="n">nc</span><span class="p">[</span><span class="mi">0</span><span class="p">,:]</span><span class="o">=</span><span class="n">c</span><span class="p">[</span><span class="mi">0</span><span class="p">,:]</span>
+                <span class="n">nc</span><span class="p">[</span><span class="mi">1</span><span class="p">,:]</span><span class="o">=</span><span class="n">c</span><span class="p">[</span><span class="mi">1</span><span class="p">,:]</span><span class="o">-</span><span class="mi">3</span><span class="o">*</span><span class="n">c</span><span class="p">[</span><span class="mi">0</span><span class="p">,:]</span><span class="o">*</span><span class="n">x</span><span class="p">[:</span><span class="n">nx</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                <span class="n">nc</span><span class="p">[</span><span class="mi">2</span><span class="p">,:]</span><span class="o">=</span><span class="n">c</span><span class="p">[</span><span class="mi">2</span><span class="p">,:]</span><span class="o">-</span><span class="mi">2</span><span class="o">*</span><span class="n">c</span><span class="p">[</span><span class="mi">1</span><span class="p">,:]</span><span class="o">*</span><span class="n">x</span><span class="p">[:</span><span class="n">nx</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="mi">3</span><span class="o">*</span><span class="n">c</span><span class="p">[</span><span class="mi">0</span><span class="p">,:]</span><span class="o">*</span><span class="n">x</span><span class="p">[:</span><span class="n">nx</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span>
+                <span class="n">nc</span><span class="p">[</span><span class="mi">3</span><span class="p">,:]</span><span class="o">=</span><span class="n">c</span><span class="p">[</span><span class="mi">3</span><span class="p">,:]</span><span class="o">-</span><span class="mi">1</span><span class="o">*</span><span class="n">c</span><span class="p">[</span><span class="mi">2</span><span class="p">,:]</span><span class="o">*</span><span class="n">x</span><span class="p">[:</span><span class="n">nx</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span><span class="o">*</span><span class="n">c</span><span class="p">[</span><span class="mi">1</span><span class="p">,:]</span><span class="o">*</span><span class="n">x</span><span class="p">[:</span><span class="n">nx</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="o">-</span><span class="mi">1</span><span class="o">*</span><span class="n">c</span><span class="p">[</span><span class="mi">0</span><span class="p">,:]</span><span class="o">*</span><span class="n">x</span><span class="p">[:</span><span class="n">nx</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">**</span><span class="mi">3</span>
+            <span class="k">return</span> <span class="n">nc</span>
+
+        <span class="n">vh</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">ZvH</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+
+        <span class="n">l</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">lmax</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">lmax</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="o">-</span><span class="n">i</span><span class="p">,</span> <span class="n">i</span><span class="p">):</span>
+                <span class="n">l</span><span class="p">[</span><span class="n">i</span><span class="o">*</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">+</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">((</span><span class="n">lmax</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">):</span>
+            <span class="n">f</span><span class="o">=</span><span class="n">CubicSpline</span><span class="p">(</span><span class="n">rad</span><span class="p">,</span><span class="n">C</span><span class="p">[:,</span><span class="n">i</span><span class="p">])</span>
+            <span class="n">c</span><span class="o">=</span><span class="n">f</span><span class="o">.</span><span class="n">c</span>
+            <span class="n">c</span><span class="o">=</span><span class="n">_convert_coeff</span><span class="p">(</span><span class="n">c</span><span class="p">,</span><span class="n">rad</span><span class="p">)</span>
+            <span class="n">I1</span> <span class="o">=</span> <span class="n">_eval_I1</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">rad</span><span class="p">,</span> <span class="n">l</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">n_rad</span><span class="p">)</span>
+            <span class="n">I2</span> <span class="o">=</span> <span class="n">_eval_I2</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">rad</span><span class="p">,</span> <span class="n">l</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">n_rad</span><span class="p">)</span>
+            <span class="n">I</span> <span class="o">=</span> <span class="n">I1</span><span class="o">/</span><span class="p">(</span><span class="n">rad</span><span class="o">**</span><span class="p">(</span><span class="n">l</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">+</span><span class="mf">1.</span><span class="p">))</span> <span class="o">+</span> <span class="n">I2</span><span class="o">*</span><span class="p">(</span><span class="n">rad</span><span class="o">**</span><span class="p">(</span><span class="n">l</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+            <span class="n">f</span> <span class="o">=</span> <span class="n">CubicSpline</span><span class="p">(</span><span class="n">rad</span><span class="p">,</span><span class="n">I</span><span class="p">)</span>
+            <span class="n">v</span><span class="o">=</span><span class="n">f</span><span class="p">(</span><span class="n">d_atom</span><span class="p">)</span>
+            <span class="n">vh</span> <span class="o">+=</span> <span class="n">ZvH</span><span class="p">[:,</span><span class="n">i</span><span class="p">]</span><span class="o">*</span><span class="n">v</span><span class="o">/</span><span class="p">(</span><span class="mf">2.</span><span class="o">*</span><span class="n">l</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">+</span><span class="mf">1.</span><span class="p">)</span>
+        <span class="k">return</span> <span class="mi">4</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">vh</span>
 
     <span class="n">l_basis</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">((</span><span class="n">mol</span><span class="o">.</span><span class="n">_bas</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]))</span>
     <span class="n">l_margin</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">4</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">16</span><span class="p">])</span>
@@ -428,7 +713,10 @@
         <span class="n">rho_here</span> <span class="o">=</span> <span class="n">rho_here</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">n_rad</span><span class="p">,</span> <span class="n">n_ang</span><span class="p">)</span> <span class="c1">#(r,\theta \phi)</span>
         <span class="c1">#r : n_rad, a : n_ang, l : (lmax+1)**2</span>
         <span class="n">C</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">rho_here</span><span class="p">,</span> <span class="n">ZI</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
-        <span class="n">vH</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">+=</span> <span class="n">kspies_fort</span><span class="o">.</span><span class="n">eval_vhm</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">ZvH</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span> <span class="p">:],</span> <span class="n">d_atom</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">idx</span><span class="p">],</span> <span class="n">rad</span><span class="p">,</span> <span class="n">lmax</span><span class="p">,</span> <span class="n">coords</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">n_rad</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">kf_imported</span><span class="p">:</span>
+            <span class="n">vH</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">+=</span> <span class="n">kspies_fort</span><span class="o">.</span><span class="n">eval_vhm</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">ZvH</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span> <span class="p">:],</span> <span class="n">d_atom</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">idx</span><span class="p">],</span> <span class="n">rad</span><span class="p">,</span> <span class="n">lmax</span><span class="p">,</span> <span class="n">coords</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">n_rad</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">vH</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">+=</span> <span class="n">eval_vhm</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">ZvH</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span> <span class="p">:],</span> <span class="n">d_atom</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">idx</span><span class="p">],</span> <span class="n">rad</span><span class="p">,</span> <span class="n">lmax</span><span class="p">,</span> <span class="n">coords</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">n_rad</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">vH</span></div>
 
@@ -543,19 +831,11 @@
 
   <div role="contentinfo">
     <p>
-        
         &copy; Copyright 2020, Seungsoo Nam, Ryan J. McCarty, Hansol Park, Eunji Sim
 
     </p>
   </div>
-    
-    
-    
-    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
-    
-    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -566,6 +846,7 @@
 
   </div>
   
+
 
   <script type="text/javascript">
       jQuery(function () {

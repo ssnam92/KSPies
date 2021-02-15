@@ -11,7 +11,7 @@ The easiest way to install this package is using the PyPI pip install
 
 .. code:: bash
 
-    python -m pip install kspies
+    pip install kspies
 
 This distribution does not come with the extras (the example files used the in the tutorial), but these can be downloaded here: `example folder <https://github.com/ssnam92/KSPies/tree/master/examples>`_
 
