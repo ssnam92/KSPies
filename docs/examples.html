@@ -92,10 +92,11 @@
 <li class="toctree-l2"><a class="reference internal" href="#test-script">1. Test Script</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#benzene">2. Benzene</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#oxygen">3. Oxygen</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#restricted-wy">4. Restricted WY</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#regularized-wy">4. Regularized WY</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#user-defined-system">5. User Defined System</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#plot-xc-zmp-fa">6. Plot XC ZMP FA</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#plot-xc-wy-pbe">7. Plot XC WY PBE</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#user-defined-potential-basis">8. User Defined Potential Basis</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
@@ -168,108 +169,560 @@
             
   <div class="section" id="examples">
 <h1>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h1>
-<dl class="simple">
-<dt>Included in the KS-pies download is an example folder including several scripts which</dt><dd><p>demonstrate possible uses of KS-pies. Each script intends to showcase the use of
+<p>Included in the KS-pies download is an example folder including several scripts which
+demonstrate possible uses of KS-pies. Each script intends to showcase the use of
 a KS-pies feature.</p>
-</dd>
-</dl>
 <div class="section" id="test-script">
 <span id="full-example"></span><h2>1. Test Script<a class="headerlink" href="#test-script" title="Permalink to this headline">¶</a></h2>
-<dl class="simple">
-<dt>A complete example using ZMP, WY and the util functions.</dt><dd><p>A Be atom is used for the test density.
+<p>A complete example using ZMP, WY and the util functions.
+A Be atom is used for the test density.
 Prints to terminal results and expected results, that can
 be compared to confirm that the code is working correctly.</p>
-</dd>
-</dl>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">pyscf</span> <span class="kn">import</span> <span class="n">gto</span><span class="p">,</span> <span class="n">scf</span><span class="p">,</span> <span class="n">dft</span>
+<span class="kn">from</span> <span class="nn">kspies</span> <span class="kn">import</span> <span class="n">wy</span><span class="p">,</span> <span class="n">zmp</span><span class="p">,</span> <span class="n">util</span>
+<span class="sd">&#39;&#39;&#39;Blackbox test script&#39;&#39;&#39;</span>
+
+<span class="c1">#Reference simple HF run</span>
+<span class="n">mol</span> <span class="o">=</span> <span class="n">gto</span><span class="o">.</span><span class="n">M</span><span class="p">(</span><span class="n">atom</span> <span class="o">=</span> <span class="s1">&#39;Be&#39;</span><span class="p">,</span>
+            <span class="n">basis</span> <span class="o">=</span> <span class="s1">&#39;cc-pVTZ&#39;</span><span class="p">,</span>
+            <span class="n">spin</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="n">verbose</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">)</span>
+<span class="n">mf</span> <span class="o">=</span> <span class="n">scf</span><span class="o">.</span><span class="n">RHF</span><span class="p">(</span><span class="n">mol</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+<span class="n">dm_rhf</span> <span class="o">=</span> <span class="n">mf</span><span class="o">.</span><span class="n">make_rdm1</span><span class="p">()</span>
+<span class="n">mf</span> <span class="o">=</span> <span class="n">scf</span><span class="o">.</span><span class="n">UHF</span><span class="p">(</span><span class="n">mol</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+<span class="n">dm_uhf</span> <span class="o">=</span> <span class="n">mf</span><span class="o">.</span><span class="n">make_rdm1</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;#####Check WY#####&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;!Expected -Ws = -14.57272496 !&quot;</span><span class="p">)</span>
+<span class="c1">#Check wy giving correct answers</span>
+<span class="n">mw1</span> <span class="o">=</span> <span class="n">wy</span><span class="o">.</span><span class="n">RWY</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="n">dm_rhf</span><span class="p">)</span>
+<span class="n">mw1</span><span class="o">.</span><span class="n">reg</span> <span class="o">=</span> <span class="mf">1e-5</span>
+<span class="n">mw1</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+<span class="n">mw1</span><span class="o">.</span><span class="n">info</span><span class="p">()</span>
+
+<span class="n">mw2</span> <span class="o">=</span> <span class="n">wy</span><span class="o">.</span><span class="n">UWY</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="n">dm_uhf</span><span class="p">)</span>
+<span class="n">mw2</span><span class="o">.</span><span class="n">reg</span> <span class="o">=</span> <span class="mf">1e-5</span>
+<span class="n">mw2</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+<span class="n">mw2</span><span class="o">.</span><span class="n">info</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;#####Check ZMP#####&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;!Expected :                 gap=  0.1262392 dN=   78.65 C= 6.75e-04 !&quot;</span><span class="p">)</span>
+<span class="c1">#Check zmp giving correct answers</span>
+<span class="n">mz1</span> <span class="o">=</span> <span class="n">zmp</span><span class="o">.</span><span class="n">RZMP</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="n">dm_rhf</span><span class="p">)</span>
+<span class="n">mz1</span><span class="o">.</span><span class="n">zscf</span><span class="p">(</span><span class="mi">16</span><span class="p">)</span>
+
+<span class="n">mz2</span> <span class="o">=</span> <span class="n">zmp</span><span class="o">.</span><span class="n">UZMP</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="n">dm_uhf</span><span class="p">)</span>
+<span class="n">mz2</span><span class="o">.</span><span class="n">zscf</span><span class="p">(</span><span class="mi">16</span><span class="p">)</span>
+
+<span class="c1">#Check util giving correct answers</span>
+<span class="n">grids</span> <span class="o">=</span> <span class="n">dft</span><span class="o">.</span><span class="n">gen_grid</span><span class="o">.</span><span class="n">Grids</span><span class="p">(</span><span class="n">mol</span><span class="p">)</span>
+<span class="n">grids</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
+<span class="n">coords</span> <span class="o">=</span> <span class="n">grids</span><span class="o">.</span><span class="n">coords</span>
+<span class="n">weights</span> <span class="o">=</span> <span class="n">grids</span><span class="o">.</span><span class="n">weights</span>
+<span class="n">ao</span> <span class="o">=</span> <span class="n">dft</span><span class="o">.</span><span class="n">numint</span><span class="o">.</span><span class="n">eval_ao</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="n">coords</span><span class="p">,</span> <span class="n">deriv</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">rho</span> <span class="o">=</span> <span class="n">dft</span><span class="o">.</span><span class="n">numint</span><span class="o">.</span><span class="n">eval_rho</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="n">ao</span><span class="p">,</span> <span class="n">dm_rhf</span><span class="p">,</span> <span class="n">xctype</span><span class="o">=</span><span class="s1">&#39;GGA&#39;</span><span class="p">)</span>
+
+<span class="n">vj_ana</span> <span class="o">=</span> <span class="n">scf</span><span class="o">.</span><span class="n">hf</span><span class="o">.</span><span class="n">get_jk</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="n">dm_rhf</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">Eh_ana</span> <span class="o">=</span> <span class="o">.</span><span class="mi">5</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s1">&#39;ij,ji&#39;</span><span class="p">,</span> <span class="n">vj_ana</span><span class="p">,</span> <span class="n">dm_rhf</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;#####Check util.eval_vh#####&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Eh(numerical) - Eh(analytic) in Hartrees&quot;</span><span class="p">)</span>
+<span class="n">saved</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mf">0.000269882</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.000132191</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.000072399</span><span class="p">,</span> 
+         <span class="o">-</span><span class="mf">0.000042809</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.000026879</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.000017730</span><span class="p">]</span> <span class="c1">#Precomputed values</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Lvl  computed      saved&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">Lvl</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">([</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">]):</span>
+    <span class="n">vj_num</span> <span class="o">=</span> <span class="n">util</span><span class="o">.</span><span class="n">eval_vh</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="n">coords</span><span class="p">,</span> <span class="n">dm_rhf</span><span class="p">,</span> <span class="n">Lvl</span> <span class="o">=</span> <span class="n">Lvl</span><span class="p">)</span>
+    <span class="n">Eh_num</span> <span class="o">=</span> <span class="o">.</span><span class="mi">5</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s1">&#39;r,r,r&#39;</span><span class="p">,</span> <span class="n">vj_num</span><span class="p">,</span> <span class="n">rho</span><span class="p">[</span><span class="mi">0</span><span class="p">,:],</span> <span class="n">weights</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%i</span><span class="s1">  </span><span class="si">%.7f</span><span class="s1"> </span><span class="si">%.7f</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">Lvl</span><span class="p">,(</span><span class="n">Eh_num</span><span class="o">-</span><span class="n">Eh_ana</span><span class="p">),</span><span class="n">saved</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+
+<span class="nb">print</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;#####Check util.eval_vxc#####&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Check with vxc*n differences on same density&quot;</span><span class="p">)</span>
+
+<span class="n">xc_code</span> <span class="o">=</span> <span class="s1">&#39;pbe&#39;</span>
+<span class="n">_</span><span class="p">,</span> <span class="n">vxc</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">dft</span><span class="o">.</span><span class="n">libxc</span><span class="o">.</span><span class="n">eval_xc</span><span class="p">(</span><span class="n">xc_code</span><span class="p">,</span> <span class="n">rho</span><span class="p">)</span>
+<span class="n">Vxc</span> <span class="o">=</span> <span class="n">dft</span><span class="o">.</span><span class="n">numint</span><span class="o">.</span><span class="n">eval_mat</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="n">ao</span><span class="p">,</span> <span class="n">weights</span><span class="p">,</span> <span class="n">rho</span><span class="p">,</span> <span class="n">vxc</span><span class="p">,</span> <span class="n">xctype</span><span class="o">=</span><span class="s1">&#39;GGA&#39;</span> <span class="p">)</span> <span class="c1">#PySCF Vxc matrix</span>
+<span class="n">Exc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s1">&#39;ij,ji&#39;</span><span class="p">,</span> <span class="n">Vxc</span><span class="p">,</span> <span class="n">dm_rhf</span><span class="p">)</span> <span class="c1">#analytic Vxc*n </span>
+<span class="n">vxcr</span> <span class="o">=</span> <span class="n">util</span><span class="o">.</span><span class="n">eval_vxc</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="n">dm_rhf</span><span class="p">,</span> <span class="n">xc_code</span><span class="p">,</span> <span class="n">coords</span><span class="p">)</span> 
+<span class="n">Exc_num</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s1">&#39;r,r,r&#39;</span><span class="p">,</span> <span class="n">vxcr</span><span class="p">,</span> <span class="n">rho</span><span class="p">[</span><span class="mi">0</span><span class="p">,:],</span> <span class="n">weights</span><span class="p">)</span> <span class="c1">#numerical Vxc*n</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;PySCF - util  : </span><span class="si">%.7f</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">Exc</span><span class="o">-</span><span class="n">Exc_num</span><span class="p">))</span>
+
+<span class="n">xc_code2</span> <span class="o">=</span> <span class="s1">&#39;0.999*pbe,pbe&#39;</span>
+<span class="n">_</span><span class="p">,</span> <span class="n">vxc</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">dft</span><span class="o">.</span><span class="n">libxc</span><span class="o">.</span><span class="n">eval_xc</span><span class="p">(</span><span class="n">xc_code2</span><span class="p">,</span> <span class="n">rho</span><span class="p">)</span>
+<span class="n">Vxc2</span> <span class="o">=</span> <span class="n">dft</span><span class="o">.</span><span class="n">numint</span><span class="o">.</span><span class="n">eval_mat</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="n">ao</span><span class="p">,</span> <span class="n">weights</span><span class="p">,</span> <span class="n">rho</span><span class="p">,</span> <span class="n">vxc</span><span class="p">,</span> <span class="n">xctype</span><span class="o">=</span><span class="s1">&#39;GGA&#39;</span> <span class="p">)</span>
+<span class="n">Exc2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s1">&#39;ij,ji&#39;</span><span class="p">,</span> <span class="n">Vxc2</span><span class="p">,</span> <span class="n">dm_rhf</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;PBE - 0.999PBE: </span><span class="si">%.7f</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">Exc</span><span class="o">-</span><span class="n">Exc2</span><span class="p">))</span>
+
+</pre></div>
+</div>
 </div>
 <div class="section" id="benzene">
 <span id="zmp-benzene"></span><h2>2. Benzene<a class="headerlink" href="#benzene" title="Permalink to this headline">¶</a></h2>
-<p>Use ZMP to create a KS potential of Benzene.</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span>  <span class="n">wy</span><span class="o">.</span><span class="n">RWY</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="n">dm_tar</span><span class="p">)</span>
+<p>First perform DF-RHF calculation of benzene,
+and then perform RWY, UWY, DF-RZMP, DF-UZMP, RZMP and DF-UZMP calculations with HF target density.
+The example also plot density differences (requires matplotlib)
+Note that RZMP and UZMP with DF approximation require a substantial amount of time.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">pyscf</span> <span class="kn">import</span> <span class="n">gto</span><span class="p">,</span> <span class="n">scf</span><span class="p">,</span> <span class="n">lib</span><span class="p">,</span> <span class="n">dft</span>
+<span class="kn">from</span> <span class="nn">kspies</span> <span class="kn">import</span> <span class="n">zmp</span><span class="p">,</span> <span class="n">wy</span>
+<span class="n">lib</span><span class="o">.</span><span class="n">num_threads</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span>
+
+<span class="c1">#Define system</span>
+<span class="n">mol</span><span class="o">=</span><span class="n">gto</span><span class="o">.</span><span class="n">M</span><span class="p">(</span><span class="n">atom</span><span class="o">=</span> <span class="s1">&#39;&#39;&#39;</span>
+<span class="s1">C    0.0000    1.3936     0.0000</span>
+<span class="s1">C    1.2069    0.6968     0.0000</span>
+<span class="s1">C    1.2069   -0.6968     0.0000</span>
+<span class="s1">C    0.0000   -1.3936     0.0000</span>
+<span class="s1">C   -1.2069   -0.6968     0.0000</span>
+<span class="s1">C   -1.2069    0.6968     0.0000</span>
+<span class="s1">H    0.0000    2.4787     0.0000</span>
+<span class="s1">H    2.1467    1.2394     0.0000</span>
+<span class="s1">H    2.1467   -1.2394     0.0000</span>
+<span class="s1">H    0.0000   -2.4787     0.0000</span>
+<span class="s1">H   -2.1467   -1.2394     0.0000</span>
+<span class="s1">H   -2.1467    1.2394     0.0000</span>
+<span class="s1">&#39;&#39;&#39;</span><span class="p">,</span>
+<span class="n">basis</span> <span class="o">=</span> <span class="s1">&#39;cc-pVTZ&#39;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+
+<span class="c1">#Reference HF calculation</span>
+<span class="n">mf</span><span class="o">=</span><span class="n">scf</span><span class="o">.</span><span class="n">RHF</span><span class="p">(</span><span class="n">mol</span><span class="p">)</span><span class="o">.</span><span class="n">density_fit</span><span class="p">()</span>
+<span class="n">mf</span><span class="o">.</span><span class="n">kernel</span><span class="p">()</span>
+<span class="n">dm_tar</span> <span class="o">=</span> <span class="n">mf</span><span class="o">.</span><span class="n">make_rdm1</span><span class="p">()</span>
+<span class="n">udm_tar</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">((</span><span class="n">dm_tar</span><span class="o">*</span><span class="mf">0.5</span><span class="p">,</span><span class="n">dm_tar</span><span class="o">*</span><span class="mf">0.5</span><span class="p">))</span> <span class="c1">#to pass to UZMP and UWY</span>
+
+<span class="c1">#Grid generation for density accuracy check</span>
+<span class="n">grids</span><span class="o">=</span><span class="n">dft</span><span class="o">.</span><span class="n">gen_grid</span><span class="o">.</span><span class="n">Grids</span><span class="p">(</span><span class="n">mol</span><span class="p">)</span>
+<span class="n">grids</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
+<span class="n">coords</span><span class="o">=</span><span class="n">grids</span><span class="o">.</span><span class="n">coords</span>
+<span class="n">weights</span><span class="o">=</span><span class="n">grids</span><span class="o">.</span><span class="n">weights</span>
+<span class="n">ao</span><span class="o">=</span><span class="n">dft</span><span class="o">.</span><span class="n">numint</span><span class="o">.</span><span class="n">eval_ao</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="n">coords</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">ndiff</span><span class="p">(</span><span class="n">P</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">P</span><span class="o">.</span><span class="n">ndim</span><span class="o">==</span><span class="mi">3</span><span class="p">:</span> <span class="n">P</span><span class="o">=</span><span class="n">P</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="n">P</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">rho</span><span class="o">=</span><span class="n">dft</span><span class="o">.</span><span class="n">numint</span><span class="o">.</span><span class="n">eval_rho</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="n">ao</span><span class="p">,</span> <span class="n">P</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s1">&#39;r,r&#39;</span><span class="p">,</span><span class="nb">abs</span><span class="p">(</span><span class="n">rho</span><span class="p">),</span><span class="n">weights</span><span class="p">)</span>
+
+<span class="c1">#RWY calculation</span>
+<span class="n">mw1</span> <span class="o">=</span> <span class="n">wy</span><span class="o">.</span><span class="n">RWY</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="n">dm_tar</span><span class="p">)</span>
+<span class="n">mw1</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+<span class="n">mw1</span><span class="o">.</span><span class="n">info</span><span class="p">()</span>
+<span class="n">dm_wy1</span> <span class="o">=</span> <span class="n">mw1</span><span class="o">.</span><span class="n">dm</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;RWY density difference: &quot;</span><span class="p">,</span><span class="n">ndiff</span><span class="p">(</span><span class="n">dm_wy1</span><span class="o">-</span><span class="n">dm_tar</span><span class="p">))</span>
+
+<span class="c1">#UWY calculation</span>
+<span class="n">mw2</span> <span class="o">=</span> <span class="n">wy</span><span class="o">.</span><span class="n">UWY</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="n">udm_tar</span><span class="p">)</span>
+<span class="n">mw2</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+<span class="n">mw2</span><span class="o">.</span><span class="n">info</span><span class="p">()</span>
+<span class="n">dm_wy2</span> <span class="o">=</span> <span class="n">mw2</span><span class="o">.</span><span class="n">dm</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;UWY density difference: &quot;</span><span class="p">,</span><span class="n">ndiff</span><span class="p">(</span><span class="n">dm_wy2</span><span class="o">-</span><span class="n">udm_tar</span><span class="p">))</span>
+
+<span class="c1">#DF-RZMP</span>
+<span class="n">mz1</span><span class="o">=</span><span class="n">zmp</span><span class="o">.</span><span class="n">RZMP</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="n">dm_tar</span><span class="p">)</span>
+<span class="n">mz1</span><span class="o">.</span><span class="n">with_df</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="p">[</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="mi">256</span><span class="p">,</span> <span class="mi">512</span> <span class="p">]:</span>
+    <span class="n">mz1</span><span class="o">.</span><span class="n">level_shift</span> <span class="o">=</span> <span class="n">l</span><span class="o">*</span><span class="mf">0.1</span>
+    <span class="n">mz1</span><span class="o">.</span><span class="n">zscf</span><span class="p">(</span><span class="n">l</span><span class="p">)</span>
+    <span class="c1">#np.save(&#39;P&#39;+str(l), mz1.dm)</span>
+
+<span class="c1">#DF-UZMP</span>
+<span class="n">mz2</span><span class="o">=</span><span class="n">zmp</span><span class="o">.</span><span class="n">UZMP</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="n">udm_tar</span><span class="p">)</span>
+<span class="n">mz2</span><span class="o">.</span><span class="n">with_df</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="p">[</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="mi">256</span><span class="p">,</span> <span class="mi">512</span> <span class="p">]:</span>
+    <span class="n">mz2</span><span class="o">.</span><span class="n">level_shift</span> <span class="o">=</span> <span class="n">l</span><span class="o">*</span><span class="mf">0.1</span>
+    <span class="n">mz2</span><span class="o">.</span><span class="n">zscf</span><span class="p">(</span><span class="n">l</span><span class="p">)</span>
+
+<span class="c1">#RZMP (slow)</span>
+<span class="n">mz3</span><span class="o">=</span><span class="n">zmp</span><span class="o">.</span><span class="n">RZMP</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="n">dm_tar</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="p">[</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="mi">256</span><span class="p">,</span> <span class="mi">512</span> <span class="p">]:</span>
+    <span class="n">mz3</span><span class="o">.</span><span class="n">level_shift</span> <span class="o">=</span> <span class="n">l</span><span class="o">*</span><span class="mf">0.1</span>
+    <span class="n">mz3</span><span class="o">.</span><span class="n">zscf</span><span class="p">(</span><span class="n">l</span><span class="p">)</span>
+
+<span class="c1">#UZMP (slow)</span>
+<span class="n">mz4</span><span class="o">=</span><span class="n">zmp</span><span class="o">.</span><span class="n">RZMP</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="n">udm_tar</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="p">[</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="mi">256</span><span class="p">,</span> <span class="mi">512</span> <span class="p">]:</span>
+    <span class="n">mz4</span><span class="o">.</span><span class="n">level_shift</span> <span class="o">=</span> <span class="n">l</span><span class="o">*</span><span class="mf">0.1</span>
+    <span class="n">mz4</span><span class="o">.</span><span class="n">zscf</span><span class="p">(</span><span class="n">l</span><span class="p">)</span>
+
+<span class="c1">#Setting for plotting density difference</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">matplotlib.colors</span> <span class="k">as</span> <span class="nn">mcolors</span>
+
+<span class="k">def</span> <span class="nf">make_colormap</span><span class="p">(</span><span class="n">seq</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return a LinearSegmentedColormap</span>
+<span class="sd">    seq: a sequence of floats and RGB-tuples. The floats should be increasing</span>
+<span class="sd">    and in the interval (0,1).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">seq</span> <span class="o">=</span> <span class="p">[(</span><span class="kc">None</span><span class="p">,)</span> <span class="o">*</span> <span class="mi">3</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">seq</span><span class="p">)</span> <span class="o">+</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="p">(</span><span class="kc">None</span><span class="p">,)</span> <span class="o">*</span> <span class="mi">3</span><span class="p">]</span>
+    <span class="n">cdict</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;red&#39;</span><span class="p">:</span> <span class="p">[],</span> <span class="s1">&#39;green&#39;</span><span class="p">:</span> <span class="p">[],</span> <span class="s1">&#39;blue&#39;</span><span class="p">:</span> <span class="p">[]}</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">item</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">seq</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="nb">float</span><span class="p">):</span>
+            <span class="n">r1</span><span class="p">,</span> <span class="n">g1</span><span class="p">,</span> <span class="n">b1</span> <span class="o">=</span> <span class="n">seq</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+            <span class="n">r2</span><span class="p">,</span> <span class="n">g2</span><span class="p">,</span> <span class="n">b2</span> <span class="o">=</span> <span class="n">seq</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+            <span class="n">cdict</span><span class="p">[</span><span class="s1">&#39;red&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">item</span><span class="p">,</span> <span class="n">r1</span><span class="p">,</span> <span class="n">r2</span><span class="p">])</span>
+            <span class="n">cdict</span><span class="p">[</span><span class="s1">&#39;green&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">item</span><span class="p">,</span> <span class="n">g1</span><span class="p">,</span> <span class="n">g2</span><span class="p">])</span>
+            <span class="n">cdict</span><span class="p">[</span><span class="s1">&#39;blue&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">item</span><span class="p">,</span> <span class="n">b1</span><span class="p">,</span> <span class="n">b2</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">mcolors</span><span class="o">.</span><span class="n">LinearSegmentedColormap</span><span class="p">(</span><span class="s1">&#39;CustomMap&#39;</span><span class="p">,</span> <span class="n">cdict</span><span class="p">)</span>
+<span class="n">c</span> <span class="o">=</span> <span class="n">mcolors</span><span class="o">.</span><span class="n">ColorConverter</span><span class="p">()</span><span class="o">.</span><span class="n">to_rgb</span>
+<span class="n">rvb</span> <span class="o">=</span> <span class="n">make_colormap</span><span class="p">(</span>
+      <span class="p">[</span><span class="n">c</span><span class="p">(</span><span class="s1">&#39;#E94B00&#39;</span><span class="p">),</span> <span class="n">c</span><span class="p">(</span><span class="s1">&#39;#FF9021&#39;</span><span class="p">),</span> <span class="mf">0.30</span><span class="p">,</span>
+       <span class="n">c</span><span class="p">(</span><span class="s1">&#39;#FF9021&#39;</span><span class="p">),</span> <span class="n">c</span><span class="p">(</span><span class="s1">&#39;#FFFBEF&#39;</span><span class="p">),</span> <span class="mf">0.49</span><span class="p">,</span>
+       <span class="n">c</span><span class="p">(</span><span class="s1">&#39;white&#39;</span><span class="p">)</span>  <span class="p">,</span> <span class="mf">0.51</span><span class="p">,</span>
+       <span class="n">c</span><span class="p">(</span><span class="s1">&#39;#F4FFDD&#39;</span><span class="p">),</span> <span class="n">c</span><span class="p">(</span><span class="s1">&#39;#7BFF0D&#39;</span><span class="p">),</span> <span class="mf">0.80</span><span class="p">,</span>
+       <span class="n">c</span><span class="p">(</span><span class="s1">&#39;#7BFF0D&#39;</span><span class="p">),</span> <span class="n">c</span><span class="p">(</span><span class="s1">&#39;#0AE000&#39;</span><span class="p">)])</span>
+
+<span class="c1">#Define drawing region</span>
+<span class="n">unit</span> <span class="o">=</span> <span class="mf">1.88973</span>
+<span class="n">nx</span> <span class="o">=</span> <span class="mi">101</span> 
+<span class="n">ny</span> <span class="o">=</span> <span class="mi">101</span>
+<span class="n">xs</span> <span class="o">=</span> <span class="n">unit</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">nx</span><span class="p">)</span>
+<span class="n">ys</span> <span class="o">=</span> <span class="n">unit</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">ny</span><span class="p">)</span>
+<span class="n">iz</span> <span class="o">=</span> <span class="mf">0.</span>
+<span class="n">coords</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">ix</span> <span class="ow">in</span> <span class="n">xs</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">iy</span> <span class="ow">in</span> <span class="n">ys</span><span class="p">:</span>
+        <span class="n">coords</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">ix</span><span class="p">,</span> <span class="n">iy</span><span class="p">,</span> <span class="n">iz</span><span class="p">))</span>
+<span class="n">coords</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">coords</span><span class="p">)</span>
+<span class="n">ao</span><span class="o">=</span><span class="n">dft</span><span class="o">.</span><span class="n">numint</span><span class="o">.</span><span class="n">eval_ao</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span><span class="n">coords</span><span class="p">)</span>
+
+<span class="n">ls</span> <span class="o">=</span> <span class="p">[</span><span class="mi">8</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="mi">512</span><span class="p">]</span>
+<span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span> <span class="o">=</span> <span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">7</span><span class="p">))</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">sharey</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">gridspec_kw</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;hspace&#39;</span><span class="p">:</span> <span class="mf">0.06</span><span class="p">,</span> <span class="s1">&#39;wspace&#39;</span><span class="p">:</span> <span class="mf">0.06</span><span class="p">})</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">):</span>
+    <span class="n">P</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">&#39;P&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">ls</span><span class="p">[</span><span class="n">i</span><span class="p">])</span><span class="o">+</span><span class="s1">&#39;.npy&#39;</span><span class="p">)</span>
+    <span class="n">drho</span><span class="o">=</span><span class="n">dft</span><span class="o">.</span><span class="n">numint</span><span class="o">.</span><span class="n">eval_rho</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span><span class="n">ao</span><span class="p">,</span><span class="n">P</span><span class="o">-</span><span class="n">P_tar</span><span class="p">)</span>
+    <span class="n">drho</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">drho</span><span class="p">,</span> <span class="p">(</span><span class="n">nx</span><span class="p">,</span> <span class="n">ny</span><span class="p">))</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">ax</span><span class="p">[</span><span class="n">i</span><span class="o">//</span><span class="mi">2</span><span class="p">,</span><span class="n">i</span><span class="o">%</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">contourf</span><span class="p">(</span><span class="n">xs</span><span class="o">/</span><span class="n">unit</span><span class="p">,</span> <span class="n">ys</span><span class="o">/</span><span class="n">unit</span><span class="p">,</span> <span class="n">drho</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">levels</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mf">0.05</span><span class="p">,</span><span class="mf">0.05</span><span class="p">,</span><span class="mi">101</span><span class="p">),</span> <span class="n">cmap</span><span class="o">=</span><span class="n">rvb</span><span class="p">,</span> <span class="n">extend</span><span class="o">=</span><span class="s1">&#39;both&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="p">[</span><span class="n">i</span><span class="o">//</span><span class="mi">2</span><span class="p">,</span><span class="n">i</span><span class="o">%</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="s1">&#39;equal&#39;</span><span class="p">,</span> <span class="n">adjustable</span><span class="o">=</span><span class="s1">&#39;box&#39;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">subplots_adjust</span><span class="p">(</span><span class="n">top</span><span class="o">=</span><span class="mf">0.95</span><span class="p">,</span><span class="n">right</span><span class="o">=</span><span class="mf">0.84</span><span class="p">,</span><span class="n">bottom</span><span class="o">=</span><span class="mf">0.06</span><span class="p">,</span><span class="n">left</span><span class="o">=</span><span class="mf">0.06</span><span class="p">)</span>
+<span class="n">cbar_ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_axes</span><span class="p">([</span><span class="mf">0.88</span><span class="p">,</span> <span class="mf">0.06</span><span class="p">,</span> <span class="mf">0.03</span><span class="p">,</span> <span class="mf">0.88</span><span class="p">])</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">cax</span><span class="o">=</span><span class="n">cbar_ax</span><span class="p">,</span><span class="n">ticks</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mf">0.05</span><span class="p">,</span><span class="mf">0.05</span><span class="p">,</span><span class="mi">11</span><span class="p">))</span>
+<span class="c1">#plt.savefig(&#39;bz_dendiff.pdf&#39;, format=&#39;pdf&#39;)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
-</td></tr></table></div>
-<p>Demonstrating a restricted WY instance with <strong>run</strong>, <strong>info</strong>, and use of the stored density matrix <strong>dm</strong>.</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span>  <span class="n">wy</span><span class="o">.</span><span class="n">UWY</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="n">udm_tar</span><span class="p">)</span>
-</pre></div>
-</td></tr></table></div>
-<p>Demonstrating an unrestricted WY instance with <strong>run</strong>, <strong>info</strong>, and use of the stored density matrix <strong>dm</strong>.</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span>  <span class="n">zmp</span><span class="o">.</span><span class="n">RZMP</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="n">dm_tar</span><span class="p">)</span>
-</pre></div>
-</td></tr></table></div>
-<p>Demonstrating a restricted ZMP instance with and without the density fitting procedure (<strong>with_df = True</strong>). Also shows use of <strong>level_shift</strong>, <strong>zscf</strong>, and how various lambda can be used.</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span>  <span class="n">zmp</span><span class="o">.</span><span class="n">UZMP</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="n">dm_tar</span><span class="p">)</span>
-</pre></div>
-</td></tr></table></div>
-<p>Demonstrating an unrestricted ZMP instance with and without the density fitting procedure (<strong>with_df = True</strong>). Also shows use of <strong>level_shift</strong>, <strong>zscf</strong>, and how various lambda can be used.</p>
+</div>
 </div>
 <div class="section" id="oxygen">
 <span id="wy-zmp-oxygen"></span><h2>3. Oxygen<a class="headerlink" href="#oxygen" title="Permalink to this headline">¶</a></h2>
-<p>Use unrestricted ZMP and unrestricted WY to calculate a KS potential of molecular oxygen.</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span>  <span class="n">zmp</span><span class="o">.</span><span class="n">UZMP</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="n">dm_tar</span><span class="p">)</span>
+<p>Similar with benzene example but CCSD density is used as a target</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">pyscf</span> <span class="kn">import</span> <span class="n">gto</span><span class="p">,</span> <span class="n">scf</span><span class="p">,</span> <span class="n">lib</span><span class="p">,</span> <span class="n">dft</span><span class="p">,</span> <span class="n">cc</span>
+<span class="kn">from</span> <span class="nn">kspies</span> <span class="kn">import</span> <span class="n">zmp</span><span class="p">,</span> <span class="n">wy</span><span class="p">,</span> <span class="n">util</span>
+<span class="n">lib</span><span class="o">.</span><span class="n">num_threads</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span>
+
+<span class="c1">#Define system</span>
+<span class="n">mol</span><span class="o">=</span><span class="n">gto</span><span class="o">.</span><span class="n">M</span><span class="p">(</span><span class="n">atom</span><span class="o">=</span> <span class="s1">&#39;&#39;&#39;</span>
+<span class="s1">O 1.208 0.0 0.0</span>
+<span class="s1">O 0.0   0.0 0.0</span>
+<span class="s1">&#39;&#39;&#39;</span><span class="p">,</span>
+<span class="n">basis</span> <span class="o">=</span> <span class="s1">&#39;cc-pVQZ&#39;</span><span class="p">,</span><span class="n">spin</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>  <span class="n">verbose</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+
+<span class="c1">#Reference calculation</span>
+<span class="n">mf</span><span class="o">=</span><span class="n">scf</span><span class="o">.</span><span class="n">UHF</span><span class="p">(</span><span class="n">mol</span><span class="p">)</span>
+<span class="n">mf</span><span class="o">.</span><span class="n">kernel</span><span class="p">()</span>
+<span class="n">mc</span><span class="o">=</span><span class="n">cc</span><span class="o">.</span><span class="n">CCSD</span><span class="p">(</span><span class="n">mf</span><span class="p">)</span>
+<span class="n">mc</span><span class="o">.</span><span class="n">kernel</span><span class="p">()</span>
+<span class="n">dm_tar</span> <span class="o">=</span> <span class="n">util</span><span class="o">.</span><span class="n">mo2ao</span><span class="p">(</span><span class="n">mf</span><span class="o">.</span><span class="n">mo_coeff</span><span class="p">,</span> <span class="n">mc</span><span class="o">.</span><span class="n">make_rdm1</span><span class="p">())</span>
+<span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s1">&#39;P_tar&#39;</span><span class="p">,</span><span class="n">dm_tar</span><span class="p">)</span>
+
+<span class="n">dm_tar</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">&#39;P_tar.npy&#39;</span><span class="p">)</span>
+
+<span class="c1">#Grid generation for density accuracy check</span>
+<span class="n">grids</span><span class="o">=</span><span class="n">dft</span><span class="o">.</span><span class="n">gen_grid</span><span class="o">.</span><span class="n">Grids</span><span class="p">(</span><span class="n">mol</span><span class="p">)</span>
+<span class="n">grids</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
+<span class="n">coords</span><span class="o">=</span><span class="n">grids</span><span class="o">.</span><span class="n">coords</span>
+<span class="n">weights</span><span class="o">=</span><span class="n">grids</span><span class="o">.</span><span class="n">weights</span>
+<span class="n">ao</span><span class="o">=</span><span class="n">dft</span><span class="o">.</span><span class="n">numint</span><span class="o">.</span><span class="n">eval_ao</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="n">coords</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">ndiff</span><span class="p">(</span><span class="n">P</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">P</span><span class="o">.</span><span class="n">ndim</span><span class="o">==</span><span class="mi">3</span><span class="p">:</span> <span class="n">P</span><span class="o">=</span><span class="n">P</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="n">P</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">rho</span><span class="o">=</span><span class="n">dft</span><span class="o">.</span><span class="n">numint</span><span class="o">.</span><span class="n">eval_rho</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="n">ao</span><span class="p">,</span> <span class="n">P</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s1">&#39;r,r&#39;</span><span class="p">,</span><span class="nb">abs</span><span class="p">(</span><span class="n">rho</span><span class="p">),</span><span class="n">weights</span><span class="p">)</span>
+
+<span class="c1">#DF-UZMP</span>
+<span class="n">mz</span> <span class="o">=</span><span class="n">zmp</span><span class="o">.</span><span class="n">UZMP</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="n">dm_tar</span><span class="p">)</span>
+<span class="n">mz</span><span class="o">.</span><span class="n">with_df</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="p">[</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="mi">256</span><span class="p">,</span> <span class="mi">512</span> <span class="p">]:</span>
+    <span class="n">mz</span><span class="o">.</span><span class="n">level_shift</span> <span class="o">=</span> <span class="n">l</span><span class="o">*</span><span class="mf">0.1</span>
+    <span class="n">mz</span><span class="o">.</span><span class="n">zscf</span><span class="p">(</span><span class="n">l</span><span class="p">)</span>
+
+<span class="c1">#UWY</span>
+<span class="n">mw</span> <span class="o">=</span> <span class="n">wy</span><span class="o">.</span><span class="n">UWY</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="n">dm_tar</span><span class="p">)</span>
+<span class="n">mw</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+<span class="n">mw</span><span class="o">.</span><span class="n">info</span><span class="p">()</span>
+<span class="n">dm_wy</span> <span class="o">=</span> <span class="n">mw</span><span class="o">.</span><span class="n">dm</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;RWY density difference: &quot;</span><span class="p">,</span><span class="n">ndiff</span><span class="p">(</span><span class="n">dm_wy</span><span class="o">-</span><span class="n">dm_tar</span><span class="p">))</span>
+
 </pre></div>
-</td></tr></table></div>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span>  <span class="n">wy</span><span class="o">.</span><span class="n">UWY</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="n">dm_tar</span><span class="p">)</span>
-</pre></div>
-</td></tr></table></div>
 </div>
-<div class="section" id="restricted-wy">
-<span id="wy-regular"></span><h2>4. Restricted WY<a class="headerlink" href="#restricted-wy" title="Permalink to this headline">¶</a></h2>
-<p>Perform restricted WY on molecular nitrogen.</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span>  <span class="n">wy</span><span class="o">.</span><span class="n">RWY</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="n">dm_tar</span><span class="p">,</span> <span class="n">pbas</span><span class="o">=</span><span class="n">PBS</span><span class="p">)</span>
+</div>
+<div class="section" id="regularized-wy">
+<span id="wy-regular"></span><h2>4. Regularized WY<a class="headerlink" href="#regularized-wy" title="Permalink to this headline">¶</a></h2>
+<p>Perform restricted WY on molecular nitrogen with regularization</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">pyscf</span> <span class="kn">import</span> <span class="n">gto</span><span class="p">,</span> <span class="n">scf</span>
+<span class="kn">from</span> <span class="nn">kspies</span> <span class="kn">import</span> <span class="n">wy</span>
+
+<span class="n">mol</span> <span class="o">=</span> <span class="n">gto</span><span class="o">.</span><span class="n">M</span><span class="p">(</span><span class="n">atom</span> <span class="o">=</span> <span class="s1">&#39;N 0 0 0 ; N 1.1 0 0&#39;</span><span class="p">,</span> 
+            <span class="n">basis</span> <span class="o">=</span> <span class="s1">&#39;cc-pVDZ&#39;</span><span class="p">)</span>
+<span class="n">mf</span> <span class="o">=</span> <span class="n">scf</span><span class="o">.</span><span class="n">RHF</span><span class="p">(</span><span class="n">mol</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+<span class="n">dm_tar</span> <span class="o">=</span> <span class="n">mf</span><span class="o">.</span><span class="n">make_rdm1</span><span class="p">()</span>
+
+<span class="n">PBS</span> <span class="o">=</span> <span class="n">gto</span><span class="o">.</span><span class="n">expand_etbs</span><span class="p">([(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">13</span><span class="p">,</span> <span class="mi">2</span><span class="o">**-</span><span class="mi">4</span> <span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
+                       <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span> <span class="p">,</span> <span class="mi">2</span><span class="o">**-</span><span class="mi">2</span> <span class="p">,</span> <span class="mi">2</span><span class="p">)])</span>
+<span class="n">mw</span> <span class="o">=</span> <span class="n">wy</span><span class="o">.</span><span class="n">RWY</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="n">dm_tar</span><span class="p">,</span> <span class="n">pbas</span><span class="o">=</span><span class="n">PBS</span><span class="p">)</span>
+<span class="c1">#Note that for this designed-to-be ill-conditioned problem,</span>
+<span class="c1">#Hessian-based optimization algorithms are problematic.</span>
+<span class="n">mw</span><span class="o">.</span><span class="n">method</span> <span class="o">=</span> <span class="s1">&#39;bfgs&#39;</span>
+<span class="n">mw</span><span class="o">.</span><span class="n">tol</span> <span class="o">=</span> <span class="mf">2e-7</span>
+<span class="n">mw</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+<span class="n">mw</span><span class="o">.</span><span class="n">info</span><span class="p">()</span>
+<span class="n">Ws_fin</span> <span class="o">=</span> <span class="n">mw</span><span class="o">.</span><span class="n">Ws</span>
+
+<span class="n">etas</span> <span class="o">=</span> <span class="p">[</span> <span class="mf">2.</span><span class="o">**</span><span class="p">(</span><span class="o">-</span><span class="n">a</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">5.</span><span class="p">,</span> <span class="mf">27.</span><span class="p">,</span> <span class="mi">45</span><span class="p">)</span> <span class="p">]</span>
+<span class="n">v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">etas</span><span class="p">))</span>
+<span class="n">W</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">etas</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">eta</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">etas</span><span class="p">):</span>
+    <span class="n">mw</span><span class="o">.</span><span class="n">reg</span><span class="o">=</span><span class="n">eta</span>
+    <span class="n">mw</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+    <span class="n">v</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">mw</span><span class="o">.</span><span class="n">Dvb</span><span class="p">()</span>
+    <span class="n">W</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">mw</span><span class="o">.</span><span class="n">Ws</span>
+    <span class="n">mw</span><span class="o">.</span><span class="n">info</span><span class="p">()</span>
+
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="n">fig</span><span class="p">,</span><span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">Ws_fin</span><span class="o">-</span><span class="n">W</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">v</span><span class="p">))</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">etas</span><span class="p">),</span> <span class="n">v</span><span class="o">*</span><span class="n">etas</span><span class="o">/</span><span class="p">(</span><span class="n">Ws_fin</span><span class="o">-</span><span class="n">W</span><span class="p">))</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="c1">#plt.savefig(&#39;L_curves.pdf&#39;, format=&#39;pdf&#39;)</span>
+<span class="c1">#plt.savefig(&#39;L_curves.eps&#39;, format=&#39;eps&#39;)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 </div>
 <div class="section" id="user-defined-system">
 <span id="userdefined-systems"></span><h2>5. User Defined System<a class="headerlink" href="#user-defined-system" title="Permalink to this headline">¶</a></h2>
-<p>Perform restricted WY on a user defined harmonic oscillator.</p>
-<p>wy.RWY(mol,dm_tar,Sijt=Sijt)</p>
-<p>To create a user defined instance, a number of settings must be specified:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3
-4
-5
-6
-7
-8</pre></div></td><td class="code"><div class="highlight"><pre><span></span>  <span class="n">mw</span> <span class="o">=</span> <span class="n">wy</span><span class="o">.</span><span class="n">RWY</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="n">dm_tar</span><span class="p">,</span> <span class="n">Sijt</span><span class="o">=</span><span class="n">Sijt</span><span class="p">)</span>
-  <span class="n">mw</span><span class="o">.</span><span class="n">tol</span> <span class="o">=</span> <span class="mf">1e-7</span>
-  <span class="n">mw</span><span class="o">.</span><span class="n">method</span> <span class="o">=</span> <span class="s1">&#39;bfgs&#39;</span>
-  <span class="n">mw</span><span class="o">.</span><span class="n">T</span> <span class="o">=</span> <span class="n">T</span>
-  <span class="n">mw</span><span class="o">.</span><span class="n">Tp</span> <span class="o">=</span> <span class="n">T</span>
-  <span class="n">mw</span><span class="o">.</span><span class="n">V</span> <span class="o">=</span> <span class="n">V</span>
-  <span class="n">mw</span><span class="o">.</span><span class="n">S</span> <span class="o">=</span> <span class="n">S</span>
-  <span class="n">mw</span><span class="o">.</span><span class="n">guide</span> <span class="o">=</span> <span class="kc">None</span>
+<p>Perform restricted WY on a user defined harmonic oscillator.
+This example shows
+generation of finite-difference Hamiltonian, solving HF equation with it,
+and perform WY calculation with that HF density as a target
+To create a user defined instance, a number of settings must be specified:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">pyscf</span> <span class="kn">import</span> <span class="n">lib</span><span class="p">,</span> <span class="n">gto</span>
+<span class="kn">from</span> <span class="nn">kspies</span> <span class="kn">import</span> <span class="n">wy</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">scipy.linalg</span> <span class="kn">import</span> <span class="n">toeplitz</span>
+<span class="kn">from</span> <span class="nn">scipy.linalg</span> <span class="kn">import</span> <span class="n">eigh</span>
+
+<span class="c1">#Define system</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">201</span><span class="p">)</span> <span class="c1">#Domain</span>
+<span class="n">h</span> <span class="o">=</span> <span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">/</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>   <span class="c1">#grid spacing</span>
+<span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>                    <span class="c1">#Dimension of basis</span>
+<span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+<span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">2.</span>
+<span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.</span>
+<span class="n">T</span> <span class="o">=</span> <span class="n">toeplitz</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">a</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">h</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>    <span class="c1">#Kinetic energy matrix by 2nd order FD</span>
+
+<span class="n">S</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">identity</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>       <span class="c1">#Overlap matrix</span>
+<span class="n">k</span> <span class="o">=</span> <span class="mf">0.25</span>
+<span class="n">V</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="mf">0.5</span><span class="o">*</span><span class="n">k</span><span class="o">*</span><span class="n">x</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>       <span class="c1">#Harmonic potential matrix</span>
+
+<span class="n">l</span> <span class="o">=</span> <span class="mf">0.5</span>                       <span class="c1">#1D e-e soft repulsion parameter</span>
+<span class="k">def</span> <span class="nf">deno</span><span class="p">(</span><span class="n">l</span><span class="p">):</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">dist</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">b</span><span class="o">-</span><span class="n">b</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+    <span class="k">return</span> <span class="mf">1.</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">dist</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">l</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">get_J</span><span class="p">(</span><span class="n">dm</span><span class="p">):</span>
+    <span class="n">J</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s1">&#39;ii,ik-&gt;k&#39;</span><span class="p">,</span> <span class="n">dm</span><span class="p">,</span> <span class="n">deno</span><span class="p">(</span><span class="n">l</span><span class="p">)))</span>
+    <span class="k">return</span> <span class="n">J</span>
+
+<span class="k">def</span> <span class="nf">get_K</span><span class="p">(</span><span class="n">dm</span><span class="p">):</span>
+    <span class="n">K</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s1">&#39;il,il-&gt;il&#39;</span><span class="p">,</span> <span class="n">dm</span><span class="p">,</span> <span class="n">deno</span><span class="p">(</span><span class="n">l</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">K</span>
+
+<span class="c1">#Pass to mole object</span>
+<span class="n">mol</span> <span class="o">=</span> <span class="n">gto</span><span class="o">.</span><span class="n">M</span><span class="p">()</span>
+<span class="n">mol</span><span class="o">.</span><span class="n">nelectron</span> <span class="o">=</span> <span class="mi">4</span>
+<span class="n">mol</span><span class="o">.</span><span class="n">verbose</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">mol</span><span class="o">.</span><span class="n">incore_anyway</span> <span class="o">=</span> <span class="kc">True</span>
+
+<span class="c1">#Solve HF equation</span>
+<span class="n">F</span> <span class="o">=</span> <span class="n">T</span><span class="o">+</span><span class="n">V</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">15</span><span class="p">):</span>
+    <span class="n">e</span><span class="p">,</span><span class="n">C</span> <span class="o">=</span> <span class="n">eigh</span><span class="p">(</span><span class="n">F</span><span class="p">,</span><span class="n">S</span><span class="p">)</span>
+    <span class="n">dm</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s1">&#39;ik,jk-&gt;ij&#39;</span><span class="p">,</span> <span class="n">C</span><span class="p">[:,:</span><span class="n">mol</span><span class="o">.</span><span class="n">nelectron</span><span class="o">//</span><span class="mi">2</span><span class="p">],</span> <span class="n">C</span><span class="p">[:,:</span><span class="n">mol</span><span class="o">.</span><span class="n">nelectron</span><span class="o">//</span><span class="mi">2</span><span class="p">])</span>
+    <span class="n">J</span> <span class="o">=</span> <span class="n">get_J</span><span class="p">(</span><span class="n">dm</span><span class="p">)</span>
+    <span class="n">K</span> <span class="o">=</span> <span class="n">get_K</span><span class="p">(</span><span class="n">dm</span><span class="p">)</span>
+    <span class="n">F</span> <span class="o">=</span> <span class="n">T</span><span class="o">+</span><span class="n">V</span><span class="o">+</span><span class="n">J</span><span class="o">-</span><span class="mf">0.5</span><span class="o">*</span><span class="n">K</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;EHF = &quot;</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s1">&#39;ij,ji&#39;</span><span class="p">,</span> <span class="n">T</span><span class="o">+</span><span class="n">V</span><span class="o">+</span><span class="mf">0.5</span><span class="o">*</span><span class="n">J</span><span class="o">-</span><span class="mf">0.25</span><span class="o">*</span><span class="n">K</span><span class="p">,</span> <span class="n">dm</span><span class="p">))</span>
+<span class="n">dm_tar</span> <span class="o">=</span> <span class="n">dm</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="mi">10</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">dm_tar</span><span class="p">)</span><span class="o">/</span><span class="n">h</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;den(HF)&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">)</span> <span class="c1"># x10 scaled density</span>
+
+<span class="c1">#Three-center overlap integral</span>
+<span class="n">Sijt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n</span><span class="p">,</span><span class="n">n</span><span class="p">,</span><span class="n">n</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+  <span class="n">Sijt</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">i</span><span class="p">,</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.</span>
+
+<span class="c1">#Run WY</span>
+<span class="n">mw</span> <span class="o">=</span> <span class="n">wy</span><span class="o">.</span><span class="n">RWY</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="n">dm_tar</span><span class="p">,</span> <span class="n">Sijt</span><span class="o">=</span><span class="n">Sijt</span><span class="p">)</span>
+<span class="n">mw</span><span class="o">.</span><span class="n">tol</span> <span class="o">=</span> <span class="mf">1e-7</span>
+<span class="n">mw</span><span class="o">.</span><span class="n">method</span> <span class="o">=</span> <span class="s1">&#39;bfgs&#39;</span>
+<span class="n">mw</span><span class="o">.</span><span class="n">T</span> <span class="o">=</span> <span class="n">T</span>    <span class="c1">#Kinetic energy matrix - finite difference in this example</span>
+<span class="n">mw</span><span class="o">.</span><span class="n">Tp</span> <span class="o">=</span> <span class="n">T</span>   <span class="c1">#Kinetic energy matrix in potential basis </span>
+<span class="n">mw</span><span class="o">.</span><span class="n">V</span> <span class="o">=</span> <span class="n">V</span>    <span class="c1">#External potential matrix</span>
+<span class="n">mw</span><span class="o">.</span><span class="n">S</span> <span class="o">=</span> <span class="n">S</span>    <span class="c1">#Overlap matrix</span>
+<span class="n">mw</span><span class="o">.</span><span class="n">guide</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">mw</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+<span class="n">mw</span><span class="o">.</span><span class="n">info</span><span class="p">()</span>
+<span class="n">mw</span><span class="o">.</span><span class="n">time_profile</span><span class="p">()</span>
+
+<span class="c1">#Plotting</span>
+<span class="n">Vb</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">mw</span><span class="o">.</span><span class="n">b</span><span class="p">)</span> <span class="c1">#-mw.b[50]) #KS potential is unique up to a constant. </span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="mi">10</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">mw</span><span class="o">.</span><span class="n">dm</span><span class="p">)</span><span class="o">/</span><span class="n">h</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;den(WY)&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">)</span> <span class="c1"># x10 scaled density</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">V</span><span class="p">),</span> <span class="n">label</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;$v_</span><span class="si">{ext}</span><span class="s1">$(r)&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">V</span><span class="o">+</span><span class="n">Vb</span><span class="p">),</span> <span class="n">label</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;$v_</span><span class="si">{S}</span><span class="s1">$(r)&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="mf">1e+6</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">mw</span><span class="o">.</span><span class="n">dm</span><span class="o">-</span><span class="n">dm_tar</span><span class="p">)</span><span class="o">/</span><span class="n">h</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;den(WY-HF)&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;blue&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">)</span> <span class="c1"># x10^6 scaled diff</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="o">-</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
 </pre></div>
-</td></tr></table></div>
-<p>Which is then executed with:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3</pre></div></td><td class="code"><div class="highlight"><pre><span></span>  <span class="n">mw</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
-  <span class="n">mw</span><span class="o">.</span><span class="n">info</span><span class="p">()</span>
-  <span class="n">mw</span><span class="o">.</span><span class="n">time_profile</span><span class="p">()</span>
-</pre></div>
-</td></tr></table></div>
+</div>
 </div>
 <div class="section" id="plot-xc-zmp-fa">
 <span id="plot-xc-zmp"></span><h2>6. Plot XC ZMP FA<a class="headerlink" href="#plot-xc-zmp-fa" title="Permalink to this headline">¶</a></h2>
-<p>Calculate and plot regularized ZMP using the util functions with exchange-correlation aspects of the Fermi-Amaldi potential.</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span>  <span class="n">zmp</span><span class="o">.</span><span class="n">RZMP</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="n">dm_tar</span><span class="p">)</span>
+<p>Calculate and plot regularized ZMP using the util functions with exchange-correlation aspects of the Fermi-Amaldi potential.
+Demonstrating the <strong>guide</strong>, <strong>level_shift</strong>, <strong>dm</strong>, and <strong>zscf</strong> routines.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">pyscf</span> <span class="kn">import</span> <span class="n">gto</span><span class="p">,</span> <span class="n">scf</span>
+<span class="kn">from</span> <span class="nn">kspies</span> <span class="kn">import</span> <span class="n">zmp</span><span class="p">,</span> <span class="n">util</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<span class="c1">#Target density from HF</span>
+<span class="n">mol</span> <span class="o">=</span> <span class="n">gto</span><span class="o">.</span><span class="n">M</span><span class="p">(</span><span class="n">atom</span><span class="o">=</span><span class="s1">&#39;Ne&#39;</span><span class="p">,</span>
+            <span class="n">basis</span><span class="o">=</span><span class="s1">&#39;aug-cc-pVTZ&#39;</span><span class="p">)</span>
+<span class="n">mf</span><span class="o">=</span><span class="n">scf</span><span class="o">.</span><span class="n">RHF</span><span class="p">(</span><span class="n">mol</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+<span class="n">dm_tar</span> <span class="o">=</span> <span class="n">mf</span><span class="o">.</span><span class="n">make_rdm1</span><span class="p">()</span>
+
+<span class="c1">#Define plotting domain</span>
+<span class="n">coords</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1001</span><span class="p">):</span>
+    <span class="n">coords</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">))</span>
+<span class="n">coords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">coords</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">))</span>
+
+<span class="c1">#ZMP calculations</span>
+<span class="n">mz</span> <span class="o">=</span> <span class="n">zmp</span><span class="o">.</span><span class="n">RZMP</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="n">dm_tar</span><span class="p">)</span>
+<span class="n">mz</span><span class="o">.</span><span class="n">guide</span><span class="o">=</span><span class="s1">&#39;faxc&#39;</span>
+<span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="p">[</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="mi">1024</span> <span class="p">]:</span>
+    <span class="n">mz</span><span class="o">.</span><span class="n">level_shift</span> <span class="o">=</span> <span class="mf">0.1</span><span class="o">*</span><span class="n">l</span>
+    <span class="n">mz</span><span class="o">.</span><span class="n">zscf</span><span class="p">(</span><span class="n">l</span><span class="p">)</span> 
+    <span class="n">dmxc</span> <span class="o">=</span> <span class="n">l</span><span class="o">*</span><span class="n">mz</span><span class="o">.</span><span class="n">dm</span><span class="o">-</span><span class="p">(</span><span class="n">l</span><span class="o">+</span><span class="mf">1.</span><span class="o">/</span><span class="n">mol</span><span class="o">.</span><span class="n">nelectron</span><span class="p">)</span><span class="o">*</span><span class="n">dm_tar</span>
+    <span class="n">vxc</span> <span class="o">=</span> <span class="n">util</span><span class="o">.</span><span class="n">eval_vh</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="n">coords</span><span class="p">,</span> <span class="n">dmxc</span> <span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">coords</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">vxc</span><span class="p">,</span> <span class="n">label</span> <span class="o">=</span> <span class="sa">r</span><span class="s1">&#39;$\lambda$=&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">l</span><span class="p">))</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;x&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;vx(r)&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="o">-</span><span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">subplots_adjust</span><span class="p">(</span><span class="n">left</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">right</span><span class="o">=</span><span class="mf">0.93</span><span class="p">,</span> <span class="n">bottom</span><span class="o">=</span><span class="mf">0.12</span><span class="p">,</span> <span class="n">top</span><span class="o">=</span><span class="mf">0.97</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
-</td></tr></table></div>
-<p>Demonstrating the <strong>guide</strong>, <strong>level_shift</strong>, <strong>dm</strong>, and <strong>zscf</strong> routines.</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span>  <span class="n">util</span><span class="o">.</span><span class="n">eval_vh</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="n">coords</span><span class="p">,</span> <span class="n">dmxc</span> <span class="p">)</span>
-</pre></div>
-</td></tr></table></div>
+</div>
 </div>
 <div class="section" id="plot-xc-wy-pbe">
 <span id="plot-xc-wy"></span><h2>7. Plot XC WY PBE<a class="headerlink" href="#plot-xc-wy-pbe" title="Permalink to this headline">¶</a></h2>
 <p>Calculate and plot regularized WY using the util functions with a PBE guiding potential.</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span>  <span class="n">wy</span><span class="o">.</span><span class="n">RWY</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="n">dm_tar</span><span class="p">,</span> <span class="n">pbas</span><span class="o">=</span><span class="s1">&#39;cc-pVQZ&#39;</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">pyscf</span> <span class="kn">import</span> <span class="n">gto</span><span class="p">,</span> <span class="n">scf</span><span class="p">,</span> <span class="n">dft</span>
+<span class="kn">from</span> <span class="nn">kspies</span> <span class="kn">import</span> <span class="n">wy</span><span class="p">,</span> <span class="n">util</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<span class="n">mol</span> <span class="o">=</span> <span class="n">gto</span><span class="o">.</span><span class="n">M</span><span class="p">(</span><span class="n">atom</span><span class="o">=</span><span class="s1">&#39;Ne&#39;</span><span class="p">,</span>
+            <span class="n">basis</span><span class="o">=</span><span class="s1">&#39;aug-cc-pVTZ&#39;</span><span class="p">)</span>
+<span class="n">mf</span><span class="o">=</span><span class="n">scf</span><span class="o">.</span><span class="n">RHF</span><span class="p">(</span><span class="n">mol</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+<span class="n">dm_tar</span> <span class="o">=</span> <span class="n">mf</span><span class="o">.</span><span class="n">make_rdm1</span><span class="p">()</span>
+
+<span class="c1">#Define plotting domain</span>
+<span class="n">coords</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1001</span><span class="p">):</span>
+    <span class="n">coords</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">))</span>
+<span class="n">coords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">coords</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">))</span>
+
+<span class="c1">#WY calculations</span>
+<span class="n">mw</span> <span class="o">=</span> <span class="n">wy</span><span class="o">.</span><span class="n">RWY</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="n">dm_tar</span><span class="p">,</span> <span class="n">pbas</span><span class="o">=</span><span class="s1">&#39;cc-pVQZ&#39;</span><span class="p">)</span>
+<span class="n">mw</span><span class="o">.</span><span class="n">guide</span> <span class="o">=</span> <span class="s1">&#39;pbe&#39;</span>
+<span class="n">mw</span><span class="o">.</span><span class="n">tol</span> <span class="o">=</span> <span class="mf">1e-7</span>
+<span class="n">pb</span> <span class="o">=</span> <span class="n">dft</span><span class="o">.</span><span class="n">numint</span><span class="o">.</span><span class="n">eval_ao</span><span class="p">(</span><span class="n">mw</span><span class="o">.</span><span class="n">pmol</span><span class="p">,</span> <span class="n">coords</span><span class="p">)</span> <span class="c1">#potential basis values on grid</span>
+<span class="n">vg</span> <span class="o">=</span> <span class="n">util</span><span class="o">.</span><span class="n">eval_vxc</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="n">dm_tar</span><span class="p">,</span> <span class="n">mw</span><span class="o">.</span><span class="n">guide</span><span class="p">,</span> <span class="n">coords</span><span class="p">)</span> <span class="c1">#guiding potential on grid</span>
+
+<span class="k">for</span> <span class="n">expo</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">6</span><span class="p">):</span>
+    <span class="n">mw</span><span class="o">.</span><span class="n">reg</span> <span class="o">=</span> <span class="mf">10.</span><span class="o">**</span><span class="p">(</span><span class="o">-</span><span class="n">expo</span><span class="p">)</span>
+    <span class="n">mw</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+    <span class="n">vC</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s1">&#39;t,rt-&gt;r&#39;</span><span class="p">,</span> <span class="n">mw</span><span class="o">.</span><span class="n">b</span><span class="p">,</span> <span class="n">pb</span><span class="p">)</span>
+    <span class="n">mw</span><span class="o">.</span><span class="n">info</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">coords</span><span class="p">[:,</span><span class="mi">0</span><span class="p">],</span> <span class="n">vg</span><span class="o">+</span><span class="n">vC</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;$\eta$ = 10^&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="o">-</span><span class="n">expo</span><span class="p">))</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;x&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;vx(r)&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="o">-</span><span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">subplots_adjust</span><span class="p">(</span><span class="n">left</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">right</span><span class="o">=</span><span class="mf">0.93</span><span class="p">,</span> <span class="n">bottom</span><span class="o">=</span><span class="mf">0.12</span><span class="p">,</span> <span class="n">top</span><span class="o">=</span><span class="mf">0.97</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
-</td></tr></table></div>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span>  <span class="n">util</span><span class="o">.</span><span class="n">eval_vxc</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="n">dm_tar</span><span class="p">,</span> <span class="n">mw</span><span class="o">.</span><span class="n">guide</span><span class="p">,</span> <span class="n">coords</span><span class="p">)</span>
+</div>
+</div>
+<div class="section" id="user-defined-potential-basis">
+<span id="userdefined-potential"></span><h2>8. User Defined Potential Basis<a class="headerlink" href="#user-defined-potential-basis" title="Permalink to this headline">¶</a></h2>
+<p>Use of user-defined potential basis.
+Slater-type basis is given as an example</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">pyscf</span> <span class="kn">import</span> <span class="n">gto</span><span class="p">,</span> <span class="n">scf</span><span class="p">,</span> <span class="n">dft</span> 
+<span class="kn">from</span> <span class="nn">kspies</span> <span class="kn">import</span> <span class="n">wy</span>
+
+<span class="n">mol_1</span> <span class="o">=</span> <span class="n">gto</span><span class="o">.</span><span class="n">M</span><span class="p">(</span><span class="n">atom</span><span class="o">=</span><span class="s1">&#39;Ne&#39;</span><span class="p">,</span> <span class="n">basis</span><span class="o">=</span><span class="s1">&#39;aug-cc-pVTZ&#39;</span><span class="p">)</span>
+<span class="n">mf</span> <span class="o">=</span> <span class="n">scf</span><span class="o">.</span><span class="n">UHF</span><span class="p">(</span><span class="n">mol_1</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+<span class="n">P_tar_1</span> <span class="o">=</span> <span class="n">mf</span><span class="o">.</span><span class="n">make_rdm1</span><span class="p">()</span>
+
+<span class="k">def</span> <span class="nf">make_sto</span><span class="p">(</span><span class="n">zeta</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">sto</span><span class="p">(</span><span class="n">coords</span><span class="p">):</span>
+        <span class="n">dist</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">coords</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">**.</span><span class="mi">5</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">zeta</span><span class="o">*</span><span class="n">dist</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">sto</span>
+
+<span class="n">pbas</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">zeta</span> <span class="ow">in</span> <span class="p">[</span> <span class="mf">0.25</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">,</span> <span class="mf">4.</span><span class="p">,</span> <span class="mf">8.</span> <span class="p">]:</span>
+    <span class="n">pbas</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">make_sto</span><span class="p">(</span><span class="n">zeta</span><span class="p">))</span>
+
+<span class="n">mol_3</span><span class="o">=</span><span class="n">gto</span><span class="o">.</span><span class="n">M</span><span class="p">(</span><span class="n">atom</span><span class="o">=</span><span class="s1">&#39;Ne&#39;</span><span class="p">,</span> <span class="n">basis</span><span class="o">=</span><span class="s1">&#39;aug-cc-pVTZ&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">make_gto</span><span class="p">(</span><span class="n">i</span><span class="p">):</span> <span class="c1">#make aug-cc-pVTZ as user-defined basis</span>
+    <span class="k">def</span> <span class="nf">gto</span><span class="p">(</span><span class="n">coords</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">dft</span><span class="o">.</span><span class="n">numint</span><span class="o">.</span><span class="n">eval_ao</span><span class="p">(</span><span class="n">mol_3</span><span class="p">,</span> <span class="n">coords</span><span class="p">)[:,</span><span class="n">i</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">gto</span>
+
+<span class="c1">#If this pbas is used, result is same with setting</span>
+<span class="c1">#pbas=&#39;aug-cc-pVTZ&#39;</span>
+<span class="c1">#pbas = []</span>
+<span class="c1">#for i in range(mol_3.nao_nr()):</span>
+<span class="c1">#  pbas.append(make_gto(i))</span>
+
+<span class="n">mywy</span> <span class="o">=</span> <span class="n">wy</span><span class="o">.</span><span class="n">UWY</span><span class="p">(</span><span class="n">mol_1</span><span class="p">,</span> <span class="n">P_tar_1</span><span class="p">,</span> <span class="n">pbas</span><span class="o">=</span><span class="n">pbas</span><span class="p">)</span>
+<span class="n">mywy</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+<span class="n">mywy</span><span class="o">.</span><span class="n">info</span><span class="p">()</span>
 </pre></div>
-</td></tr></table></div>
+</div>
 </div>
 </div>
 

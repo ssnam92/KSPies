@@ -3,8 +3,8 @@ Examples
 ========
 
 Included in the KS-pies download is an example folder including several scripts which 
-    demonstrate possible uses of KS-pies. Each script intends to showcase the use of 
-    a KS-pies feature.
+demonstrate possible uses of KS-pies. Each script intends to showcase the use of 
+a KS-pies feature.
 
 
 .. _Full-example:
@@ -13,47 +13,24 @@ Included in the KS-pies download is an example folder including several scripts 
 ##############
 
 A complete example using ZMP, WY and the util functions. 
-    A Be atom is used for the test density. 
-    Prints to terminal results and expected results, that can
-    be compared to confirm that the code is working correctly.
+A Be atom is used for the test density. 
+Prints to terminal results and expected results, that can
+be compared to confirm that the code is working correctly.
+
+.. literalinclude:: ../examples/1_test_script.py
+
 
 .. _ZMP-benzene:
 
 2. Benzene
 ##########
 
-Use ZMP to create a KS potential of Benzene.
+First perform DF-RHF calculation of benzene,
+and then perform RWY, UWY, DF-RZMP, DF-UZMP, RZMP and DF-UZMP calculations with HF target density.
+The example also plot density differences (requires matplotlib)
+Note that RZMP and UZMP with DF approximation require a substantial amount of time.
 
-.. code-block:: python
-  :linenos:
-
-    wy.RWY(mol, dm_tar)
-
-Demonstrating a restricted WY instance with **run**, **info**, and use of the stored density matrix **dm**.
-
-.. code-block:: python
-  :linenos:
-
-    wy.UWY(mol, udm_tar)
-
-Demonstrating an unrestricted WY instance with **run**, **info**, and use of the stored density matrix **dm**.
-
-
-.. code-block:: python
-  :linenos:
-
-    zmp.RZMP(mol, dm_tar)
-
-Demonstrating a restricted ZMP instance with and without the density fitting procedure (**with_df = True**). Also shows use of **level_shift**, **zscf**, and how various lambda can be used.
-
-
-.. code-block:: python
-  :linenos:
-
-    zmp.UZMP(mol, dm_tar)
-
-Demonstrating an unrestricted ZMP instance with and without the density fitting procedure (**with_df = True**). Also shows use of **level_shift**, **zscf**, and how various lambda can be used.
-
+.. literalinclude:: ../examples/2_benzene.py
 
 
 .. _WY-ZMP-oxygen:
@@ -61,30 +38,19 @@ Demonstrating an unrestricted ZMP instance with and without the density fitting 
 3. Oxygen
 #########
 
-Use unrestricted ZMP and unrestricted WY to calculate a KS potential of molecular oxygen.
+Similar with benzene example but CCSD density is used as a target
 
-.. code-block:: python
-  :linenos:
-
-    zmp.UZMP(mol, dm_tar)
-
-.. code-block:: python
-  :linenos:
-
-    wy.UWY(mol, dm_tar)
+.. literalinclude:: ../examples/3_oxygen.py
 
 
 .. _WY-regular:
 
-4. Restricted WY
+4. Regularized WY
 #################
 
-Perform restricted WY on molecular nitrogen.
+Perform restricted WY on molecular nitrogen with regularization
 
-.. code-block:: python
-  :linenos:
-
-    wy.RWY(mol, dm_tar, pbas=PBS)
+.. literalinclude:: ../examples/4_regularized_wy.py
 
 
 .. _userdefined-systems:
@@ -93,32 +59,12 @@ Perform restricted WY on molecular nitrogen.
 ######################
 
 Perform restricted WY on a user defined harmonic oscillator.
-
-
-wy.RWY(mol,dm_tar,Sijt=Sijt)
-
+This example shows
+generation of finite-difference Hamiltonian, solving HF equation with it,
+and perform WY calculation with that HF density as a target 
 To create a user defined instance, a number of settings must be specified:
 
-.. code-block:: python
-  :linenos:
-
-    mw = wy.RWY(mol, dm_tar, Sijt=Sijt)
-    mw.tol = 1e-7
-    mw.method = 'bfgs'
-    mw.T = T
-    mw.Tp = T
-    mw.V = V
-    mw.S = S
-    mw.guide = None
-
-Which is then executed with:
-
-.. code-block:: python
-  :linenos:
-
-    mw.run()
-    mw.info()
-    mw.time_profile()
+.. literalinclude:: ../examples/5_user_defined_system.py
 
 
 .. _plot-xc-zmp:
@@ -127,18 +73,10 @@ Which is then executed with:
 #################
 
 Calculate and plot regularized ZMP using the util functions with exchange-correlation aspects of the Fermi-Amaldi potential.
-
-.. code-block:: python
-  :linenos:
-
-    zmp.RZMP(mol, dm_tar)
-
 Demonstrating the **guide**, **level_shift**, **dm**, and **zscf** routines.
 
-.. code-block:: python
-  :linenos:
+.. literalinclude:: ../examples/6_plot_xc_zmp_fa.py
 
-    util.eval_vh(mol, coords, dmxc )
 
 .. _plot-xc-wy:
 
@@ -147,12 +85,16 @@ Demonstrating the **guide**, **level_shift**, **dm**, and **zscf** routines.
 
 Calculate and plot regularized WY using the util functions with a PBE guiding potential.
 
-.. code-block:: python
-  :linenos:
+.. literalinclude:: ../examples/7_plot_xc_wy_pbe.py
 
-    wy.RWY(mol, dm_tar, pbas='cc-pVQZ')
 
-.. code-block:: python
-  :linenos:
+.. _userdefined-potential:
 
-    util.eval_vxc(mol, dm_tar, mw.guide, coords)
+8. User Defined Potential Basis
+###############################
+
+Use of user-defined potential basis.
+Slater-type basis is given as an example
+
+.. literalinclude:: ../examples/8_user_defined_potential.py
+
