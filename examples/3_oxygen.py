@@ -27,9 +27,9 @@ coords=grids.coords
 weights=grids.weights
 ao=dft.numint.eval_ao(mol, coords)
 def ndiff(P):
-  if P.ndim==3: P=P[0]+P[1]
-  rho=dft.numint.eval_rho(mol, ao, P)
-  return np.einsum('r,r',abs(rho),weights)
+    if P.ndim==3: P=P[0]+P[1]
+    rho=dft.numint.eval_rho(mol, ao, P)
+    return np.einsum('r,r',abs(rho),weights)
 
 #DF-UZMP
 mz =zmp.UZMP(mol, dm_tar)

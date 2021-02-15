@@ -54,9 +54,9 @@ saved = [-0.000269882, -0.000132191, -0.000072399,
          -0.000042809, -0.000026879, -0.000017730] #Precomputed values
 print("Lvl  computed      saved")
 for i, Lvl in enumerate([ 3, 4, 5, 6, 7, 8]):
-  vj_num = util.eval_vh(mol, coords, dm_rhf, Lvl = Lvl)
-  Eh_num = .5*np.einsum('r,r,r', vj_num, rho[0,:], weights)
-  print('%i  %.7f %.7f'%(Lvl,(Eh_num-Eh_ana),saved[i]))
+    vj_num = util.eval_vh(mol, coords, dm_rhf, Lvl = Lvl)
+    Eh_num = .5*np.einsum('r,r,r', vj_num, rho[0,:], weights)
+    print('%i  %.7f %.7f'%(Lvl,(Eh_num-Eh_ana),saved[i]))
 
 print()
 print("#####Check util.eval_vxc#####")

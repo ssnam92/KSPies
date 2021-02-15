@@ -20,15 +20,15 @@ plt.figure(figsize=(3,4))
 mw = wy.RWY(mol, dm_tar, pbas='cc-pVQZ')
 mw.guide = 'pbe'
 mw.tol = 1e-7
-pb = dft.numint.eval_ao(mw.mol2, coords) #potential basis values on grid
+pb = dft.numint.eval_ao(mw.pmol, coords) #potential basis values on grid
 vg = util.eval_vxc(mol, dm_tar, mw.guide, coords) #guiding potential on grid
 
 for expo in np.arange(2,6):
-  mw.reg = 10.**(-expo)
-  mw.run()
-  vC = np.einsum('t,rt->r', mw.b, pb)
-  mw.time_profile()
-  plt.plot(coords[:,0], vg+vC, label=r'$\eta$ = 10^'+str(-expo))
+    mw.reg = 10.**(-expo)
+    mw.run()
+    vC = np.einsum('t,rt->r', mw.b, pb)
+    mw.info()
+    plt.plot(coords[:,0], vg+vC, label=r'$\eta$ = 10^'+str(-expo))
 
 plt.xlabel("x")
 plt.ylabel("vx(r)")
