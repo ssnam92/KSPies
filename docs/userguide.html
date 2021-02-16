@@ -182,19 +182,23 @@ All KSPies inversion program (ZMP and WY) requires at least two input:
 1. mole object: which defines geometry, basis set, and other molecular information (charge, spin…) and
 2. density matrix: generated with same mole object. Since KSPies is KS inversion program, this will used as a target density.
 Below code shows how these inputs can be generated for HF and CCSD calculations.</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3
-4
-5
-6
-7
-8</pre></div></td><td class="code"><div class="highlight"><pre><span></span>  <span class="kn">from</span> <span class="nn">pyscf</span> <span class="kn">import</span> <span class="n">gto</span><span class="p">,</span> <span class="n">scf</span><span class="p">,</span> <span class="n">cc</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10</pre></div></td><td class="code"><div class="highlight"><pre><span></span>  <span class="kn">from</span> <span class="nn">pyscf</span> <span class="kn">import</span> <span class="n">gto</span><span class="p">,</span> <span class="n">scf</span><span class="p">,</span> <span class="n">cc</span>
 
   <span class="n">mol</span> <span class="o">=</span> <span class="n">gto</span><span class="o">.</span><span class="n">M</span><span class="p">(</span><span class="n">atom</span><span class="o">=</span><span class="s1">&#39;Ne&#39;</span><span class="p">,</span><span class="n">basis</span><span class="o">=</span><span class="s1">&#39;cc-pVTZ&#39;</span><span class="p">)</span>
   <span class="n">mf</span> <span class="o">=</span> <span class="n">scf</span><span class="o">.</span><span class="n">RHF</span><span class="p">(</span><span class="n">mol</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
   <span class="n">dm_hf</span> <span class="o">=</span> <span class="n">mf</span><span class="o">.</span><span class="n">make_rdm1</span><span class="p">()</span>
   <span class="n">mc</span> <span class="o">=</span> <span class="n">cc</span><span class="o">.</span><span class="n">CCSD</span><span class="p">(</span><span class="n">mf</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+  <span class="n">dm_cc</span> <span class="o">=</span> <span class="n">mc</span><span class="o">.</span><span class="n">make_rdm1</span><span class="p">(</span><span class="n">ao_repr</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+  <span class="c1">#or</span>
   <span class="kn">from</span> <span class="nn">kspies</span> <span class="kn">import</span> <span class="n">util</span>
   <span class="n">dm_cc</span> <span class="o">=</span> <span class="n">util</span><span class="o">.</span><span class="n">mo2ao</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="n">mc</span><span class="o">.</span><span class="n">make_rdm1</span><span class="p">(),</span> <span class="n">mf</span><span class="o">.</span><span class="n">mo_coeff</span><span class="p">)</span>
 </pre></div>
@@ -249,7 +253,8 @@ Further details can be found in the module documentation for <a class="reference
 <li><p><a class="reference internal" href="examples.html#zmp-benzene"><span class="std std-ref">Unrestricted WY on benzene</span></a></p></li>
 <li><p><a class="reference internal" href="examples.html#wy-zmp-oxygen"><span class="std std-ref">Unrestricted WY on molecular oxygen</span></a></p></li>
 <li><p><a class="reference internal" href="examples.html#plot-xc-wy"><span class="std std-ref">WY usage for plotting a PBE guiding potential</span></a></p></li>
-<li><p><a class="reference internal" href="examples.html#userdefined-systems"><span class="std std-ref">WY usage on a user defined potential</span></a></p></li>
+<li><p><a class="reference internal" href="examples.html#userdefined-systems"><span class="std std-ref">WY usage on a user defined Hamiltonian</span></a></p></li>
+<li><p><a class="reference internal" href="examples.html#userdefined-potential"><span class="std std-ref">WY usage on a user defined potential basis</span></a></p></li>
 </ul>
 </div>
 <div class="section" id="failures">
@@ -302,6 +307,11 @@ However, when BFGS fails, CG can be an option.</p>
 <p>If WY fails with maximum gradient element (can be checked with .info() method) approximately 1e-5,
 check if “tol” is set too low.
 For molecular systems, setting “tol” below 1e-7 might numerically burden to WY.</p>
+<p>Although KS-pies WY supports nonequivalent orbital and potential basis set,
+WY sometimes does not converge when the potential basis is larger than the orbital basis
+(especially for open-shell systems).
+Since changing optimization algorithm does not solve this problem, we recommand
+using same orbital and potential basis for easy convergence.</p>
 <p>Note that the result of WY is very sensitive to initial condition or optimization algorithm used.
 For density-rich region (i.e. vicinity of nuclei or bonding region), this is not a problem,
 but for density-deficient region, the shape of potential may depend on optimization conditions.

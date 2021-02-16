@@ -31,6 +31,8 @@ Below code shows how these inputs can be generated for HF and CCSD calculations.
     mf = scf.RHF(mol).run()
     dm_hf = mf.make_rdm1()
     mc = cc.CCSD(mf).run()
+    dm_cc = mc.make_rdm1(ao_repr=True)
+    #or
     from kspies import util
     dm_cc = util.mo2ao(mol, mc.make_rdm1(), mf.mo_coeff)
 
@@ -91,7 +93,8 @@ The examples directory includes:
 - :ref:`Unrestricted WY on benzene <ZMP-benzene>`
 - :ref:`Unrestricted WY on molecular oxygen <WY-ZMP-oxygen>`
 - :ref:`WY usage for plotting a PBE guiding potential <plot-xc-wy>`
-- :ref:`WY usage on a user defined potential <userdefined-systems>`
+- :ref:`WY usage on a user defined Hamiltonian <userdefined-systems>`
+- :ref:`WY usage on a user defined potential basis <userdefined-potential>`
 
 
 Failures
@@ -157,6 +160,12 @@ However, when BFGS fails, CG can be an option.
 If WY fails with maximum gradient element (can be checked with .info() method) approximately 1e-5, 
 check if "tol" is set too low.
 For molecular systems, setting "tol" below 1e-7 might numerically burden to WY.
+
+Although KS-pies WY supports nonequivalent orbital and potential basis set,
+WY sometimes does not converge when the potential basis is larger than the orbital basis 
+(especially for open-shell systems).
+Since changing optimization algorithm does not solve this problem, we recommand
+using same orbital and potential basis for easy convergence.
 
 Note that the result of WY is very sensitive to initial condition or optimization algorithm used.
 For density-rich region (i.e. vicinity of nuclei or bonding region), this is not a problem, 
