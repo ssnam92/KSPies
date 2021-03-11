@@ -25,6 +25,5 @@ Installation
 
         pip install kspies
 
-  Note this does not downloads compiled Fortran binary directly.
-  User can compile `kspies/kspies_fort.f90` to utilize much faster Fortran subroutine for `wy` and `util`.
-  Example compile command is introduced in `kspies/compile.sh`
+  For systems not supported by the manylinux wheel, user can run using the python implimentation, or compile the fortran code `kspies/kspies_fort.f90` for their system.
+  Example compile commands are detailed in `kspies/compile.sh`
