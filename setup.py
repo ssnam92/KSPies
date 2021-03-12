@@ -11,12 +11,16 @@ lib = Extension(
         libraries=['lapack']
         )
 
+data_files = [
+    ('fortran_source', ['kspies/kspies_fort.f90', 'kspies/compile.sh'])
+]
+
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setup(
     name="kspies", # Replace with your own username
-    version="1.0.0",
+    version="1.0.3",
     author="Seungsoo Nam,  Ryan J. McCarty, Hansol Park, Eunji Sim",
     author_email="skaclitz@yonsei.ac.kr",
     description="This is a python based Kohn-Sham Inversion Evaluation Software package for use with pySCF.",
@@ -24,11 +28,12 @@ setup(
     long_description_content_type="text/markdown",
     url="https://ssnam92.github.io/KSPies/",
     packages=setuptools.find_packages(),
+    data_files=data_files,
     ext_modules = [lib],
     install_requires=[
-        "numpy>=1.18.4",
-        "scipy>=1.4.1",
-        "pyscf>=1.6.6",
+      "numpy>=1.18.4",
+      "scipy>=1.4.1",
+      "opt_einsum>=3.2.0"
     ],
     classifiers=[
         "Programming Language :: Python :: 3",
@@ -38,3 +43,4 @@ setup(
     ],
     python_requires='>=3.6',
 )
+
