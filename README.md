@@ -23,6 +23,11 @@ Installation
 
         pip install kspies
 
-  All prerequisite packages are installed automatically except pyscf\\
+  All prerequisite packages are installed automatically except pyscf\
   Or user can download source from GitHub repo, and manually compile `kspies/kspies_fort.f90`.
   Example compile commands can be found in `kspies/compile.sh`
+
+Citing KSPies
+-------------
+[KS-pies: Kohn–Sham inversion toolkit](https://aip.scitation.org/doi/10.1063/5.0040941),
+S. Nam, R. J. McCarty, H. Park, E. Sim, J. Chem. Phys. 154, 124122 (2021); https://doi.org/10.1063/5.0040941
