@@ -150,18 +150,18 @@ def readwfn(filename, mol, makerdm=False):
             achrg.append(float(dat[-1]))
             coord.append([float(c) for c in dat[4:7]])
         chrg_criteria = sum(abs(mol.atom_charges() - np.array(achrg))) > 1e-10
-        coord_criteria = np.linalg.norm(mol.atom_coords() - np.array(coord)) >  1e-6
+        coord_criteria = np.linalg.norm(mol.atom_coords() - np.array(coord)) >  1e-5
         if chrg_criteria or coord_criteria:
             warnings.warn("Different molecule!")
 
         centr = []
         typea = []
         expos = []
-        for i in range(nprm//20+1):
+        for i in range((nprm-1)//20+1):
             centr += [int(a) for a in f.readline().split()[2:]]
-        for i in range(nprm//20+1):
+        for i in range((nprm-1)//20+1):
             typea += [int(a) for a in f.readline().split()[2:]]
-        for i in range(nprm//5+1):
+        for i in range((nprm-1)//5+1):
             expos += [float(a.replace('D', 'E')) for a in f.readline().split()[1:]]
 
         MOs = []
@@ -172,7 +172,7 @@ def readwfn(filename, mol, makerdm=False):
             eng.append(float(dat[-1]))
             occ.append(float(dat[-5]))
             orb = []
-            for i in range(nprm//5+1):
+            for i in range((nprm-1)//5+1):
                 orb += [float(a.replace('D','E')) for a in f.readline().split()]
             MOs.append(orb)
     MOs = np.array(MOs).T
@@ -182,17 +182,18 @@ def readwfn(filename, mol, makerdm=False):
         c2s.append(np.linalg.pinv(gto.cart2sph(l)))
     from pyscf.x2c import x2c
     uncmol, ctr = x2c._uncontract_mol(mol, True, 0.)
+    float_formatter = "{:.6E}".format
     uncmol_info = []
     for ib in range(uncmol.nbas):
         ia = uncmol.bas_atom(ib)
         l = uncmol.bas_angular(ib)
         es = uncmol.bas_exp(ib)
-        uncmol_info.append([ia+1, l, es[0]])
+        uncmol_info.append([ia+1, l, float_formatter(es[0])])
 
     match = []
     for ip in range(nprm):
         am = [l for l in range(5) if typea[ip] in TYPE_MAP[l]]
-        match.append(uncmol_info.index([centr[ip], am, expos[ip]]))
+        match.append(uncmol_info.index([centr[ip], am, float_formatter(expos[ip])]))
 
     Rot = np.zeros((uncmol.nao_nr(), nprm))
     bidx = 0
